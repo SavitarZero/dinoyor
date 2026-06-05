@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { signOut } from '@/lib/actions/auth'
 import { getTranslations, getLocale } from 'next-intl/server'
 import { LanguageSwitcher } from './LanguageSwitcher'
+import { ThemeToggle } from './ThemeToggle'
 
 export async function Navbar() {
   const supabase = await createClient()
@@ -64,6 +65,7 @@ export async function Navbar() {
             </Link>
           )}
           <LanguageSwitcher />
+          <ThemeToggle />
         </nav>
       </div>
     </header>
