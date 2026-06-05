@@ -1,27 +1,33 @@
 'use client'
 import { useState } from 'react'
-import { signInWithEmail, signInWithOAuth } from '@/lib/actions/auth'
+import { signUpWithEmail } from '@/lib/actions/auth'
 import Link from 'next/link'
+import { useTranslations, useLocale } from 'next-intl'
 
-export default function LoginPage() {
+export default function RegisterPage() {
+  const t = useTranslations('auth')
+  const locale = useLocale()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [message, setMessage] = useState('')
   const [error, setError] = useState('')
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    const result = await signInWithEmail(email, password)
+    const result = await signUpWithEmail(email, password)
     if (result?.error) setError(result.error)
+    if (result?.success) setMessage(t('checkEmail'))
   }
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-white mb-6">Sign in to Dinoyor</h1>
+      <h1 className="text-2xl font-bold text-white mb-6">{t('createAccount')}</h1>
       {error && <p className="text-red-400 text-sm mb-4">{error}</p>}
+      {message && <p className="text-accent text-sm mb-4">{message}</p>}
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="email"
-          placeholder="Email"
+          placeholder={t('email')}
           value={email}
           onChange={e => setEmail(e.target.value)}
           required
@@ -29,26 +35,20 @@ export default function LoginPage() {
         />
         <input
           type="password"
-          placeholder="Password"
+          placeholder={t('passwordMin')}
           value={password}
           onChange={e => setPassword(e.target.value)}
           required
+          minLength={8}
           className="w-full px-4 py-2 rounded-lg bg-background border border-border text-white focus:outline-none focus:border-accent"
         />
         <button type="submit" className="w-full py-2 rounded-lg bg-accent text-black font-semibold hover:opacity-90">
-          Sign In
+          {t('register')}
         </button>
       </form>
-      <div className="my-4 text-center text-gray-500 text-sm">or</div>
-      <button
-        onClick={() => signInWithOAuth('google')}
-        className="w-full py-2 rounded-lg border border-border text-white hover:border-accent text-sm"
-      >
-        Continue with Google
-      </button>
       <p className="mt-4 text-center text-gray-500 text-sm">
-        No account?{' '}
-        <Link href="/register" className="text-accent hover:underline">Register</Link>
+        {t('haveAccount')}{' '}
+        <Link href={`/${locale}/login`} className="text-accent hover:underline">{t('signIn')}</Link>
       </p>
     </div>
   )

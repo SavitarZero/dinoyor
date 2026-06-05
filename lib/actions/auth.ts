@@ -1,12 +1,14 @@
 'use server'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
+import { getLocale } from 'next-intl/server'
 
 export async function signInWithEmail(email: string, password: string) {
   const supabase = await createClient()
+  const locale = await getLocale()
   const { error } = await supabase.auth.signInWithPassword({ email, password })
   if (error) return { error: error.message }
-  redirect('/dashboard')
+  redirect(`/${locale}/dashboard`)
 }
 
 export async function signUpWithEmail(email: string, password: string) {
@@ -32,6 +34,7 @@ export async function signInWithOAuth(provider: 'google' | 'discord') {
 
 export async function signOut() {
   const supabase = await createClient()
+  const locale = await getLocale()
   await supabase.auth.signOut()
-  redirect('/login')
+  redirect(`/${locale}/login`)
 }

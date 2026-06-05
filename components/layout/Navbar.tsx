@@ -1,10 +1,14 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { signOut } from '@/lib/actions/auth'
+import { getTranslations, getLocale } from 'next-intl/server'
+import { LanguageSwitcher } from './LanguageSwitcher'
 
 export async function Navbar() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
+  const t = await getTranslations('nav')
+  const locale = await getLocale()
 
   let isAdmin = false
   if (user) {
@@ -19,46 +23,47 @@ export async function Navbar() {
   return (
     <header className="border-b border-border bg-surface sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
-        <Link href="/" className="text-accent font-bold text-xl tracking-widest">
+        <Link href={`/${locale}`} className="text-accent font-bold text-xl tracking-widest">
           DINOYOR
         </Link>
         <nav className="flex items-center gap-5">
-          <Link href="/listings" className="text-gray-400 hover:text-white text-sm transition-colors">
-            Marketplace
+          <Link href={`/${locale}/listings`} className="text-gray-400 hover:text-white text-sm transition-colors">
+            {t('marketplace')}
           </Link>
           {user ? (
             <>
-              <Link href="/listings/new" className="text-gray-400 hover:text-white text-sm transition-colors">
-                Sell
+              <Link href={`/${locale}/listings/new`} className="text-gray-400 hover:text-white text-sm transition-colors">
+                {t('sell')}
               </Link>
-              <Link href="/orders" className="text-gray-400 hover:text-white text-sm transition-colors">
-                Orders
+              <Link href={`/${locale}/orders`} className="text-gray-400 hover:text-white text-sm transition-colors">
+                {t('orders')}
               </Link>
-              <Link href="/wallet" className="text-gray-400 hover:text-white text-sm transition-colors">
-                Wallet
+              <Link href={`/${locale}/wallet`} className="text-gray-400 hover:text-white text-sm transition-colors">
+                {t('wallet')}
               </Link>
-              <Link href="/dashboard" className="text-gray-400 hover:text-white text-sm transition-colors">
-                Dashboard
+              <Link href={`/${locale}/dashboard`} className="text-gray-400 hover:text-white text-sm transition-colors">
+                {t('dashboard')}
               </Link>
               {isAdmin && (
-                <Link href="/admin" className="text-yellow-400 hover:text-yellow-300 text-sm transition-colors">
-                  Admin
+                <Link href={`/${locale}/admin`} className="text-yellow-400 hover:text-yellow-300 text-sm transition-colors">
+                  {t('admin')}
                 </Link>
               )}
               <form action={signOut}>
                 <button className="text-gray-500 hover:text-white text-sm transition-colors">
-                  Sign out
+                  {t('signOut')}
                 </button>
               </form>
             </>
           ) : (
             <Link
-              href="/login"
+              href={`/${locale}/login`}
               className="px-3 py-1 rounded-lg bg-accent text-black text-sm font-semibold hover:opacity-90"
             >
-              Sign in
+              {t('signIn')}
             </Link>
           )}
+          <LanguageSwitcher />
         </nav>
       </div>
     </header>
