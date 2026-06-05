@@ -40,20 +40,12 @@ export default function LoginPage() {
         </button>
       </form>
       <div className="my-4 text-center text-gray-500 text-sm">or</div>
-      <div className="space-y-2">
-        <button
-          onClick={() => signInWithOAuth('google')}
-          className="w-full py-2 rounded-lg border border-border text-white hover:border-accent text-sm"
-        >
-          Continue with Google
-        </button>
-        <button
-          onClick={() => signInWithOAuth('discord')}
-          className="w-full py-2 rounded-lg border border-border text-white hover:border-accent text-sm"
-        >
-          Continue with Discord
-        </button>
-      </div>
+      <button
+        onClick={() => signInWithOAuth('google')}
+        className="w-full py-2 rounded-lg border border-border text-white hover:border-accent text-sm"
+      >
+        Continue with Google
+      </button>
       <p className="mt-4 text-center text-gray-500 text-sm">
         No account?{' '}
         <Link href="/register" className="text-accent hover:underline">Register</Link>
