@@ -20,23 +20,41 @@ create table if not exists public.messages (
 alter table public.conversations enable row level security;
 alter table public.messages enable row level security;
 
-create policy "conv_participant" on public.conversations for all using (
-  auth.uid() = buyer_id or auth.uid() = seller_id
-);
-create policy "conv_admin" on public.conversations for all using (
-  exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
-);
+do $$
+begin
+  if not exists (select 1 from pg_policies where tablename = 'conversations' and policyname = 'conv_participant') then
+    create policy "conv_participant" on public.conversations for all using (
+      auth.uid() = buyer_id or auth.uid() = seller_id
+    );
+  end if;
+  if not exists (select 1 from pg_policies where tablename = 'conversations' and policyname = 'conv_admin') then
+    create policy "conv_admin" on public.conversations for all using (
+      exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+    );
+  end if;
+  if not exists (select 1 from pg_policies where tablename = 'messages' and policyname = 'msg_participant') then
+    create policy "msg_participant" on public.messages for all using (
+      exists (
+        select 1 from public.conversations c
+        where c.id = conversation_id
+        and (c.buyer_id = auth.uid() or c.seller_id = auth.uid())
+      )
+    );
+  end if;
+  if not exists (select 1 from pg_policies where tablename = 'messages' and policyname = 'msg_admin') then
+    create policy "msg_admin" on public.messages for all using (
+      exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
+    );
+  end if;
+end $$;
 
-create policy "msg_participant" on public.messages for all using (
-  exists (
-    select 1 from public.conversations c
-    where c.id = conversation_id
-    and (c.buyer_id = auth.uid() or c.seller_id = auth.uid())
-  )
-);
-create policy "msg_admin" on public.messages for all using (
-  exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
-);
-
--- Enable Realtime on messages so both parties receive live updates
-alter publication supabase_realtime add table public.messages;
+-- Enable Realtime on messages (idempotent)
+do $$
+begin
+  if not exists (
+    select 1 from pg_publication_tables
+    where pubname = 'supabase_realtime' and tablename = 'messages'
+  ) then
+    alter publication supabase_realtime add table public.messages;
+  end if;
+end $$;
