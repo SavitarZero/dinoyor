@@ -33,7 +33,7 @@ export default async function NewListingPage() {
           {profile?.kyc_status !== 'pending' && (
             <Link
               href="/profile/kyc"
-              className="inline-block mt-3 px-4 py-2 rounded-lg bg-white text-black text-sm font-medium hover:bg-gray-200 transition-colors"
+              className="inline-block mt-3 px-4 py-2 rounded-xl bg-accent text-black text-sm font-semibold hover:opacity-90 transition-opacity"
             >
               Verify identity
             </Link>
@@ -46,15 +46,21 @@ export default async function NewListingPage() {
   const { data: games } = await supabase.from('games').select('id, name').order('name')
 
   return (
-    <div className="max-w-2xl mx-auto py-8 px-4">
-      <div className="mb-6">
-        <Link href="/market" className="text-gray-500 hover:text-white text-sm transition-colors">
-          ← Back
+    <div className="max-w-2xl mx-auto px-4 py-8 space-y-5">
+      <div className="flex items-center gap-3">
+        <Link href="/listings" className="p-2 rounded-xl border border-border text-gray-500 hover:text-white hover:border-accent transition-colors">
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
         </Link>
-        <h1 className="text-xl font-bold text-white mt-3">Sell an item</h1>
-        <p className="text-gray-500 text-sm mt-1">Your listing will be visible immediately after publishing.</p>
+        <div>
+          <h1 className="text-lg font-bold text-white">Create listing</h1>
+          <p className="text-gray-600 text-xs mt-0.5">Visible on the marketplace immediately after publishing</p>
+        </div>
       </div>
-      <ListingForm games={games ?? []} />
+      <div className="rounded-xl border border-border bg-surface p-5">
+        <ListingForm games={games ?? []} />
+      </div>
     </div>
   )
 }

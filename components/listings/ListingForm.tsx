@@ -117,8 +117,8 @@ export function ListingForm({ games }: { games: Game[] }) {
     if (result?.error) setError(result.error)
   }
 
-  const inputCls = 'w-full px-3 py-2.5 rounded-lg bg-background border border-border text-white placeholder-gray-600 text-sm focus:outline-none focus:border-accent transition-colors'
-  const labelCls = 'block text-sm text-gray-400 mb-1.5'
+  const inputCls = 'w-full px-3 py-2.5 rounded-xl bg-background border border-border text-white placeholder-gray-600 text-sm focus:outline-none focus:border-accent transition-colors'
+  const labelCls = 'block text-xs font-medium text-gray-400 mb-1.5'
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
@@ -197,11 +197,11 @@ export function ListingForm({ games }: { games: Game[] }) {
         />
 
         {coverCompressing ? (
-          <div className="w-32 h-32 rounded-lg border border-border bg-background flex items-center justify-center">
+          <div className="w-32 h-32 rounded-xl border border-border bg-background flex items-center justify-center">
             <span className="text-gray-500 text-xs">Compressing…</span>
           </div>
         ) : coverPreview ? (
-          <div className="relative w-32 h-32 rounded-lg overflow-hidden bg-background border border-border group cursor-pointer" onClick={() => coverRef.current?.click()}>
+          <div className="relative w-32 h-32 rounded-xl overflow-hidden bg-background border border-border group cursor-pointer" onClick={() => coverRef.current?.click()}>
             <img src={coverPreview} alt="cover" className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
               <span className="text-white text-xs">Change</span>
@@ -211,7 +211,7 @@ export function ListingForm({ games }: { games: Game[] }) {
           <button
             type="button"
             onClick={() => coverRef.current?.click()}
-            className="w-full rounded-lg border border-dashed border-border hover:border-accent transition-colors py-6 text-center"
+            className="w-full rounded-xl border-2 border-dashed border-border hover:border-accent transition-colors py-10 text-center"
           >
             <p className="text-sm text-gray-400">Upload cover image</p>
             <p className="text-xs text-gray-600 mt-0.5">Auto-compressed · max {COVER_MAX_MB} MB</p>
@@ -234,7 +234,7 @@ export function ListingForm({ games }: { games: Game[] }) {
 
         <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
           {additionalPreviews.map((img, i) => (
-            <div key={i} className="relative aspect-square rounded-lg overflow-hidden bg-background border border-border group">
+            <div key={i} className="relative aspect-square rounded-xl overflow-hidden bg-background border border-border group">
               <img src={img.url} alt="" className="w-full h-full object-cover" />
               <button
                 type="button"
@@ -247,7 +247,7 @@ export function ListingForm({ games }: { games: Game[] }) {
           ))}
 
           {additionalCompressing && (
-            <div className="aspect-square rounded-lg border border-border bg-background flex items-center justify-center">
+            <div className="aspect-square rounded-xl border border-border bg-background flex items-center justify-center">
               <span className="text-xs text-gray-600">…</span>
             </div>
           )}
@@ -256,7 +256,7 @@ export function ListingForm({ games }: { games: Game[] }) {
             <button
               type="button"
               onClick={() => additionalRef.current?.click()}
-              className="aspect-square rounded-lg border border-dashed border-border hover:border-accent transition-colors flex items-center justify-center"
+              className="aspect-square rounded-xl border-2 border-dashed border-border hover:border-accent transition-colors flex items-center justify-center"
             >
               <span className="text-gray-500 text-lg">+</span>
             </button>
@@ -266,14 +266,14 @@ export function ListingForm({ games }: { games: Game[] }) {
       </div>
 
       <div className="border-t border-border pt-5 space-y-3">
-        <p className="text-gray-500 text-xs">5% platform fee per sale · payment held in escrow until buyer confirms</p>
         <button
           type="submit"
           disabled={loading || coverCompressing || additionalCompressing}
-          className="w-full py-3 rounded-lg bg-white text-black font-medium text-sm hover:bg-gray-200 transition-colors disabled:opacity-50"
+          className="w-full py-3 rounded-xl bg-accent text-black font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-40"
         >
           {loading ? 'Publishing…' : 'Publish listing'}
         </button>
+        <p className="text-gray-600 text-xs text-center">5% platform fee · funds held in escrow until buyer confirms receipt</p>
       </div>
     </form>
   )
