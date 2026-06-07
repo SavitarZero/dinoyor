@@ -201,21 +201,34 @@ export function PaymentSection({
             Don't have USDT? How to get it
           </summary>
           <div className="mt-2 space-y-2">
+            {wallet?.network === 'TRC20' && (
+              <div className="rounded-md bg-accent/5 border border-accent/20 px-3 py-2 space-y-1.5">
+                <p className="text-accent text-[11px] font-semibold">Only have TRX? — Swap inside TronLink</p>
+                <ol className="text-gray-500 text-[11px] space-y-0.5 list-decimal list-inside">
+                  <li>Open <span className="text-white">TronLink</span> → tap <span className="text-white">DApps</span></li>
+                  <li>Go to <span className="text-white">SunSwap</span> (sun.io) — the main Tron DEX</li>
+                  <li>Swap <span className="text-white">TRX → USDT (TRC20)</span> — no withdrawal needed</li>
+                  <li>Keep at least <span className="text-white">15 TRX</span> remaining for gas after the swap</li>
+                </ol>
+                <p className="text-gray-600 text-[10px]">SunSwap fee ~0.3% · no withdrawal fee · instant</p>
+              </div>
+            )}
             <div className="rounded-md bg-surface border border-border px-3 py-2 space-y-1.5">
-              <p className="text-gray-300 text-[11px] font-semibold">Option 1 — Via exchange (easiest)</p>
+              <p className="text-gray-300 text-[11px] font-semibold">Via exchange (Binance / OKX / Bybit)</p>
               <ol className="text-gray-500 text-[11px] space-y-0.5 list-decimal list-inside">
-                <li>Open Binance / OKX / Bybit</li>
-                <li>Trade your coin (ETH / BNB / etc.) → USDT</li>
-                <li>Withdraw USDT via <span className="text-white">TRC20</span> (lowest fee ~1 USDT)</li>
+                <li>Sell TRX / ETH / BNB → USDT on the exchange</li>
+                <li>Withdraw USDT via <span className="text-white">TRC20</span> (lowest fee, ~1 USDT)</li>
               </ol>
             </div>
-            <div className="rounded-md bg-surface border border-border px-3 py-2 space-y-1.5">
-              <p className="text-gray-300 text-[11px] font-semibold">Option 2 — In-wallet swap</p>
-              <ul className="text-gray-500 text-[11px] space-y-0.5">
-                <li>MetaMask: tap <span className="text-white">Swap</span> → ETH → USDT (costs ETH gas)</li>
-                <li>Trust Wallet: tap <span className="text-white">Swap</span> → choose USDT</li>
-              </ul>
-            </div>
+            {wallet?.network === 'ERC20' && (
+              <div className="rounded-md bg-surface border border-border px-3 py-2 space-y-1.5">
+                <p className="text-gray-300 text-[11px] font-semibold">In-wallet swap (ERC20)</p>
+                <ul className="text-gray-500 text-[11px] space-y-0.5">
+                  <li>MetaMask: tap <span className="text-white">Swap</span> → ETH → USDT (costs ETH gas)</li>
+                  <li>Trust Wallet: tap <span className="text-white">Swap</span> → choose USDT</li>
+                </ul>
+              </div>
+            )}
           </div>
         </details>
 
