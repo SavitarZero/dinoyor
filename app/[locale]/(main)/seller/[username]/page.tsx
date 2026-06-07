@@ -120,8 +120,8 @@ export default async function SellerStorePage({
         ) : (
           <>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-              {listings.map((l, i) => (
-                <ListingCard key={l.id} listing={l} rank={from + i} />
+              {listings.map((l) => (
+                <ListingCard key={l.id} listing={l} />
               ))}
             </div>
 

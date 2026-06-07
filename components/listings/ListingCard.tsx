@@ -10,7 +10,7 @@ const CURRENCY_SYMBOL: Record<string, string> = {
   BTC:  '₿',
 }
 
-export function ListingCard({ listing, rank }: { listing: ListingWithGame; rank?: number }) {
+export function ListingCard({ listing, isHot }: { listing: ListingWithGame; isHot?: boolean }) {
   const symbol = CURRENCY_SYMBOL[listing.price_currency] ?? listing.price_currency
   return (
     <Link
@@ -41,7 +41,7 @@ export function ListingCard({ listing, rank }: { listing: ListingWithGame; rank?
           </div>
         )}
 
-        {rank !== undefined && rank < 3 && (
+        {isHot && (
           <div className="absolute top-2 left-2">
             <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-orange-500/90 text-white text-[10px] font-bold backdrop-blur-sm">
               🔥 Hot

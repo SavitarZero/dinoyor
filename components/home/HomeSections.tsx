@@ -10,6 +10,7 @@ interface Props {
   games: GameWithStats[]
   byCategory: Record<string, GameWithStats[]>
   listings: ListingWithGame[]
+  hotIds: Set<string>
 }
 
 const CATEGORY_ICON: Record<string, React.ReactNode> = {
@@ -21,7 +22,7 @@ const CATEGORY_ICON: Record<string, React.ReactNode> = {
 
 const CATEGORY_ORDER = ['MMORPG', 'Shooter / Skin Market', 'Survival / Sandbox', 'Blockchain']
 
-export function HomeSections({ games, byCategory, listings }: Props) {
+export function HomeSections({ games, byCategory, listings, hotIds }: Props) {
   const [activeGame, setActiveGame] = useState<string | null>(null)
   const [activeCategory, setActiveCategory] = useState<string | null>(null)
   const [heroIndex, setHeroIndex] = useState(0)
@@ -252,7 +253,7 @@ export function HomeSections({ games, byCategory, listings }: Props) {
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                  {items.map((l, i) => <ListingCard key={l.id} listing={l} rank={i} />)}
+                  {items.map((l) => <ListingCard key={l.id} listing={l} isHot={hotIds.has(l.id)} />)}
                 </div>
               </section>
               )

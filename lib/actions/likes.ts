@@ -20,11 +20,11 @@ export async function toggleLike(listingId: string): Promise<{ liked?: boolean; 
 
   if (existing) {
     await supabase.from('listing_likes').delete().eq('user_id', user.id).eq('listing_id', listingId)
-    revalidatePath(`/market/${listingId}`)
+    revalidatePath('/', 'layout')
     return { liked: false }
   } else {
     await supabase.from('listing_likes').insert({ user_id: user.id, listing_id: listingId })
-    revalidatePath(`/market/${listingId}`)
+    revalidatePath('/', 'layout')
     return { liked: true }
   }
 }

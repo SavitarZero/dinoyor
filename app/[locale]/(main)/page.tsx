@@ -1,11 +1,12 @@
 import { createClient } from '@/lib/supabase/server'
 import { HomeSections } from '@/components/home/HomeSections'
+import { getHotListingIds } from '@/lib/utils/hotListings'
 import type { ListingWithGame, GameWithStats } from '@/lib/types/index'
 
 export default async function HomePage() {
   const supabase = await createClient()
 
-  const [{ data: gamesRaw, error: e1 }, { data: listingCounts, error: e2 }, { data: listings, error: e3 }] = await Promise.all([
+  const [{ data: gamesRaw, error: e1 }, { data: listingCounts, error: e2 }, { data: listings, error: e3 }, hotIds] = await Promise.all([
     supabase
       .from('games')
       .select('id, name, slug, category, logo_url, banner_url')
@@ -17,8 +18,11 @@ export default async function HomePage() {
       .from('listings')
       .select('id, title, price_amount, price_currency, images, status, seller_id, sold_count, games(name, slug, category, logo_url, banner_url), profiles:seller_id(username)')
       .eq('status', 'active')
+      .order('sold_count', { ascending: false })
       .order('created_at', { ascending: false })
       .limit(64),
+
+    getHotListingIds(supabase),
   ])
 
   if (e1) console.error('[home] games:', e1.message)
@@ -49,6 +53,7 @@ export default async function HomePage() {
       games={games}
       byCategory={byCategory}
       listings={(listings ?? []) as unknown as ListingWithGame[]}
+      hotIds={hotIds}
     />
   )
 }

@@ -53,6 +53,7 @@ export default async function MarketPage({
     .from('listings')
     .select('id, title, price_amount, price_currency, images, status, seller_id, sold_count, game_id, games(name, slug, category, logo_url, banner_url), profiles:seller_id(username)', { count: 'exact' })
     .eq('status', 'active')
+    .order('sold_count', { ascending: false })
     .order('created_at', { ascending: false })
     .range(from, to)
 
@@ -158,7 +159,7 @@ export default async function MarketPage({
           ) : (
             <>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                {listings.map((l, i) => <ListingCard key={l.id} listing={l} rank={from + i} />)}
+                {listings.map((l) => <ListingCard key={l.id} listing={l} />)}
               </div>
 
               {/* Pagination */}
