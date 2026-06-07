@@ -26,7 +26,7 @@ export function BuyButton({ listingId }: { listingId: string }) {
           <div>
             <p className="text-white font-semibold text-sm">Confirm Purchase</p>
             <p className="text-gray-400 text-xs mt-0.5">
-              An order will be created. You'll receive payment instructions to send funds to escrow.
+              An order will be created. You'll receive payment instructions to complete your purchase.
             </p>
           </div>
         </div>

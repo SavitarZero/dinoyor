@@ -31,7 +31,7 @@ export function Footer() {
               DINOYOR
             </Link>
             <p className="text-gray-500 text-xs mt-3 leading-relaxed max-w-48">
-              P2P marketplace for gaming items. Safe trades with crypto escrow for SEA gamers.
+              P2P marketplace for gaming items. Safe trades with secure payments for SEA gamers.
             </p>
           </div>
 

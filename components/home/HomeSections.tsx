@@ -278,26 +278,26 @@ export function HomeSections({ games, byCategory, listings, hotIds }: Props) {
         <div className="mt-12 mb-12">
           <div className="text-center mb-8">
             <h2 className="text-xl md:text-2xl font-black text-white">How it works</h2>
-            <p className="text-gray-500 text-sm mt-1">Trade in-game items in 3 simple steps</p>
+            <p className="text-gray-500 text-sm mt-1">Buy & sell in-game items safely in 3 steps</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
               {
                 step: '01',
-                title: 'List your item',
-                desc: 'Post what you want to sell',
+                title: 'Find or list an item',
+                desc: 'Browse the market or create a listing in seconds.',
                 icon: 'M12 4v16m8-8H4',
               },
               {
                 step: '02',
-                title: 'Buyer pays escrow',
-                desc: 'Payment is held securely in escrow until the trade is confirmed by both sides.',
+                title: 'Secure payment',
+                desc: 'Your money is held safely until you confirm the item is delivered.',
                 icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
               },
               {
                 step: '03',
-                title: 'Confirm & receive',
-                desc: 'Deliver the item, buyer confirms, and funds are released to your wallet.',
+                title: 'Get your item',
+                desc: 'Receive the item, hit confirm, and the seller gets paid.',
                 icon: 'M5 13l4 4L19 7',
               },
             ].map(({ step, title, desc, icon }) => (
@@ -320,35 +320,35 @@ export function HomeSections({ games, byCategory, listings, hotIds }: Props) {
         {/* ── Trust & Safety ── */}
         <div className="rounded-2xl border border-border bg-surface p-6 md:p-8 mb-8">
           <div className="text-center mb-6">
-            <h2 className="text-xl md:text-2xl font-black text-white">Trust & Safety</h2>
-            <p className="text-gray-500 text-sm mt-1">Every trade is protected from start to finish</p>
+            <h2 className="text-xl md:text-2xl font-black text-white">Why trade on Dinoyor?</h2>
+            <p className="text-gray-500 text-sm mt-1">Built for safe, fast game item trading</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
               {
-                title: 'Escrow Protection',
-                desc: 'Funds are held until both parties confirm the trade is complete.',
+                title: 'Buyer Protection',
+                desc: 'Your payment is locked until you confirm you got the item. No scams.',
                 icon: 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z',
                 color: 'text-accent',
                 bg: 'bg-accent/10 border-accent/20',
               },
               {
-                title: 'KYC Verified Sellers',
-                desc: 'Every seller is identity-verified before they can list items.',
+                title: 'Verified Sellers',
+                desc: 'All sellers pass ID verification before they can sell.',
                 icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
                 color: 'text-green-400',
                 bg: 'bg-green-500/10 border-green-500/20',
               },
               {
-                title: 'Dispute Resolution',
-                desc: 'Our team mediates any trade disputes to ensure a fair outcome.',
+                title: 'Dispute Support',
+                desc: 'Problem with a trade? Our team steps in to help resolve it.',
                 icon: 'M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3',
                 color: 'text-yellow-400',
                 bg: 'bg-yellow-500/10 border-yellow-500/20',
               },
               {
                 title: 'Crypto Payments',
-                desc: 'Pay with USDT, ETH, or BTC — fast, borderless, and secure.',
+                desc: 'Pay with USDT — instant, no borders, low fees.',
                 icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
                 color: 'text-purple-400',
                 bg: 'bg-purple-500/10 border-purple-500/20',
