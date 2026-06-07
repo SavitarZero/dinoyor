@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { WalletAddressForm } from '@/components/wallet/WalletAddressForm'
+import { requestPayout } from '@/lib/actions/payouts'
 
 export default async function WalletPage() {
   const supabase = await createClient()
@@ -12,32 +13,54 @@ export default async function WalletPage() {
     { data: balances },
     { data: payouts },
     { data: txLog },
+    { data: payoutRequests },
   ] = await Promise.all([
     supabase.from('profiles').select('wallet_address, wallet_network').eq('id', user.id).single(),
     supabase.from('seller_balances').select('*').eq('seller_id', user.id),
     supabase.from('payouts').select('*').eq('seller_id', user.id).order('processed_at', { ascending: false }),
     supabase.from('balance_transactions').select('*').eq('seller_id', user.id).order('created_at', { ascending: false }).limit(50),
+    supabase.from('payout_requests').select('*').eq('seller_id', user.id).order('created_at', { ascending: false }),
   ])
 
-  const totalUsdt = balances?.reduce((sum, b) => b.currency === 'USDT' ? sum + Number(b.pending_amount) : sum, 0) ?? 0
+  const pendingRequests = payoutRequests?.filter(r => r.status === 'pending') ?? []
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8 space-y-8">
       <h1 className="text-2xl font-bold text-white">Wallet</h1>
 
-      {/* Balance card */}
       <div className="rounded-xl border border-border bg-surface p-6 space-y-4">
         <div>
           <p className="text-gray-500 text-xs uppercase tracking-wide mb-1">Pending Balance</p>
           {!balances?.length ? (
             <p className="text-3xl font-bold text-white">0 <span className="text-lg text-gray-500">USDT</span></p>
           ) : (
-            <div className="space-y-1">
-              {balances.map(b => (
-                <p key={b.id} className="text-3xl font-bold text-white">
-                  {Number(b.pending_amount).toFixed(2)} <span className="text-lg text-gray-500">{b.currency}</span>
-                </p>
-              ))}
+            <div className="space-y-4">
+              {balances.map(b => {
+                const hasPending = pendingRequests.some(r => r.currency === b.currency)
+                return (
+                  <div key={b.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                    <p className="text-3xl font-bold text-white">
+                      {Number(b.pending_amount).toFixed(2)} <span className="text-lg text-gray-500">{b.currency}</span>
+                    </p>
+                    {!profile?.wallet_address ? (
+                      <p className="text-yellow-400 text-xs">Set payout wallet first</p>
+                    ) : hasPending ? (
+                      <span className="px-3 py-1.5 rounded-full bg-yellow-900/30 border border-yellow-700/40 text-yellow-400 text-xs font-medium">
+                        Payout requested — pending admin approval
+                      </span>
+                    ) : Number(b.pending_amount) > 0 ? (
+                      <form action={async () => {
+                        'use server'
+                        await requestPayout(b.currency)
+                      }}>
+                        <button className="px-4 py-2.5 rounded-lg bg-accent text-black text-sm font-semibold hover:opacity-90">
+                          Request Payout
+                        </button>
+                      </form>
+                    ) : null}
+                  </div>
+                )
+              })}
             </div>
           )}
         </div>
@@ -49,7 +72,6 @@ export default async function WalletPage() {
         </div>
       </div>
 
-      {/* Wallet address */}
       <div className="rounded-xl border border-border bg-surface p-6 space-y-4">
         <div className="flex items-center justify-between">
           <div>
@@ -76,7 +98,6 @@ export default async function WalletPage() {
         />
       </div>
 
-      {/* Transaction history */}
       <div>
         <h2 className="text-white font-semibold mb-3">Transaction History</h2>
         {!txLog?.length ? (
@@ -114,7 +135,6 @@ export default async function WalletPage() {
         )}
       </div>
 
-      {/* Payout history */}
       <div>
         <h2 className="text-white font-semibold mb-3">Payout History</h2>
         {!payouts?.length ? (

@@ -1,56 +1,68 @@
 import { createClient } from '@/lib/supabase/server'
-import { processPayout } from '@/lib/actions/admin'
+import { approvePayoutRequest, rejectPayoutRequest } from '@/lib/actions/payouts'
 
 export default async function AdminPayoutsPage() {
   const supabase = await createClient()
-  const { data: balances } = await supabase
-    .from('seller_balances')
-    .select('*, profiles!seller_id(username)')
-    .gt('pending_amount', 0)
-    .order('pending_amount', { ascending: false })
+  const { data: requests } = await supabase
+    .from('payout_requests')
+    .select('*, profiles!seller_id(username, wallet_address, wallet_network)')
+    .eq('status', 'pending')
+    .order('created_at', { ascending: true })
 
   return (
     <div>
       <h1 className="text-2xl font-bold text-white mb-6">
-        Pending Payouts <span className="text-gray-500 text-lg">({balances?.length ?? 0})</span>
+        Payout Requests <span className="text-gray-500 text-lg">({requests?.length ?? 0})</span>
       </h1>
-      {!balances?.length && <p className="text-gray-500">No pending payouts.</p>}
+      {!requests?.length && <p className="text-gray-500">No pending payout requests.</p>}
       <div className="space-y-4">
-        {balances?.map(b => (
-          <div key={b.id} className="rounded-xl border border-border bg-surface p-5 space-y-3">
-            <div>
-              <p className="text-white font-medium">
-                {(b as any).profiles?.username ?? b.seller_id}
-              </p>
-              <p className="text-accent text-xl font-bold">{b.pending_amount} {b.currency}</p>
+        {requests?.map(r => (
+          <div key={r.id} className="rounded-xl border border-border bg-surface p-5 space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+              <div>
+                <p className="text-white font-medium">{(r as any).profiles?.username ?? r.seller_id}</p>
+                <p className="text-accent text-xl font-bold">{Number(r.amount).toFixed(2)} {r.currency}</p>
+              </div>
+              <div className="text-right">
+                <p className="text-gray-400 text-xs">
+                  {new Date(r.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' })}
+                </p>
+              </div>
+            </div>
+            <div className="rounded-lg bg-background border border-border px-4 py-2.5">
+              <p className="text-gray-500 text-xs">{(r as any).profiles?.wallet_network}</p>
+              <p className="text-white text-sm font-mono break-all">{r.wallet_address}</p>
             </div>
             <form
               action={async (fd: FormData) => {
                 'use server'
-                await processPayout(
-                  b.seller_id,
-                  b.currency,
-                  fd.get('wallet_address') as string,
-                  fd.get('tx_hash') as string
-                )
+                const action = fd.get('action') as string
+                if (action === 'approve') {
+                  await approvePayoutRequest(r.id, fd.get('tx_hash') as string)
+                } else {
+                  await rejectPayoutRequest(r.id, fd.get('reason') as string || 'Rejected by admin')
+                }
               }}
               className="space-y-2"
             >
               <input
-                name="wallet_address"
-                placeholder="Destination wallet address"
-                required
-                className="w-full px-3 py-2 rounded-lg bg-background border border-border text-white text-sm"
-              />
-              <input
                 name="tx_hash"
                 placeholder="Transaction hash (after sending)"
-                required
-                className="w-full px-3 py-2 rounded-lg bg-background border border-border text-white text-sm"
+                className="w-full px-3 py-2.5 rounded-lg bg-background border border-border text-white text-sm"
               />
-              <button className="px-4 py-2 rounded-lg bg-accent text-black text-sm font-semibold hover:opacity-90">
-                Mark as Paid
-              </button>
+              <input
+                name="reason"
+                placeholder="Rejection reason (optional)"
+                className="w-full px-3 py-2.5 rounded-lg bg-background border border-border text-white text-sm"
+              />
+              <div className="flex gap-2">
+                <button name="action" value="approve" className="px-4 py-2.5 rounded-lg bg-accent text-black text-sm font-semibold hover:opacity-90">
+                  Approve
+                </button>
+                <button name="action" value="reject" className="px-4 py-2.5 rounded-lg bg-red-600 text-white text-sm font-semibold hover:opacity-90">
+                  Reject
+                </button>
+              </div>
             </form>
           </div>
         ))}
