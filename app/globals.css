@@ -1,8 +1,6 @@
 @import "tailwindcss";
 
-/* Dark mode (default) */
-:root,
-.dark {
+:root {
   --background: #0a0a0b;
   --surface: #111114;
   --border-color: #1e1e24;
@@ -11,14 +9,11 @@
   --muted: #6b7280;
 }
 
-/* Light mode */
-.light {
-  --background: #f4f5f7;
-  --surface: #ffffff;
-  --border-color: #e2e4e9;
-  --accent: #0099bb;
-  --foreground: #111114;
-  --muted: #6b7280;
+.scrollbar-none {
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
 }
 
 @theme inline {
@@ -34,4 +29,20 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px var(--background) inset !important;
+  -webkit-text-fill-color: var(--foreground) !important;
+  caret-color: var(--foreground);
+  transition: background-color 9999s ease-in-out 0s;
 }

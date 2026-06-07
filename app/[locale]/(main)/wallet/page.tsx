@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 
 export default async function WalletPage() {
+  
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
@@ -54,7 +55,7 @@ export default async function WalletPage() {
                   </p>
                 </div>
                 {p.tx_hash && (
-                  <p className="text-gray-600 text-xs font-mono truncate max-w-[140px]">
+                  <p className="text-gray-600 text-xs font-mono truncate max-w-35">
                     {p.tx_hash}
                   </p>
                 )}

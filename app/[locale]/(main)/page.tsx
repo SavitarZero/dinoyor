@@ -1,71 +1,54 @@
-import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { ListingCard } from '@/components/listings/ListingCard'
-import type { ListingWithGame } from '@/lib/types'
-import { getTranslations, getLocale } from 'next-intl/server'
+import { HomeSections } from '@/components/home/HomeSections'
+import type { ListingWithGame, GameWithStats } from '@/lib/types/index'
 
 export default async function HomePage() {
   const supabase = await createClient()
-  const t = await getTranslations('home')
-  const locale = await getLocale()
 
-  const { data: listings } = await supabase
-    .from('listings')
-    .select('id, title, price_amount, price_currency, images, status, seller_id, games(name, slug, logo_url)')
-    .eq('status', 'active')
-    .order('created_at', { ascending: false })
-    .limit(8)
+  const [{ data: gamesRaw, error: e1 }, { data: listingCounts, error: e2 }, { data: listings, error: e3 }] = await Promise.all([
+    supabase
+      .from('games')
+      .select('id, name, slug, category, logo_url, banner_url')
+      .order('category').order('name'),
+
+    supabase.from('listings').select('game_id').eq('status', 'active'),
+
+    supabase
+      .from('listings')
+      .select('id, title, price_amount, price_currency, images, status, seller_id, games(name, slug, category, logo_url, banner_url), profiles:seller_id(username)')
+      .eq('status', 'active')
+      .order('created_at', { ascending: false })
+      .limit(64),
+  ])
+
+  if (e1) console.error('[home] games:', e1.message)
+  if (e2) console.error('[home] counts:', e2.message)
+  if (e3) console.error('[home] listings:', e3.message)
+
+  const countMap: Record<string, number> = {}
+  for (const row of listingCounts ?? []) {
+    countMap[row.game_id] = (countMap[row.game_id] ?? 0) + 1
+  }
+
+  const games: GameWithStats[] = (gamesRaw ?? []).map(g => ({
+    ...g,
+    category: g.category ?? null,
+    banner_url: g.banner_url ?? null,
+    listing_count: countMap[g.id] ?? 0,
+  }))
+
+  const byCategory: Record<string, GameWithStats[]> = {}
+  for (const g of games) {
+    const cat = g.category ?? 'Other'
+    if (!byCategory[cat]) byCategory[cat] = []
+    byCategory[cat].push(g)
+  }
 
   return (
-    <div>
-      <section className="py-28 text-center px-4 relative overflow-hidden">
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{ background: 'radial-gradient(ellipse at 50% 0%, rgba(0,229,255,0.07) 0%, transparent 70%)' }}
-        />
-        <h1 className="text-5xl md:text-6xl font-bold text-white mb-5 relative">
-          {t('hero.title')}<br />
-          <span className="text-accent">{t('hero.titleAccent')}</span>
-        </h1>
-        <p className="text-gray-400 max-w-xl mx-auto mb-10 text-lg relative">
-          {t('hero.subtitle')}
-        </p>
-        <div className="flex justify-center gap-4 relative">
-          <Link href={`/${locale}/listings`} className="px-6 py-3 rounded-lg bg-accent text-black font-semibold hover:opacity-90">
-            {t('hero.browse')}
-          </Link>
-          <Link href={`/${locale}/register`} className="px-6 py-3 rounded-lg border border-border text-white hover:border-accent transition-colors">
-            {t('hero.sell')}
-          </Link>
-        </div>
-      </section>
-
-      <section className="max-w-4xl mx-auto px-4 pb-20">
-        <h2 className="text-xl font-bold text-white mb-8 text-center">{t('howItWorks')}</h2>
-        <div className="grid md:grid-cols-3 gap-6">
-          {(['find', 'pay', 'confirm'] as const).map(key => (
-            <div key={key} className="rounded-xl border border-border bg-surface p-6">
-              <p className="text-accent font-bold text-sm mb-2">{t(`steps.${key}.step`)}</p>
-              <p className="text-white font-semibold">{t(`steps.${key}.title`)}</p>
-              <p className="text-gray-400 text-sm mt-1">{t(`steps.${key}.desc`)}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {listings && listings.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 pb-20">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-white">{t('recentListings')}</h2>
-            <Link href={`/${locale}/listings`} className="text-accent text-sm hover:underline">{t('seeAll')}</Link>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {(listings as unknown as ListingWithGame[]).map(l => (
-              <ListingCard key={l.id} listing={l} locale={locale} />
-            ))}
-          </div>
-        </section>
-      )}
-    </div>
+    <HomeSections
+      games={games}
+      byCategory={byCategory}
+      listings={(listings ?? []) as unknown as ListingWithGame[]}
+    />
   )
 }

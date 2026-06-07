@@ -8,15 +8,12 @@ const handleI18nRouting = createMiddleware(routing)
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname
 
-  const pathWithoutLocale = pathname.replace(/^\/(en|th)/, '') || '/'
-  const locale = routing.locales.find(l => pathname.startsWith(`/${l}`)) ?? routing.defaultLocale
-
-  const protectedPaths = ['/dashboard', '/listings/new', '/orders', '/wallet', '/profile']
+  const protectedPaths = ['/profile', '/listings/new', '/orders', '/wallet']
   const adminPaths = ['/admin']
 
   const isProtected =
-    protectedPaths.some(p => pathWithoutLocale.startsWith(p)) ||
-    adminPaths.some(p => pathWithoutLocale.startsWith(p))
+    protectedPaths.some(p => pathname.startsWith(p)) ||
+    adminPaths.some(p => pathname.startsWith(p))
 
   if (isProtected) {
     let supabaseResponse = NextResponse.next({ request })
@@ -41,10 +38,9 @@ export async function proxy(request: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) {
-      return NextResponse.redirect(new URL(`/${locale}/login`, request.url))
+      return NextResponse.redirect(new URL('/login', request.url))
     }
 
-    // Merge supabase session cookies onto the i18n response so auth stays fresh
     const i18nResponse = handleI18nRouting(request)
     supabaseResponse.cookies.getAll().forEach(({ name, value, ...opts }) => {
       i18nResponse.cookies.set(name, value, opts)
@@ -56,10 +52,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Exclude _next/*, _vercel/*, and static file extensions — next-intl recommended matcher
-  matcher: [
-    '/',
-    '/(en|th)/:path*',
-    '/((?!_next|_vercel|.*\\..*).*)',
-  ],
+  matcher: ['/((?!_next|_vercel|auth|api|.*\\..*).*)', '/'],
 }

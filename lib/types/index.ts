@@ -24,7 +24,13 @@ export interface Game {
   id: string
   name: string
   slug: string
+  category: string | null
   logo_url: string | null
+  banner_url: string | null
+}
+
+export interface GameWithStats extends Game {
+  listing_count: number
 }
 
 export interface Listing {

@@ -1,6 +1,6 @@
 {
   "nav": {
-    "marketplace": "Marketplace",
+    "marketplace": "Market",
     "sell": "Sell",
     "orders": "Orders",
     "wallet": "Wallet",
@@ -14,7 +14,7 @@
       "title": "Trade Game Items.",
       "titleAccent": "Secured by Escrow.",
       "subtitle": "Buy and sell in-game items with crypto — every transaction protected by Dinoyor's centralized escrow wallet for SEA gamers.",
-      "browse": "Browse Marketplace",
+      "browse": "Browse Market",
       "sell": "Start Selling"
     },
     "howItWorks": "How It Works",
@@ -28,17 +28,24 @@
   },
   "auth": {
     "signInTitle": "Sign in to Dinoyor",
-    "createAccount": "Create Account",
+    "createAccount": "Sign up for Dinoyor",
+    "username": "Username",
+    "usernamePlaceholder": "Username (3–20 chars, letters & numbers)",
     "email": "Email",
     "password": "Password",
     "passwordMin": "Password (min 8 chars)",
-    "signIn": "Sign In",
-    "register": "Create Account",
+    "confirmPassword": "Confirm password",
+    "signIn": "Sign in",
+    "register": "Sign up",
     "noAccount": "No account?",
     "haveAccount": "Already have an account?",
     "orContinueWith": "or",
     "continueWithGoogle": "Continue with Google",
-    "checkEmail": "Check your email to confirm your account."
+    "checkEmail": "Account created! You can now sign in.",
+    "passwordMismatch": "Passwords do not match",
+    "usernameTaken": "Username is already taken",
+    "usernameInvalid": "Username must be 3–20 characters, letters, numbers or underscore only",
+    "invalidCredentials": "Username or password is incorrect"
   },
   "kyc": {
     "title": "Verify Your Identity",
@@ -55,7 +62,7 @@
     "success": "KYC submitted. We will review within 1-2 business days."
   },
   "listings": {
-    "title": "Marketplace",
+    "title": "Market",
     "noResults": "No listings found.",
     "searchPlaceholder": "Search items...",
     "allCurrencies": "All currencies",
@@ -132,7 +139,7 @@
     "kycBanner": "Identity not verified",
     "kycBannerDesc": "Verify your identity to start selling items.",
     "verifyNow": "Verify Now",
-    "browse": "Browse Marketplace",
+    "browse": "Browse Market",
     "sell": "Sell an Item",
     "orders": "My Orders",
     "wallet": "Wallet"

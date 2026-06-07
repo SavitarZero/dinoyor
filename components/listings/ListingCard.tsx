@@ -1,26 +1,70 @@
-import Image from 'next/image'
+'use client'
 import Link from 'next/link'
-import type { ListingWithGame } from '@/lib/types'
+import type { ListingWithGame } from '@/lib/types/index'
+import { GameBanner } from '@/components/games/GameImage'
 
-export function ListingCard({ listing, locale = 'en' }: { listing: ListingWithGame; locale?: string }) {
+const CURRENCY_COLOR: Record<string, string> = {
+  USDT: 'text-green-400',
+  ETH:  'text-blue-400',
+  BTC:  'text-orange-400',
+}
+
+export function ListingCard({ listing, rank }: { listing: ListingWithGame; rank?: number }) {
+  const currency = listing.price_currency
   return (
     <Link
-      href={`/${locale}/listings/${listing.id}`}
-      className="block rounded-xl border border-border bg-surface hover:border-accent transition-colors"
+      href={`/market/${listing.id}`}
+      className="group flex flex-col bg-surface rounded-xl overflow-hidden border border-border hover:border-accent/50 hover:shadow-[0_0_0_1px_rgba(0,229,255,0.12)] transition-all duration-200"
     >
-      <div className="relative h-48 rounded-t-xl overflow-hidden bg-background">
+      {/* Image — landscape 16:9 */}
+      <div className="relative aspect-video bg-background overflow-hidden">
         {listing.images[0] ? (
-          <Image src={listing.images[0]} alt={listing.title} fill className="object-cover" />
+          <img
+            src={listing.images[0]}
+            alt={listing.title}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            onError={(e) => { e.currentTarget.style.display = 'none' }}
+          />
+        ) : listing.games ? (
+          <GameBanner
+            src={null}
+            slug={listing.games.slug}
+            name={listing.games.name}
+            className="w-full h-full"
+          />
         ) : (
-          <div className="flex items-center justify-center h-full text-gray-600 text-sm">No image</div>
+          <div className="w-full h-full flex items-center justify-center text-gray-700">
+            <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+        )}
+
+        {rank !== undefined && rank < 3 && (
+          <div className="absolute top-2 left-2">
+            <span className="px-1.5 py-0.5 rounded bg-orange-500 text-white text-[10px] font-bold">
+              #{rank + 1}
+            </span>
+          </div>
         )}
       </div>
-      <div className="p-4">
-        <p className="text-xs text-gray-500 mb-1">{listing.games?.name}</p>
-        <h3 className="text-white font-medium truncate">{listing.title}</h3>
-        <p className="text-accent font-semibold mt-2">
-          {listing.price_amount} {listing.price_currency}
+
+      {/* Info */}
+      <div className="p-3 flex flex-col gap-2 flex-1">
+        <p className="text-white text-xs font-medium leading-snug line-clamp-2 group-hover:text-accent transition-colors min-h-8">
+          {listing.title}
         </p>
+        <div className="flex items-center justify-between gap-2 mt-auto">
+          <div className="flex items-baseline gap-1">
+            <span className={`text-sm font-bold ${CURRENCY_COLOR[currency] ?? 'text-white'}`}>
+              {listing.price_amount}
+            </span>
+            <span className="text-[10px] text-gray-600">{currency}</span>
+          </div>
+          {listing.profiles?.username && (
+            <span className="text-[10px] text-gray-700 truncate max-w-16">@{listing.profiles.username}</span>
+          )}
+        </div>
       </div>
     </Link>
   )

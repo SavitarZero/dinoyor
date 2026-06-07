@@ -50,7 +50,7 @@ export async function createListing(formData: FormData) {
 
   if (error) return { error: error.message }
   revalidatePath('/listings')
-  redirect(`/listings/${data.id}`)
+  redirect(`/market/${data.id}`)
 }
 
 export async function cancelListing(listingId: string) {

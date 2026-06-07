@@ -12,35 +12,40 @@ function SearchBarInner() {
     const sp = new URLSearchParams(params.toString())
     if (q) sp.set('q', q)
     else sp.delete('q')
-    router.push(`/listings?${sp.toString()}`)
+    router.push(`/market?${sp.toString()}`)
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-2 mb-6">
+    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2 mb-6">
       <input
         value={q}
         onChange={e => setQ(e.target.value)}
         placeholder="Search items..."
-        className="flex-1 px-4 py-2 rounded-lg bg-surface border border-border text-white focus:outline-none focus:border-accent"
+        className="flex-1 px-4 py-2.5 rounded-xl bg-surface border border-border text-white placeholder-gray-600 text-sm focus:outline-none focus:border-accent transition-colors"
       />
-      <select
-        defaultValue={params.get('currency') ?? ''}
-        onChange={e => {
-          const sp = new URLSearchParams(params.toString())
-          if (e.target.value) sp.set('currency', e.target.value)
-          else sp.delete('currency')
-          router.push(`/listings?${sp.toString()}`)
-        }}
-        className="px-3 py-2 rounded-lg bg-surface border border-border text-white"
-      >
-        <option value="">All currencies</option>
-        <option value="USDT">USDT</option>
-        <option value="ETH">ETH</option>
-        <option value="BTC">BTC</option>
-      </select>
-      <button type="submit" className="px-4 py-2 rounded-lg bg-accent text-black font-semibold">
-        Search
-      </button>
+      <div className="flex gap-2">
+        <select
+          defaultValue={params.get('currency') ?? ''}
+          onChange={e => {
+            const sp = new URLSearchParams(params.toString())
+            if (e.target.value) sp.set('currency', e.target.value)
+            else sp.delete('currency')
+            router.push(`/market?${sp.toString()}`)
+          }}
+          className="flex-1 sm:flex-none px-3 py-2.5 rounded-xl bg-surface border border-border text-white text-sm focus:outline-none focus:border-accent"
+        >
+          <option value="">All currencies</option>
+          <option value="USDT">USDT</option>
+          <option value="ETH">ETH</option>
+          <option value="BTC">BTC</option>
+        </select>
+        <button
+          type="submit"
+          className="px-5 py-2.5 rounded-xl bg-accent text-black text-sm font-bold hover:opacity-90 transition-opacity"
+        >
+          Search
+        </button>
+      </div>
     </form>
   )
 }

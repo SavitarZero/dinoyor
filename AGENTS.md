@@ -3,3 +3,77 @@
 
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
 <!-- END:nextjs-agent-rules -->
+
+## UI Rules — Responsive First
+
+Every UI change MUST work on mobile (375px), tablet (768px), and desktop (1280px). No exceptions.
+
+### Breakpoints (Tailwind)
+
+- Default = mobile
+- `sm:` = 640px+
+- `md:` = 768px+
+- `lg:` = 1280px+
+
+### Required checks before writing any UI
+
+1. Does it stack on mobile? Use `flex-col sm:flex-row` not `flex-row` alone.
+2. Is text readable on small screens? Max `text-4xl` on mobile, scale up with `md:text-5xl lg:text-6xl`.
+3. Do grids collapse? Use `grid-cols-1 sm:grid-cols-2 lg:grid-cols-4`, never start at 4.
+4. Is touch target large enough? Minimum 44×44px for buttons (`py-2.5 px-4` minimum).
+5. Is horizontal overflow prevented? Add `min-w-0` on flex children that hold text, use `truncate` on long strings.
+6. Does the navbar work? Desktop = single row. Mobile = logo + icons top, search bar second row.
+
+### Patterns to always use
+
+```tsx
+// Text — scale up, never down
+className="text-2xl md:text-3xl lg:text-4xl"
+
+// Grid — start at 1, grow up
+className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+
+// Flex — stack on mobile
+className="flex flex-col sm:flex-row gap-4"
+
+// Hide/show per breakpoint
+className="hidden md:block"  // desktop only
+className="md:hidden"        // mobile only
+
+// Prevent text overflow in flex
+className="flex-1 min-w-0"
+// <p className="truncate">long text</p>
+
+// Padding — tighter on mobile
+className="px-4 md:px-8"
+className="py-8 md:py-16"
+```
+
+### Never do
+
+- `grid-cols-4` without a mobile fallback
+- `flex-row` for forms or card groups without `sm:` prefix
+- `text-6xl` without a smaller `text-3xl` default
+- Fixed pixel widths (`w-96`) on containers — use `max-w-*` instead
+- `overflow-hidden` on the body or layout wrappers
+- Hover-only information (mobile has no hover)
+
+## Navbar Design Rules (ref: YouTube · Shopee · Facebook)
+
+### Structure
+```
+Desktop:  [Logo]  [──── Search bar (flex-1, pill shape) ────]  [icon] [icon] [Sell] [avatar]
+Mobile:   [Logo]  [spacer]  [Sell] [avatar]
+          [search bar full width, second row]
+```
+
+### Rules
+- Height: `h-16` desktop, `h-14` mobile row
+- Search: `rounded-full h-10`, bg `#0a0a0b`, border `border-border`, focus `border-accent`
+- Icon buttons (Orders, bell): `p-2.5 rounded-full hover:bg-white/8 transition-colors` — NO text label on desktop
+- Sell button: `rounded-full bg-accent text-black font-bold px-4 py-1.5` — pill shape, accent fill
+- Avatar: `w-8 h-8 rounded-full`, no chevron
+- Active nav link: `text-white` + `border-b-2 border-accent` at bottom edge
+- Logo: text only, `font-black tracking-widest text-accent`
+- Never use square buttons in navbar — always `rounded-full` or `rounded-xl`
+- Divider line `h-5 w-px bg-border` between search and right-side icons

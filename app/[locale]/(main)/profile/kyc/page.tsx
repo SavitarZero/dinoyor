@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation'
 import type { KYCStatus } from '@/lib/types'
 
 export default async function KYCPage() {
+  
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')

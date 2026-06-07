@@ -1,19 +1,18 @@
 'use client'
 import { useState } from 'react'
-import { signInWithEmail, signInWithOAuth } from '@/lib/actions/auth'
 import Link from 'next/link'
-import { useTranslations, useLocale } from 'next-intl'
+import { signInWithUsername, signInWithOAuth } from '@/lib/actions/auth'
+import { useTranslations } from 'next-intl'
 
 export default function LoginPage() {
   const t = useTranslations('auth')
-  const locale = useLocale()
-  const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
+  const [error, setError]       = useState('')
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    const result = await signInWithEmail(email, password)
+    const result = await signInWithUsername(username, password)
     if (result?.error) setError(result.error)
   }
 
@@ -23,10 +22,10 @@ export default function LoginPage() {
       {error && <p className="text-red-400 text-sm mb-4">{error}</p>}
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
-          type="email"
-          placeholder={t('email')}
-          value={email}
-          onChange={e => setEmail(e.target.value)}
+          type="text"
+          placeholder={t('username')}
+          value={username}
+          onChange={e => setUsername(e.target.value)}
           required
           className="w-full px-4 py-2 rounded-lg bg-background border border-border text-white focus:outline-none focus:border-accent"
         />
@@ -51,7 +50,7 @@ export default function LoginPage() {
       </button>
       <p className="mt-4 text-center text-gray-500 text-sm">
         {t('noAccount')}{' '}
-        <Link href={`/${locale}/register`} className="text-accent hover:underline">{t('register')}</Link>
+        <Link href="/register" className="text-accent hover:underline">{t('register')}</Link>
       </p>
     </div>
   )
