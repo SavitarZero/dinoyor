@@ -23,33 +23,47 @@ const STATUS_STYLE: Record<OrderStatus, string> = {
 }
 
 const ACTIVE_STATUSES = ['awaiting_payment', 'paid_escrow', 'delivered']
+const PER_PAGE = 5
 
-interface Props { searchParams: Promise<{ tab?: string }> }
+interface Props { searchParams: Promise<{ tab?: string; page?: string }> }
 
 export default async function OrdersPage({ searchParams }: Props) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const { tab = 'all' } = await searchParams
+  const { tab = 'all', page = '1' } = await searchParams
+  const currentPage = Math.max(1, parseInt(page) || 1)
+  const from = (currentPage - 1) * PER_PAGE
+  const to = from + PER_PAGE - 1
 
   let q = supabase
     .from('orders')
-    .select('id, amount, status, created_at, buyer_id, seller_id, listings(title, images)')
+    .select('id, amount, status, created_at, buyer_id, seller_id, listings(title, images)', { count: 'exact' })
     .or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`)
     .order('created_at', { ascending: false })
+    .range(from, to)
 
   if (tab === 'active')    q = q.in('status', ACTIVE_STATUSES)
   if (tab === 'completed') q = q.eq('status', 'completed')
   if (tab === 'disputed')  q = q.eq('status', 'disputed')
 
-  const { data: orders } = await q
+  const { data: orders, count } = await q
+  const totalPages = Math.ceil((count ?? 0) / PER_PAGE)
+
+  function buildUrl(p: number) {
+    const params = new URLSearchParams()
+    if (tab !== 'all') params.set('tab', tab)
+    if (p > 1) params.set('page', String(p))
+    const qs = params.toString()
+    return `/orders${qs ? `?${qs}` : ''}`
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-lg font-bold text-white">My Orders</h1>
-        <span className="text-gray-600 text-sm">{orders?.length ?? 0} orders</span>
+        <span className="text-gray-600 text-sm">{count ?? 0} orders</span>
       </div>
 
       <OrderTabs active={tab} />
@@ -62,7 +76,7 @@ export default async function OrdersPage({ searchParams }: Props) {
           </Link>
         </div>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="space-y-3">
           {orders.map(o => {
             const status = o.status as OrderStatus
             const image = (o as any).listings?.images?.[0]
@@ -77,7 +91,7 @@ export default async function OrdersPage({ searchParams }: Props) {
               <Link
                 key={o.id}
                 href={`/orders/${o.id}`}
-                className="flex items-center gap-3 p-3 sm:p-4 rounded-xl border border-border bg-surface hover:border-accent transition-all group"
+                className="flex items-center gap-4 p-4 rounded-xl border border-border bg-surface hover:border-accent transition-all group"
               >
                 <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden bg-background shrink-0">
                   {image ? (
@@ -104,21 +118,60 @@ export default async function OrdersPage({ searchParams }: Props) {
                     </span>
                     {needsAction && (
                       <span className="text-xs px-2 py-0.5 rounded-full bg-accent/10 border border-accent/30 text-accent font-medium animate-pulse">
-                        Action
+                        Action needed
                       </span>
                     )}
                   </div>
                 </div>
 
+                <div className="hidden sm:block text-gray-600 text-xs shrink-0">
+                  {new Date(o.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                </div>
+
                 <div className="text-right shrink-0">
                   <p className="text-white text-sm font-bold">${o.amount}</p>
-                  <p className="text-gray-600 text-xs">
-                    {new Date(o.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
-                  </p>
                 </div>
+
+                <svg className="w-4 h-4 text-gray-600 group-hover:text-accent transition-colors shrink-0 hidden sm:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
               </Link>
             )
           })}
+        </div>
+      )}
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 mt-8">
+          {currentPage > 1 && (
+            <Link
+              href={buildUrl(currentPage - 1)}
+              className="px-3 py-2 rounded-xl border border-border text-gray-400 text-sm hover:text-white hover:border-accent transition-colors"
+            >
+              ← Prev
+            </Link>
+          )}
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+            <Link
+              key={p}
+              href={buildUrl(p)}
+              className={`w-9 h-9 rounded-xl flex items-center justify-center text-sm font-medium transition-colors ${
+                p === currentPage
+                  ? 'bg-accent text-black'
+                  : 'border border-border text-gray-400 hover:text-white hover:border-accent'
+              }`}
+            >
+              {p}
+            </Link>
+          ))}
+          {currentPage < totalPages && (
+            <Link
+              href={buildUrl(currentPage + 1)}
+              className="px-3 py-2 rounded-xl border border-border text-gray-400 text-sm hover:text-white hover:border-accent transition-colors"
+            >
+              Next →
+            </Link>
+          )}
         </div>
       )}
     </div>
