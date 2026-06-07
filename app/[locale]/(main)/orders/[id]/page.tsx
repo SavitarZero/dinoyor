@@ -209,6 +209,8 @@ export default async function OrderDetailPage({
           wallets={escrowWallets}
           isTestnet={IS_TESTNET}
           alreadyNotified={!!(order as any).payment_notified_at}
+          submittedTxHash={(order as any).payment_tx_hash ?? null}
+          submittedNetwork={(order as any).payment_network ?? null}
         />
       )}
 

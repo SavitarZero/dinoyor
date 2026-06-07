@@ -2,12 +2,22 @@ import { createClient } from '@/lib/supabase/server'
 import { confirmPaymentReceived } from '@/lib/actions/orders'
 import Link from 'next/link'
 
+const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === 'true'
+
+function explorerUrl(txHash: string, network: string) {
+  if (network === 'ERC20')
+    return IS_TESTNET ? `https://sepolia.etherscan.io/tx/${txHash}` : `https://etherscan.io/tx/${txHash}`
+  return IS_TESTNET
+    ? `https://nile.tronscan.org/#/transaction/${txHash}`
+    : `https://tronscan.org/#/transaction/${txHash}`
+}
+
 export default async function AdminOrdersPage() {
   const supabase = await createClient()
 
   const { data: orders } = await supabase
     .from('orders')
-    .select('id, amount, payment_notified_at, created_at, listings(title), buyer:profiles!buyer_id(username), seller:profiles!seller_id(username)')
+    .select('id, amount, payment_notified_at, payment_tx_hash, payment_network, created_at, listings(title), buyer:profiles!buyer_id(username), seller:profiles!seller_id(username)')
     .eq('status', 'awaiting_payment')
     .order('payment_notified_at', { ascending: true, nullsFirst: false })
 
@@ -74,6 +84,19 @@ function OrderRow({ order, highlight }: { order: any; highlight: boolean }) {
               day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'UTC'
             })}
           </p>
+        )}
+        {order.payment_tx_hash && (
+          <div className="flex items-center gap-2 mt-1">
+            <span className="text-gray-500 text-xs font-mono truncate max-w-40">{order.payment_tx_hash}</span>
+            <a
+              href={explorerUrl(order.payment_tx_hash, order.payment_network ?? 'ERC20')}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="shrink-0 text-accent text-xs hover:underline flex items-center gap-1"
+            >
+              Verify ↗
+            </a>
+          </div>
         )}
         <p className="text-gray-600 text-xs">
           Created: {new Date(order.created_at).toLocaleString('en-GB', {

@@ -123,20 +123,27 @@ export async function buyerConfirmReceived(orderId: string) {
   return { success: true }
 }
 
-export async function notifyPaymentSent(orderId: string) {
+export async function notifyPaymentSent(orderId: string, txHash: string, network: string) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Not authenticated' }
 
+  const trimmedTx = txHash.trim()
+  if (!trimmedTx) return { error: 'Transaction hash is required' }
+
   const { data: order } = await supabase
     .from('orders')
-    .select('id, buyer_id, seller_id, status')
+    .select('id, buyer_id, seller_id, status, amount')
     .eq('id', orderId)
     .single()
   if (!order || order.buyer_id !== user.id) return { error: 'Unauthorized' }
   if (order.status !== 'awaiting_payment') return { error: 'Order not awaiting payment' }
 
-  await supabase.from('orders').update({ payment_notified_at: new Date().toISOString() }).eq('id', orderId)
+  await supabase.from('orders').update({
+    payment_notified_at: new Date().toISOString(),
+    payment_tx_hash: trimmedTx,
+    payment_network: network,
+  }).eq('id', orderId)
 
   const admin = createAdminClient()
   const { data: conv } = await admin.from('conversations').select('id').eq('order_id', orderId).single()
@@ -144,7 +151,7 @@ export async function notifyPaymentSent(orderId: string) {
     await admin.from('messages').insert({
       conversation_id: conv.id,
       sender_id: null,
-      body: 'Buyer has notified that payment was sent. Waiting for admin confirmation.',
+      body: `Payment submitted by buyer\nNetwork: ${network}\nTX: ${trimmedTx}\n\nWaiting for admin confirmation.`,
     })
   }
 
