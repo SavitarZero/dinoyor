@@ -13,7 +13,7 @@ const getNavbarData = cache(async () => {
   const user = session?.user ?? null
 
   let profile = null
-  let isAdmin = false
+  let role: string = 'user'
   if (user) {
     const { data } = await supabase
       .from('profiles')
@@ -21,7 +21,7 @@ const getNavbarData = cache(async () => {
       .eq('id', user.id)
       .single()
     profile = data
-    isAdmin = profile?.role === 'admin'
+    role = profile?.role ?? 'user'
   }
 
   const avatarUrl =
@@ -29,11 +29,11 @@ const getNavbarData = cache(async () => {
     (user?.user_metadata?.avatar_url as string | undefined) ||
     null
 
-  return { user, profile, isAdmin, avatarUrl }
+  return { user, profile, role, avatarUrl }
 })
 
 export async function NavbarUser() {
-  const { user, profile, isAdmin, avatarUrl } = await getNavbarData()
+  const { user, profile, role, avatarUrl } = await getNavbarData()
 
   if (!user) {
     return (
@@ -50,6 +50,8 @@ export async function NavbarUser() {
     )
   }
 
+  const isSeller = role === 'seller' || role === 'admin'
+
   return (
     <>
       <Link href="/market" className={`hidden lg:inline-flex ${textBtn}`}>
@@ -60,23 +62,25 @@ export async function NavbarUser() {
         <Package size={18} />
         Orders
       </Link>
-      <Link href="/listings/new" className={`hidden md:inline-flex ${textBtn}`}>
-        <Plus size={18} />
-        Sell
-      </Link>
+      {isSeller && (
+        <Link href="/listings/new" className={`hidden md:inline-flex ${textBtn}`}>
+          <Plus size={18} />
+          Sell
+        </Link>
+      )}
       <span className="hidden md:block h-6 w-px bg-white/10 mx-2 shrink-0" />
       <ProfileDropdown
         avatarUrl={avatarUrl}
         username={profile?.username ?? null}
         email={user.email ?? ''}
-        isAdmin={isAdmin}
+        role={role}
       />
     </>
   )
 }
 
 export async function NavbarUserMobile() {
-  const { user, profile, isAdmin, avatarUrl } = await getNavbarData()
+  const { user, profile, role, avatarUrl } = await getNavbarData()
 
   if (!user) {
     return (
@@ -94,17 +98,21 @@ export async function NavbarUserMobile() {
     )
   }
 
+  const isSeller = role === 'seller' || role === 'admin'
+
   return (
     <>
-      <Link href="/listings/new" className={textBtn}>
-        <Plus size={16} />
-        Sell
-      </Link>
+      {isSeller && (
+        <Link href="/listings/new" className={textBtn}>
+          <Plus size={16} />
+          Sell
+        </Link>
+      )}
       <ProfileDropdown
         avatarUrl={avatarUrl}
         username={profile?.username ?? null}
         email={user.email ?? ''}
-        isAdmin={isAdmin}
+        role={role}
       />
     </>
   )

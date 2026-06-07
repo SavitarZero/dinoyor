@@ -32,7 +32,10 @@ export async function reviewKYC(
     reviewed_at: new Date().toISOString(),
   }).eq('id', submissionId)
 
-  await supabase.from('profiles').update({ kyc_status: decision }).eq('id', sub.user_id)
+  await supabase.from('profiles').update({
+    kyc_status: decision,
+    ...(decision === 'approved' && { role: 'seller' }),
+  }).eq('id', sub.user_id)
 
   revalidatePath('/admin/kyc')
   return { success: true }

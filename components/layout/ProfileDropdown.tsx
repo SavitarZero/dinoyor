@@ -9,26 +9,34 @@ import {
   ShieldCheck,
   Settings2,
   LogOut,
+  Store,
 } from 'lucide-react'
 
 interface Props {
   avatarUrl: string | null
   username: string | null
   email: string
-  isAdmin: boolean
+  role: string
 }
 
-const MENU_ITEMS = [
+const BASE_ITEMS = [
   { href: '/profile',     label: 'Profile',         Icon: LayoutDashboard },
   { href: '/orders',      label: 'Orders',          Icon: Package },
-  { href: '/wallet',      label: 'Wallet',          Icon: Wallet },
   { href: '/profile/kyc', label: 'Verify Identity', Icon: ShieldCheck },
 ]
 
-export function ProfileDropdown({ avatarUrl, username, email, isAdmin }: Props) {
+const SELLER_ITEMS = [
+  { href: '/wallet',      label: 'Wallet',          Icon: Wallet },
+  { href: '/listings',    label: 'My Listings',     Icon: Store },
+]
+
+export function ProfileDropdown({ avatarUrl, username, email, role }: Props) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
   const initials = (username || email || '?')[0].toUpperCase()
+  const isSeller = role === 'seller' || role === 'admin'
+  const isAdmin = role === 'admin'
+  const menuItems = [...BASE_ITEMS, ...(isSeller ? SELLER_ITEMS : [])]
 
   useEffect(() => {
     if (!open) return
@@ -82,7 +90,7 @@ export function ProfileDropdown({ avatarUrl, username, email, isAdmin }: Props) 
 
         {/* Nav items */}
         <div className="py-1">
-          {MENU_ITEMS.map(({ href, label, Icon }) => (
+          {menuItems.map(({ href, label, Icon }) => (
             <Link
               key={href}
               href={href}

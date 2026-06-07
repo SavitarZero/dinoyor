@@ -14,7 +14,7 @@ export async function createListing(formData: FormData) {
     .select('kyc_status')
     .eq('id', user.id)
     .single()
-  if (profile?.kyc_status !== 'approved') return { error: 'KYC verification required to list items' }
+  if (profile?.kyc_status !== 'approved') return { error: 'KYC approval required to create listings' }
 
   const title = formData.get('title') as string
   const gameId = formData.get('game_id') as string
