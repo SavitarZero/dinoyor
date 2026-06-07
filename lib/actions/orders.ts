@@ -29,7 +29,6 @@ export async function createOrder(listingId: string) {
     buyer_id: user.id,
     seller_id: listing.seller_id,
     amount: listing.price_amount,
-    currency: listing.price_currency,
     platform_fee_pct: feePct,
     status: 'awaiting_payment',
   }).select('id').single()
@@ -116,7 +115,7 @@ export async function buyerConfirmReceived(orderId: string) {
 
   await supabase.rpc('increment_seller_balance', {
     p_seller_id: order.seller_id,
-    p_currency: order.currency,
+    p_currency: 'USD',
     p_amount: sellerAmount,
   })
 

@@ -14,16 +14,15 @@ interface Props {
   listingId: string
   initialComments: Comment[]
   isAuthenticated: boolean
-  isKycApproved: boolean
   hasPurchased: boolean
 }
 
-export function CommentsSection({ listingId, initialComments, isAuthenticated, isKycApproved, hasPurchased }: Props) {
+export function CommentsSection({ listingId, initialComments, isAuthenticated, hasPurchased }: Props) {
   const [comments, setComments] = useState(initialComments)
   const [body, setBody] = useState('')
   const [pending, startTransition] = useTransition()
   const router = useRouter()
-  const canComment = isAuthenticated && isKycApproved && hasPurchased
+  const canComment = isAuthenticated && hasPurchased
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -76,15 +75,10 @@ export function CommentsSection({ listingId, initialComments, isAuthenticated, i
           {!isAuthenticated ? (
             <p className="text-gray-500 text-sm">
               <button onClick={() => router.push('/login')} className="text-accent hover:underline font-medium">Sign in</button>
-              {' '}and verify identity to leave a review
-            </p>
-          ) : !isKycApproved ? (
-            <p className="text-gray-500 text-sm">
-              <button onClick={() => router.push('/profile/kyc')} className="text-accent hover:underline font-medium">Verify your identity</button>
               {' '}to leave a review
             </p>
           ) : (
-            <p className="text-gray-500 text-sm">Only verified buyers can leave a review</p>
+            <p className="text-gray-500 text-sm">Only buyers who completed a purchase can leave a review</p>
           )}
         </div>
       )}

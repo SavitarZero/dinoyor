@@ -17,16 +17,12 @@ export default async function ListingDetailPage({
 
   const { data: { user } } = await supabase.auth.getUser()
 
-  const [{ data: listing }, { data: profile }, { data: likes }, { data: comments }, { data: purchase }] = await Promise.all([
+  const [{ data: listing }, { data: likes }, { data: comments }, { data: purchase }] = await Promise.all([
     supabase
       .from('listings')
       .select('*, games(name, slug, logo_url, banner_url), seller:profiles!seller_id(username, avatar_url)')
       .eq('id', id)
       .single(),
-
-    user
-      ? supabase.from('profiles').select('kyc_status').eq('id', user.id).single()
-      : Promise.resolve({ data: null }),
 
     supabase
       .from('listing_likes')
@@ -46,12 +42,11 @@ export default async function ListingDetailPage({
 
   if (!listing) notFound()
 
-  const isSeller     = user?.id === listing.seller_id
-  const seller       = (listing as any).seller
-  const likeCount    = likes?.length ?? 0
-  const userLiked    = !!(user && likes?.some(l => l.user_id === user.id))
-  const isKycApproved = profile?.kyc_status === 'approved'
-  const hasPurchased  = !!purchase
+  const isSeller    = user?.id === listing.seller_id
+  const seller      = (listing as any).seller
+  const likeCount   = likes?.length ?? 0
+  const userLiked   = !!(user && likes?.some(l => l.user_id === user.id))
+  const hasPurchased = !!purchase
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8 space-y-10">
@@ -99,7 +94,6 @@ export default async function ListingDetailPage({
                 initialLiked={userLiked}
                 initialCount={likeCount}
                 isAuthenticated={!!user}
-                isKycApproved={isKycApproved}
               />
               <span className="text-xs text-gray-500">{listing.sold_count ?? 0} sold</span>
               {listing.delivery_time && (
@@ -176,7 +170,6 @@ export default async function ListingDetailPage({
           listingId={listing.id}
           initialComments={(comments ?? []) as any}
           isAuthenticated={!!user}
-          isKycApproved={isKycApproved}
           hasPurchased={hasPurchased}
         />
       </div>

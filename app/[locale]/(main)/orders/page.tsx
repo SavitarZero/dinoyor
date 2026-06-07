@@ -124,7 +124,7 @@ export default async function OrdersPage({ searchParams }: Props) {
                 <div className="text-right shrink-0 flex items-center gap-3">
                   <div>
                     <p className="text-white font-bold">{o.amount}</p>
-                    <p className="text-gray-500 text-xs">{o.currency}</p>
+                    <p className="text-gray-500 text-xs">USD</p>
                   </div>
                   <svg className="w-4 h-4 text-gray-600 group-hover:text-accent transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />

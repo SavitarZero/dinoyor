@@ -9,10 +9,9 @@ interface Props {
   initialLiked: boolean
   initialCount: number
   isAuthenticated: boolean
-  isKycApproved: boolean
 }
 
-export function LikeButton({ listingId, initialLiked, initialCount, isAuthenticated, isKycApproved }: Props) {
+export function LikeButton({ listingId, initialLiked, initialCount, isAuthenticated }: Props) {
   const [liked, setLiked] = useState(initialLiked)
   const [count, setCount] = useState(initialCount)
   const [pending, startTransition] = useTransition()
@@ -20,7 +19,6 @@ export function LikeButton({ listingId, initialLiked, initialCount, isAuthentica
 
   function handleClick() {
     if (!isAuthenticated) { router.push('/login'); return }
-    if (!isKycApproved) { router.push('/profile/kyc'); return }
 
     const next = !liked
     setLiked(next)

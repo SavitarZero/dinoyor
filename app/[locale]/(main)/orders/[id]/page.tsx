@@ -164,7 +164,7 @@ export default async function OrderDetailPage({
         </div>
         <div className="text-right shrink-0">
           <p className="text-accent font-bold text-lg">{order.amount}</p>
-          <p className="text-gray-500 text-xs">{order.currency}</p>
+          <p className="text-gray-500 text-xs">USD</p>
         </div>
       </div>
 
@@ -196,7 +196,7 @@ export default async function OrderDetailPage({
           </div>
           <p className="text-gray-400 text-sm">
             Send exactly{' '}
-            <span className="text-white font-bold">{order.amount} {order.currency}</span>
+            <span className="text-white font-bold">${order.amount} USD</span>
             {' '}to the platform escrow wallet. Payment must be confirmed before delivery begins.
           </p>
           <div className="rounded-lg bg-background border border-border p-3">

@@ -3,11 +3,17 @@ import { useState } from 'react'
 import { createOrder } from '@/lib/actions/orders'
 
 export function BuyButton({ listingId }: { listingId: string }) {
-  const [step, setStep]       = useState<'idle' | 'confirm' | 'loading'>('idle')
+  const [step, setStep]   = useState<'idle' | 'confirm' | 'loading'>('idle')
+  const [error, setError] = useState('')
 
   async function handleConfirm() {
     setStep('loading')
-    await createOrder(listingId)
+    setError('')
+    const result = await createOrder(listingId)
+    if (result?.error) {
+      setError(result.error)
+      setStep('idle')
+    }
   }
 
   if (step === 'confirm') {
@@ -55,14 +61,24 @@ export function BuyButton({ listingId }: { listingId: string }) {
   }
 
   return (
-    <button
-      onClick={() => setStep('confirm')}
-      className="w-full py-3 rounded-xl bg-accent text-black font-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
-    >
-      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-      </svg>
-      Buy Now
-    </button>
+    <div className="space-y-2">
+      {error && (
+        <div className="rounded-xl bg-red-900/20 border border-red-700/50 px-4 py-3 flex gap-2 items-start">
+          <svg className="w-4 h-4 text-red-400 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+          </svg>
+          <p className="text-red-400 text-xs leading-relaxed">{error}</p>
+        </div>
+      )}
+      <button
+        onClick={() => { setStep('confirm'); setError('') }}
+        className="w-full py-3 rounded-xl bg-accent text-black font-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+      >
+        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+        Buy Now
+      </button>
+    </div>
   )
 }
