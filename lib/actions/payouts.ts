@@ -10,7 +10,7 @@ export async function requestPayout(currency: string) {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('wallet_address, wallet_network, kyc_status')
+    .select('wallet_address, wallet_network, kyc_status, payout_min_amount')
     .eq('id', user.id)
     .single()
 
@@ -25,6 +25,11 @@ export async function requestPayout(currency: string) {
     .single()
 
   if (!balance || balance.pending_amount <= 0) return { error: 'No balance available' }
+
+  const minAmount = Number(profile?.payout_min_amount ?? 10)
+  if (Number(balance.pending_amount) < minAmount) {
+    return { error: `Minimum payout is ${minAmount} USDT` }
+  }
 
   const { data: existing } = await supabase
     .from('payout_requests')
@@ -41,6 +46,20 @@ export async function requestPayout(currency: string) {
     currency,
     wallet_address: profile.wallet_address,
   })
+
+  revalidatePath('/wallet')
+  return { success: true }
+}
+
+export async function updatePayoutSettings(minAmount: number) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Not authenticated' }
+  if (minAmount < 1) return { error: 'Minimum payout must be at least 1 USDT' }
+
+  await supabase.from('profiles')
+    .update({ payout_min_amount: minAmount })
+    .eq('id', user.id)
 
   revalidatePath('/wallet')
   return { success: true }

@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { WalletAddressForm } from '@/components/wallet/WalletAddressForm'
+import { PayoutSettingsForm } from '@/components/wallet/PayoutSettingsForm'
 import { requestPayout } from '@/lib/actions/payouts'
 
 export default async function WalletPage() {
@@ -15,7 +16,7 @@ export default async function WalletPage() {
     { data: txLog },
     { data: payoutRequests },
   ] = await Promise.all([
-    supabase.from('profiles').select('wallet_address, wallet_network').eq('id', user.id).single(),
+    supabase.from('profiles').select('wallet_address, wallet_network, payout_min_amount').eq('id', user.id).single(),
     supabase.from('seller_balances').select('*').eq('seller_id', user.id),
     supabase.from('payouts').select('*').eq('seller_id', user.id).order('processed_at', { ascending: false }),
     supabase.from('balance_transactions').select('*').eq('seller_id', user.id).order('created_at', { ascending: false }).limit(50),
@@ -23,6 +24,7 @@ export default async function WalletPage() {
   ])
 
   const pendingRequests = payoutRequests?.filter(r => r.status === 'pending') ?? []
+  const minAmount = Number(profile?.payout_min_amount ?? 10)
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8 space-y-8">
@@ -49,14 +51,17 @@ export default async function WalletPage() {
                         Payout requested — pending admin approval
                       </span>
                     ) : Number(b.pending_amount) > 0 ? (
-                      <form action={async () => {
-                        'use server'
-                        await requestPayout(b.currency)
-                      }}>
-                        <button className="px-4 py-2.5 rounded-lg bg-accent text-black text-sm font-semibold hover:opacity-90">
-                          Request Payout
-                        </button>
-                      </form>
+                      <div className="flex items-center gap-2">
+                        <form action={async () => {
+                          'use server'
+                          await requestPayout(b.currency)
+                        }}>
+                          <button className="px-4 py-2.5 rounded-lg bg-accent text-black text-sm font-semibold hover:opacity-90">
+                            Request Payout
+                          </button>
+                        </form>
+                        <span className="text-gray-500 text-xs">Min. {minAmount} USDT</span>
+                      </div>
                     ) : null}
                   </div>
                 )
@@ -96,6 +101,14 @@ export default async function WalletPage() {
           currentAddress={profile?.wallet_address ?? null}
           currentNetwork={profile?.wallet_network ?? null}
         />
+      </div>
+
+      <div className="rounded-xl border border-border bg-surface p-6 space-y-3">
+        <div>
+          <p className="text-white font-semibold">Payout Settings</p>
+          <p className="text-gray-500 text-xs mt-0.5">Set your minimum payout threshold</p>
+        </div>
+        <PayoutSettingsForm currentMin={minAmount} />
       </div>
 
       <div>
