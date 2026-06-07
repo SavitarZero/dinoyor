@@ -11,10 +11,12 @@ export default async function WalletPage() {
     { data: profile },
     { data: balances },
     { data: payouts },
+    { data: txLog },
   ] = await Promise.all([
     supabase.from('profiles').select('wallet_address, wallet_network').eq('id', user.id).single(),
     supabase.from('seller_balances').select('*').eq('seller_id', user.id),
     supabase.from('payouts').select('*').eq('seller_id', user.id).order('processed_at', { ascending: false }),
+    supabase.from('balance_transactions').select('*').eq('seller_id', user.id).order('created_at', { ascending: false }).limit(50),
   ])
 
   const totalUsdt = balances?.reduce((sum, b) => b.currency === 'USDT' ? sum + Number(b.pending_amount) : sum, 0) ?? 0
@@ -72,6 +74,44 @@ export default async function WalletPage() {
           currentAddress={profile?.wallet_address ?? null}
           currentNetwork={profile?.wallet_network ?? null}
         />
+      </div>
+
+      {/* Transaction history */}
+      <div>
+        <h2 className="text-white font-semibold mb-3">Transaction History</h2>
+        {!txLog?.length ? (
+          <div className="rounded-xl border border-border bg-surface p-6 text-center">
+            <p className="text-gray-500 text-sm">No transactions yet.</p>
+          </div>
+        ) : (
+          <div className="rounded-xl border border-border bg-surface divide-y divide-border">
+            {txLog.map((tx: any) => (
+              <div key={tx.id} className="flex items-center justify-between p-4">
+                <div className="flex items-center gap-3">
+                  <span className={`text-lg font-bold ${tx.type === 'credit' ? 'text-green-400' : 'text-red-400'}`}>
+                    {tx.type === 'credit' ? '+' : '-'}
+                  </span>
+                  <div>
+                    <p className="text-white font-semibold">
+                      {Number(tx.amount).toFixed(2)} {tx.currency}
+                    </p>
+                    <p className="text-gray-500 text-xs mt-0.5">{tx.note}</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <p className="text-gray-400 text-xs">
+                    {new Date(tx.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' })}
+                  </p>
+                  {tx.order_id && (
+                    <a href={`/orders/${tx.order_id}`} className="text-accent text-xs hover:underline">
+                      View order
+                    </a>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Payout history */}

@@ -119,6 +119,15 @@ export async function buyerConfirmReceived(orderId: string) {
     p_amount: sellerAmount,
   })
 
+  await supabase.from('balance_transactions').insert({
+    seller_id: order.seller_id,
+    order_id: orderId,
+    type: 'credit',
+    amount: sellerAmount,
+    currency: 'USDT',
+    note: `Order #${orderId.slice(0, 8).toUpperCase()} completed`,
+  })
+
   revalidatePath(`/orders/${orderId}`)
   return { success: true }
 }

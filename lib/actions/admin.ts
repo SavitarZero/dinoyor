@@ -98,19 +98,28 @@ export async function processPayout(
     .single()
   if (!balance || balance.pending_amount <= 0) return { error: 'No balance to payout' }
 
-  await supabase.from('payouts').insert({
+  const { data: payout } = await supabase.from('payouts').insert({
     seller_id: sellerId,
     amount: balance.pending_amount,
     currency,
     wallet_address: walletAddress,
     tx_hash: txHash,
     processed_by: userId,
-  })
+  }).select('id').single()
 
   await supabase.from('seller_balances')
     .update({ pending_amount: 0 })
     .eq('seller_id', sellerId)
     .eq('currency', currency)
+
+  await supabase.from('balance_transactions').insert({
+    seller_id: sellerId,
+    payout_id: payout?.id,
+    type: 'debit',
+    amount: balance.pending_amount,
+    currency,
+    note: 'Payout processed',
+  })
 
   revalidatePath('/admin/payouts')
   return { success: true }
