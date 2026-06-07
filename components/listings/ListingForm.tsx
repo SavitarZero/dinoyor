@@ -117,24 +117,18 @@ export function ListingForm({ games }: { games: Game[] }) {
     if (result?.error) setError(result.error)
   }
 
-  const inputCls = 'w-full px-4 py-3 rounded-xl bg-background border border-border text-white placeholder-gray-600 text-sm focus:outline-none focus:border-accent transition-colors'
-  const labelCls = 'block text-sm font-medium text-gray-400 mb-1.5'
+  const inputCls = 'w-full px-3 py-2.5 rounded-lg bg-background border border-border text-white placeholder-gray-600 text-sm focus:outline-none focus:border-accent transition-colors'
+  const labelCls = 'block text-sm text-gray-400 mb-1.5'
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       {error && (
-        <div className="rounded-xl bg-red-900/20 border border-red-700/50 p-4 flex gap-3 items-start">
-          <svg className="w-4 h-4 text-red-400 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-          </svg>
-          <p className="text-red-400 text-sm">{error}</p>
-        </div>
+        <p className="text-red-400 text-sm">{error}</p>
       )}
 
-      {/* Game */}
       <div>
         <label className={labelCls}>Game</label>
-        <select name="game_id" required className={inputCls + ' cursor-pointer'}>
+        <select name="game_id" required className={inputCls}>
           <option value="">Select a game...</option>
           {games.map(g => (
             <option key={g.id} value={g.id}>{g.name}</option>
@@ -142,9 +136,8 @@ export function ListingForm({ games }: { games: Game[] }) {
         </select>
       </div>
 
-      {/* Title */}
       <div>
-        <label className={labelCls}>Item Name</label>
+        <label className={labelCls}>Item name</label>
         <input
           name="title"
           type="text"
@@ -155,11 +148,9 @@ export function ListingForm({ games }: { games: Game[] }) {
         />
       </div>
 
-      {/* Price */}
-      <div>
-        <label className={labelCls}>Price (USD)</label>
-        <div className="relative">
-          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm font-medium">$</span>
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className={labelCls}>Price (USDT)</label>
           <input
             name="price_amount"
             type="number"
@@ -167,44 +158,35 @@ export function ListingForm({ games }: { games: Game[] }) {
             min="0.01"
             required
             placeholder="0.00"
-            className={inputCls + ' pl-8'}
+            className={inputCls}
           />
+          <input type="hidden" name="price_currency" value="USD" />
         </div>
-        <input type="hidden" name="price_currency" value="USD" />
+        <div>
+          <label className={labelCls}>Delivery time</label>
+          <select name="delivery_time" className={inputCls}>
+            <option value="">Not specified</option>
+            <option value="Instant">Instant</option>
+            <option value="< 1 hour">&lt; 1 hour</option>
+            <option value="1–3 hours">1–3 hours</option>
+            <option value="Same day">Same day</option>
+            <option value="1–2 days">1–2 days</option>
+          </select>
+        </div>
       </div>
 
-      {/* Delivery time */}
       <div>
-        <label className={labelCls}>Estimated Delivery Time</label>
-        <select name="delivery_time" className={inputCls + ' cursor-pointer'}>
-          <option value="">Not specified</option>
-          <option value="Instant">Instant</option>
-          <option value="< 1 hour">&lt; 1 hour</option>
-          <option value="1–3 hours">1–3 hours</option>
-          <option value="Same day">Same day</option>
-          <option value="1–2 days">1–2 days</option>
-        </select>
-      </div>
-
-      {/* Description */}
-      <div>
-        <label className={labelCls}>
-          Description <span className="text-gray-600 font-normal">(optional)</span>
-        </label>
+        <label className={labelCls}>Description <span className="text-gray-600">(optional)</span></label>
         <textarea
           name="description"
           rows={3}
-          placeholder="Describe the item — condition, server, any extras..."
+          placeholder="Condition, server, extras..."
           className={inputCls + ' resize-none'}
         />
       </div>
 
-      {/* ── Cover image ── */}
       <div>
-        <label className={labelCls}>
-          Cover Image <span className="text-red-400">*</span>
-          <span className="text-gray-600 font-normal ml-1">· shown on listing cards</span>
-        </label>
+        <label className={labelCls}>Cover image</label>
         <input
           ref={coverRef}
           name="cover"
@@ -215,42 +197,31 @@ export function ListingForm({ games }: { games: Game[] }) {
         />
 
         {coverCompressing ? (
-          <div className="w-40 h-40 rounded-xl border border-border bg-background flex flex-col items-center justify-center gap-2">
-            <svg className="w-5 h-5 text-accent animate-spin" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-            </svg>
-            <p className="text-gray-600 text-xs">Compressing…</p>
+          <div className="w-32 h-32 rounded-lg border border-border bg-background flex items-center justify-center">
+            <span className="text-gray-500 text-xs">Compressing…</span>
           </div>
         ) : coverPreview ? (
-          <div className="relative w-40 h-40 rounded-xl overflow-hidden bg-background border border-border group cursor-pointer" onClick={() => coverRef.current?.click()}>
+          <div className="relative w-32 h-32 rounded-lg overflow-hidden bg-background border border-border group cursor-pointer" onClick={() => coverRef.current?.click()}>
             <img src={coverPreview} alt="cover" className="w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-              <span className="text-white text-xs font-medium">Change</span>
+            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+              <span className="text-white text-xs">Change</span>
             </div>
-            <span className="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded-md bg-accent text-black text-xs font-semibold">Cover</span>
           </div>
         ) : (
           <button
             type="button"
             onClick={() => coverRef.current?.click()}
-            className="w-full rounded-xl border-2 border-dashed border-border hover:border-accent transition-colors p-8 text-center group"
+            className="w-full rounded-lg border border-dashed border-border hover:border-accent transition-colors py-6 text-center"
           >
-            <svg className="w-8 h-8 text-gray-600 group-hover:text-accent transition-colors mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
-            </svg>
-            <p className="text-sm text-gray-400 group-hover:text-white transition-colors">Upload cover image</p>
-            <p className="text-xs text-gray-600 mt-1">JPG, PNG, WEBP · auto-compressed to ~400 KB</p>
+            <p className="text-sm text-gray-400">Upload cover image</p>
+            <p className="text-xs text-gray-600 mt-0.5">Auto-compressed · max {COVER_MAX_MB} MB</p>
           </button>
         )}
-        {coverError && <p className="text-red-400 text-xs mt-1.5">{coverError}</p>}
+        {coverError && <p className="text-red-400 text-xs mt-1">{coverError}</p>}
       </div>
 
-      {/* ── Additional images ── */}
       <div>
-        <label className={labelCls}>
-          Additional Images <span className="text-gray-600 font-normal">(optional · up to {ADDITIONAL_MAX_COUNT})</span>
-        </label>
+        <label className={labelCls}>Additional images <span className="text-gray-600">(up to {ADDITIONAL_MAX_COUNT})</span></label>
         <input
           ref={additionalRef}
           name="additional"
@@ -261,28 +232,22 @@ export function ListingForm({ games }: { games: Game[] }) {
           className="hidden"
         />
 
-        <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+        <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
           {additionalPreviews.map((img, i) => (
-            <div key={i} className="relative aspect-square rounded-xl overflow-hidden bg-background border border-border group">
+            <div key={i} className="relative aspect-square rounded-lg overflow-hidden bg-background border border-border group">
               <img src={img.url} alt="" className="w-full h-full object-cover" />
               <button
                 type="button"
                 onClick={() => removeAdditional(i)}
                 className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/70 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
               >
-                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                ×
               </button>
             </div>
           ))}
 
           {additionalCompressing && (
-            <div className="aspect-square rounded-xl border border-border bg-background flex flex-col items-center justify-center gap-1">
-              <svg className="w-4 h-4 text-accent animate-spin" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-              </svg>
+            <div className="aspect-square rounded-lg border border-border bg-background flex items-center justify-center">
               <span className="text-xs text-gray-600">…</span>
             </div>
           )}
@@ -291,45 +256,23 @@ export function ListingForm({ games }: { games: Game[] }) {
             <button
               type="button"
               onClick={() => additionalRef.current?.click()}
-              className="aspect-square rounded-xl border-2 border-dashed border-border hover:border-accent transition-colors flex flex-col items-center justify-center gap-1 group"
+              className="aspect-square rounded-lg border border-dashed border-border hover:border-accent transition-colors flex items-center justify-center"
             >
-              <svg className="w-5 h-5 text-gray-600 group-hover:text-accent transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-              </svg>
-              <span className="text-xs text-gray-600 group-hover:text-gray-400 transition-colors">
-                {additionalPreviews.length === 0 ? 'Add' : `${additionalPreviews.length}/${ADDITIONAL_MAX_COUNT}`}
-              </span>
+              <span className="text-gray-500 text-lg">+</span>
             </button>
           )}
         </div>
-        {additionalError && <p className="text-red-400 text-xs mt-1.5">{additionalError}</p>}
+        {additionalError && <p className="text-red-400 text-xs mt-1">{additionalError}</p>}
       </div>
 
-      {/* Info + Submit */}
-      <div className="border-t border-border pt-4">
-        <div className="rounded-xl bg-surface border border-border p-3 flex gap-2 mb-4">
-          <svg className="w-4 h-4 text-accent shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
-          </svg>
-          <p className="text-gray-400 text-xs">
-            A 5% platform fee applies to each sale. Payment is held in escrow until the buyer confirms receipt.
-          </p>
-        </div>
-
+      <div className="border-t border-border pt-5 space-y-3">
+        <p className="text-gray-500 text-xs">5% platform fee per sale · payment held in escrow until buyer confirms</p>
         <button
           type="submit"
           disabled={loading || coverCompressing || additionalCompressing}
-          className="w-full py-3 rounded-xl bg-accent text-black font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center gap-2"
+          className="w-full py-3 rounded-lg bg-white text-black font-medium text-sm hover:bg-gray-200 transition-colors disabled:opacity-50"
         >
-          {loading ? (
-            <>
-              <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-              </svg>
-              Publishing…
-            </>
-          ) : 'Publish Listing'}
+          {loading ? 'Publishing…' : 'Publish listing'}
         </button>
       </div>
     </form>
