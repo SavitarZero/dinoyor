@@ -5,7 +5,7 @@ import { notFound, redirect } from 'next/navigation'
 import { AutoReleaseTimer } from '@/components/orders/AutoReleaseTimer'
 import { ProofUpload } from '@/components/orders/ProofUpload'
 import { ChatWindow } from '@/components/orders/ChatWindow'
-import { PaymentSection } from '@/components/orders/PaymentSection'
+import { PaymentSection, type EscrowWallet } from '@/components/orders/PaymentSection'
 import { buyerConfirmReceived, openDispute } from '@/lib/actions/orders'
 import type { Message } from '@/lib/types'
 
@@ -52,13 +52,20 @@ export default async function OrderDetailPage({
   const [{ data: proofs }, { data: conversation }, { data: escrowSettings }] = await Promise.all([
     supabase.from('order_proofs').select('screenshot_urls').eq('order_id', id),
     supabase.from('conversations').select('id').eq('order_id', id).single(),
-    supabase.from('platform_settings').select('key, value').in('key', ['escrow_wallet_address', 'escrow_wallet_network']),
+    supabase.from('platform_settings').select('key, value').in('key', [
+      'escrow_wallet_erc20', 'escrow_wallet_trc20',
+      'escrow_wallet_erc20_testnet', 'escrow_wallet_trc20_testnet',
+    ]),
   ])
 
-  const addrKey    = IS_TESTNET ? 'escrow_wallet_address_testnet' : 'escrow_wallet_address'
-  const networkKey = IS_TESTNET ? 'escrow_wallet_network_testnet' : 'escrow_wallet_network'
-  const escrowAddress = escrowSettings?.find(s => s.key === addrKey)?.value ?? ''
-  const escrowNetwork = escrowSettings?.find(s => s.key === networkKey)?.value ?? 'TRC20'
+  const suffix = IS_TESTNET ? '_testnet' : ''
+  const erc20Address = escrowSettings?.find(s => s.key === `escrow_wallet_erc20${suffix}`)?.value ?? ''
+  const trc20Address = escrowSettings?.find(s => s.key === `escrow_wallet_trc20${suffix}`)?.value ?? ''
+
+  const escrowWallets: EscrowWallet[] = [
+    { network: 'ERC20', label: 'ERC20 (Ethereum)', address: erc20Address },
+    { network: 'TRC20', label: 'TRC20 (Tron)',     address: trc20Address },
+  ]
 
   let initialMessages: Message[] = []
   if (conversation) {
@@ -199,8 +206,7 @@ export default async function OrderDetailPage({
         <PaymentSection
           orderId={id}
           amount={order.amount}
-          escrowAddress={escrowAddress}
-          escrowNetwork={escrowNetwork}
+          wallets={escrowWallets}
           isTestnet={IS_TESTNET}
           alreadyNotified={!!(order as any).payment_notified_at}
         />

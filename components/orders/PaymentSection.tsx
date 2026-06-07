@@ -2,22 +2,31 @@
 import { useState } from 'react'
 import { notifyPaymentSent } from '@/lib/actions/orders'
 
+export interface EscrowWallet {
+  network: 'ERC20' | 'TRC20'
+  label: string      // e.g. "ERC20 (Ethereum)" / "TRC20 (Tron)"
+  address: string
+}
+
 interface Props {
   orderId: string
   amount: number
-  escrowAddress: string
-  escrowNetwork: string
+  wallets: EscrowWallet[]   // ERC20 first = default
   isTestnet: boolean
   alreadyNotified: boolean
 }
 
-export function PaymentSection({ orderId, amount, escrowAddress, escrowNetwork, isTestnet, alreadyNotified }: Props) {
-  const [copied, setCopied] = useState(false)
+export function PaymentSection({ orderId, amount, wallets, isTestnet, alreadyNotified }: Props) {
+  const [selected, setSelected] = useState(0)
+  const [copied, setCopied]     = useState(false)
   const [notified, setNotified] = useState(alreadyNotified)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading]   = useState(false)
+
+  const wallet = wallets[selected]
 
   async function handleCopy() {
-    await navigator.clipboard.writeText(escrowAddress)
+    if (!wallet?.address) return
+    await navigator.clipboard.writeText(wallet.address)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
@@ -48,14 +57,10 @@ export function PaymentSection({ orderId, amount, escrowAddress, escrowNetwork, 
       </div>
 
       {/* Steps */}
-      <ol className="space-y-3 text-sm text-gray-400">
+      <ol className="space-y-2.5 text-sm text-gray-400">
         <li className="flex gap-3">
           <span className="w-5 h-5 rounded-full bg-yellow-900/60 border border-yellow-700/60 text-yellow-400 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">1</span>
-          <span>
-            Send exactly{' '}
-            <span className="text-white font-bold">{amount} USDT</span>
-            {' '}via <span className="text-white font-medium">{escrowNetwork}</span> to the address below
-          </span>
+          <span>Choose a network below, then send exactly <span className="text-white font-bold">{amount} USDT</span> to that address</span>
         </li>
         <li className="flex gap-3">
           <span className="w-5 h-5 rounded-full bg-yellow-900/60 border border-yellow-700/60 text-yellow-400 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">2</span>
@@ -63,50 +68,74 @@ export function PaymentSection({ orderId, amount, escrowAddress, escrowNetwork, 
         </li>
         <li className="flex gap-3">
           <span className="w-5 h-5 rounded-full bg-yellow-900/60 border border-yellow-700/60 text-yellow-400 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">3</span>
-          <span>Admin confirms receipt → seller will deliver the item</span>
+          <span>Admin confirms → seller delivers the item</span>
         </li>
       </ol>
 
-      {/* Wallet address */}
-      {escrowAddress ? (
-        <div className="rounded-xl bg-background border border-border p-4 space-y-2">
-          <div className="flex items-center justify-between">
-            <p className="text-gray-500 text-xs font-medium uppercase tracking-wide">Escrow wallet ({escrowNetwork})</p>
+      {/* Network tabs */}
+      <div className="rounded-xl bg-background border border-border overflow-hidden">
+        {/* Tab selector */}
+        <div className="flex border-b border-border">
+          {wallets.map((w, i) => (
             <button
-              onClick={handleCopy}
-              className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium transition-all ${
-                copied
-                  ? 'bg-green-900/30 border border-green-700/50 text-green-400'
-                  : 'bg-surface border border-border text-gray-400 hover:text-white hover:border-accent'
+              key={w.network}
+              onClick={() => { setSelected(i); setCopied(false) }}
+              className={`flex-1 py-2.5 text-xs font-semibold transition-colors ${
+                i === selected
+                  ? 'bg-surface text-white border-b-2 border-accent'
+                  : 'text-gray-500 hover:text-gray-300'
               }`}
             >
-              {copied ? (
-                <>
-                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
-                  Copied
-                </>
-              ) : (
-                <>
-                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                  </svg>
-                  Copy
-                </>
+              {w.label}
+              {i === 0 && (
+                <span className="ml-1.5 px-1.5 py-0.5 rounded bg-accent/20 text-accent text-[10px] font-bold">
+                  Recommended
+                </span>
               )}
             </button>
-          </div>
-          <p className="text-white text-sm font-mono break-all">{escrowAddress}</p>
-          <p className="text-red-400/80 text-xs">
-            ⚠ Send only USDT via {escrowNetwork}. Wrong network = lost funds.
-          </p>
+          ))}
         </div>
-      ) : (
-        <div className="rounded-xl bg-background border border-border p-4">
-          <p className="text-gray-500 text-sm">Wallet address not configured yet — contact support.</p>
+
+        {/* Address */}
+        <div className="p-4 space-y-3">
+          {wallet?.address ? (
+            <>
+              <div className="flex items-start justify-between gap-3">
+                <p className="text-white text-sm font-mono break-all leading-relaxed">{wallet.address}</p>
+                <button
+                  onClick={handleCopy}
+                  className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                    copied
+                      ? 'bg-green-900/30 border border-green-700/50 text-green-400'
+                      : 'bg-surface border border-border text-gray-400 hover:text-white hover:border-accent'
+                  }`}
+                >
+                  {copied ? (
+                    <>
+                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                      Copied
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                      Copy
+                    </>
+                  )}
+                </button>
+              </div>
+              <p className="text-red-400/80 text-xs">
+                ⚠ Send USDT on <strong>{wallet.network}</strong> only. Wrong network = lost funds, cannot recover.
+              </p>
+            </>
+          ) : (
+            <p className="text-gray-500 text-sm">Wallet address not configured yet — contact support.</p>
+          )}
         </div>
-      )}
+      </div>
 
       {/* Notify button */}
       {notified ? (
@@ -119,7 +148,7 @@ export function PaymentSection({ orderId, amount, escrowAddress, escrowNetwork, 
       ) : (
         <button
           onClick={handleNotify}
-          disabled={loading || !escrowAddress}
+          disabled={loading || !wallet?.address}
           className="w-full py-3 rounded-xl bg-yellow-500 text-black font-bold text-sm hover:bg-yellow-400 disabled:opacity-40 transition-colors"
         >
           {loading ? 'Notifying…' : "I've sent payment — Notify Admin"}
