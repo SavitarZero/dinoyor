@@ -69,7 +69,7 @@ export async function Navbar() {
               {/* Sell — pill accent button */}
               <Link
                 href="/listings/new"
-                className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold bg-accent text-black hover:opacity-90 active:opacity-80 transition-opacity whitespace-nowrap shadow-[0_0_12px_rgba(0,229,255,0.25)]"
+                className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold bg-accent/15 text-accent border border-accent/30 hover:bg-accent/25 transition-colors whitespace-nowrap"
               >
                 <Plus size={15} strokeWidth={2.5} />
                 Sell
@@ -114,7 +114,7 @@ export async function Navbar() {
             <>
               <Link
                 href="/listings/new"
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold bg-accent text-black hover:opacity-90 active:opacity-80 transition-opacity shadow-[0_0_8px_rgba(0,229,255,0.2)]"
+                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold bg-accent/15 text-accent border border-accent/30 hover:bg-accent/25 transition-colors"
               >
                 <Plus size={13} strokeWidth={2.5} />
                 Sell

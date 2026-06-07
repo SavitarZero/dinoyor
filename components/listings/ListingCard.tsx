@@ -42,8 +42,8 @@ export function ListingCard({ listing, rank }: { listing: ListingWithGame; rank?
 
         {rank !== undefined && rank < 3 && (
           <div className="absolute top-2 left-2">
-            <span className="px-1.5 py-0.5 rounded bg-orange-500 text-white text-[10px] font-bold">
-              #{rank + 1}
+            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-orange-500/90 text-white text-[10px] font-bold backdrop-blur-sm">
+              🔥 Hot
             </span>
           </div>
         )}
@@ -60,6 +60,7 @@ export function ListingCard({ listing, rank }: { listing: ListingWithGame; rank?
               {listing.price_amount}
             </span>
             <span className="text-[10px] text-gray-600">{currency}</span>
+            <span className="text-[10px] text-gray-600">· {listing.sold_count ?? 0} sold</span>
           </div>
           {listing.profiles?.username && (
             <span className="text-[10px] text-gray-700 truncate max-w-16">@{listing.profiles.username}</span>

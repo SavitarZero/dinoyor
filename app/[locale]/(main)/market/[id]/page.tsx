@@ -92,13 +92,16 @@ export default async function ListingDetailPage({
             <p className="text-3xl font-bold text-accent">
               {listing.price_amount} <span className="text-xl text-accent/70">{listing.price_currency}</span>
             </p>
-            <LikeButton
-              listingId={listing.id}
-              initialLiked={userLiked}
-              initialCount={likeCount}
-              isAuthenticated={!!user}
-              isKycApproved={isKycApproved}
-            />
+            <div className="flex items-center gap-2">
+              <LikeButton
+                listingId={listing.id}
+                initialLiked={userLiked}
+                initialCount={likeCount}
+                isAuthenticated={!!user}
+                isKycApproved={isKycApproved}
+              />
+              <span className="text-xs text-gray-500">{listing.sold_count ?? 0} sold</span>
+            </div>
           </div>
 
           {/* Seller */}

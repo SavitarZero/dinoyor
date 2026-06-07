@@ -44,6 +44,7 @@ export interface Listing {
   images: string[]
   extra_fields: Record<string, unknown>
   status: 'active' | 'sold' | 'cancelled'
+  sold_count: number
   created_at: string
   updated_at: string
 }

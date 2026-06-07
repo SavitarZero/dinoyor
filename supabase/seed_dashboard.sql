@@ -292,4 +292,33 @@ begin
   end loop;
 end $$;
 
+-- 6) Mock sold_count
+update public.listings set sold_count = case title
+  when '100M OSRS Gold — Fast Delivery'            then 312
+  when '1B OSRS Gold — Bulk Rate'                  then 87
+  when 'Twisted Bow — Trade Ready'                 then 14
+  when 'OSRS Account — Maxed Pure 99 Str'          then 9
+  when '500,000 WoW Gold — US/EU Realm'            then 204
+  when 'Mythic+ Carry 15+ Key Weekly'              then 156
+  when 'WoW Classic SoD — 100k Gold'               then 91
+  when 'Gladiator Mount Boost — Season 4'          then 33
+  when 'AK-47 Redline FT — CS2 Skin'              then 428
+  when 'Karambit Fade Factory New'                 then 7
+  when 'AWP Dragon Lore FT'                        then 3
+  when 'M4A4 Howl FT — Contraband'                then 5
+  when '100 Exalted Orbs PoE2 SC — Fast'          then 189
+  when '500 Divine Orbs — Standard SC'             then 76
+  when 'Rare Endgame Build Full Gear Setup'        then 42
+  when 'Headhunter Belt SC PoE2'                   then 11
+  when '10M Albion Silver — Fast Delivery'         then 267
+  when '50M Silver — West/East Server'             then 98
+  when '100,000 Lost Ark Gold — EU Central'        then 143
+  when 'UC 3,600 Top-Up — Any Server'              then 334
+  when '10B ISK — Jita Delivery'                   then 58
+  when 'Minecraft Java Account — Full Access'      then 201
+  when '3 Axies Team — Pure Origin Build'          then 37
+  when 'Pixels Farm Land — Plot #4812'             then 4
+  else floor(random() * 30)::int
+end;
+
 -- ✅ Done! Run SELECT count(*) FROM public.listings; to verify
