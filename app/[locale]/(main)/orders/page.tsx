@@ -142,7 +142,7 @@ export default async function OrdersPage({ searchParams }: Props) {
       )}
 
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 mt-8">
+        <div className="flex items-center justify-center gap-2 mt-6">
           {currentPage > 1 && (
             <Link
               href={buildUrl(currentPage - 1)}
