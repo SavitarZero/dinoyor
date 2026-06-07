@@ -1,5 +1,5 @@
 'use client'
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import imageCompression from 'browser-image-compression'
 import { createListing } from '@/lib/actions/listings'
 
@@ -31,6 +31,11 @@ export function ListingForm({ games }: { games: Game[] }) {
   const [loading, setLoading] = useState(false)
   const [price, setPrice] = useState('')
 
+  const [gameSearch, setGameSearch] = useState('')
+  const [gameOpen, setGameOpen] = useState(false)
+  const [selectedGame, setSelectedGame] = useState<Game | null>(null)
+  const gameRef = useRef<HTMLDivElement>(null)
+
   const [coverPreview, setCoverPreview]   = useState<string | null>(null)
   const [coverError, setCoverError]       = useState('')
   const [coverCompressing, setCoverCompressing] = useState(false)
@@ -41,6 +46,19 @@ export function ListingForm({ games }: { games: Game[] }) {
 
   const coverRef      = useRef<HTMLInputElement>(null)
   const additionalRef = useRef<HTMLInputElement>(null)
+
+  const filteredGames = games.filter(g =>
+    g.name.toLowerCase().includes(gameSearch.toLowerCase())
+  )
+
+  useEffect(() => {
+    if (!gameOpen) return
+    function handleClick(e: MouseEvent) {
+      if (gameRef.current && !gameRef.current.contains(e.target as Node)) setGameOpen(false)
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [gameOpen])
 
   async function handleCover(files: FileList | null) {
     setCoverError('')
@@ -135,12 +153,46 @@ export function ListingForm({ games }: { games: Game[] }) {
           <div className="rounded-xl border border-border bg-surface p-5 space-y-4">
             <div>
               <label className={labelCls}>Game</label>
-              <select name="game_id" required className={inputCls}>
-                <option value="">Select a game...</option>
-                {games.map(g => (
-                  <option key={g.id} value={g.id}>{g.name}</option>
-                ))}
-              </select>
+              <input type="hidden" name="game_id" value={selectedGame?.id ?? ''} />
+              <div className="relative" ref={gameRef}>
+                <div
+                  className={`${inputCls} flex items-center cursor-text`}
+                  onClick={() => setGameOpen(true)}
+                >
+                  <input
+                    type="text"
+                    value={gameOpen ? gameSearch : (selectedGame?.name ?? '')}
+                    onChange={e => { setGameSearch(e.target.value); setGameOpen(true) }}
+                    onFocus={() => setGameOpen(true)}
+                    placeholder="Search or select a game..."
+                    className="flex-1 bg-transparent outline-none placeholder-gray-600 text-sm text-white"
+                  />
+                  <svg
+                    className={`w-4 h-4 text-gray-500 shrink-0 transition-transform ${gameOpen ? 'rotate-180' : ''}`}
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+                {gameOpen && (
+                  <div className="absolute z-20 top-full left-0 right-0 mt-1 rounded-xl border border-border bg-surface shadow-xl max-h-52 overflow-y-auto">
+                    {filteredGames.length === 0 ? (
+                      <p className="px-3 py-2.5 text-gray-500 text-sm">No games found</p>
+                    ) : filteredGames.map(g => (
+                      <button
+                        key={g.id}
+                        type="button"
+                        onClick={() => { setSelectedGame(g); setGameSearch(''); setGameOpen(false) }}
+                        className={`w-full text-left px-3 py-2.5 text-sm hover:bg-white/5 transition-colors ${
+                          selectedGame?.id === g.id ? 'text-accent' : 'text-white'
+                        }`}
+                      >
+                        {g.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
             <div>
               <label className={labelCls}>Item name</label>
