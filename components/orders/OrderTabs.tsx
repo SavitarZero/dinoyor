@@ -11,15 +11,15 @@ const TABS = [
 export function OrderTabs({ active }: { active: string }) {
   const router = useRouter()
   return (
-    <div className="flex gap-1 p-1 rounded-xl bg-surface border border-border mb-6">
+    <div className="flex border-b border-border mb-6 overflow-x-auto scrollbar-none">
       {TABS.map(tab => (
         <button
           key={tab.id}
           onClick={() => router.push(tab.id === 'all' ? '/orders' : `/orders?tab=${tab.id}`)}
-          className={`flex-1 py-2 rounded-lg text-sm font-semibold transition-colors ${
+          className={`px-4 py-2.5 text-sm font-medium border-b-2 -mb-px whitespace-nowrap transition-colors ${
             active === tab.id
-              ? 'bg-accent text-black'
-              : 'text-gray-500 hover:text-white'
+              ? 'border-accent text-white'
+              : 'border-transparent text-gray-500 hover:text-gray-300'
           }`}
         >
           {tab.label}
