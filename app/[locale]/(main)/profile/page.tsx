@@ -71,7 +71,17 @@ export default async function DashboardPage() {
       </div>
 
       {/* KYC Banner */}
-      {profile?.kyc_status !== 'approved' && (
+      {profile?.kyc_status === 'pending' ? (
+        <div className="rounded-xl border border-blue-700/50 bg-blue-900/10 p-4 flex items-center gap-3">
+          <svg className="w-5 h-5 text-blue-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <div>
+            <p className="text-blue-400 font-medium text-sm">Verification under review</p>
+            <p className="text-gray-400 text-xs mt-0.5">Your documents are being reviewed. This usually takes 1–2 business days.</p>
+          </div>
+        </div>
+      ) : profile?.kyc_status !== 'approved' && (
         <div className="rounded-xl border border-yellow-700/50 bg-yellow-900/10 p-4 flex items-center justify-between">
           <div>
             <p className="text-yellow-400 font-medium text-sm">Identity not verified</p>

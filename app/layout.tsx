@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { Geist } from "next/font/google"
+import NextTopLoader from "nextjs-toploader"
 import "./globals.css"
 
 const geist = Geist({
@@ -16,6 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${geist.variable} h-full`} suppressHydrationWarning>
       <body className="min-h-full antialiased">
+        <NextTopLoader color="#00e5ff" shadow={false} showSpinner={false} height={2} />
         {children}
       </body>
     </html>

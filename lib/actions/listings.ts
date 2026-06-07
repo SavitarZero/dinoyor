@@ -20,6 +20,7 @@ export async function createListing(formData: FormData) {
   const priceAmount = parseFloat(formData.get('price_amount') as string)
   const priceCurrency = formData.get('price_currency') as string
   const description = formData.get('description') as string
+  const deliveryTime = (formData.get('delivery_time') as string) || null
   const imageFiles = formData.getAll('images') as File[]
 
   if (!title || !gameId || isNaN(priceAmount) || priceAmount <= 0) {
@@ -43,6 +44,7 @@ export async function createListing(formData: FormData) {
     game_id: gameId,
     title,
     description: description || null,
+    delivery_time: deliveryTime,
     price_amount: priceAmount,
     price_currency: priceCurrency,
     images: imageUrls,

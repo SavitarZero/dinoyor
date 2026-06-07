@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { ListingCard } from '@/components/listings/ListingCard'
 import type { ListingWithGame, GameWithStats } from '@/lib/types/index'
 import { ChevronRight, ChevronLeft, Gamepad2, Sword, TreePine, Crosshair, Coins } from 'lucide-react'
-import { GameLogo, GameBanner, slugColor } from '@/components/games/GameImage'
+import { GameLogo, GameBanner } from '@/components/games/GameImage'
 
 interface Props {
   games: GameWithStats[]
@@ -217,6 +217,15 @@ export function HomeSections({ games, byCategory, listings }: Props) {
           </div>
         )}
 
+        {/* ── Divider ── */}
+        {gameSections.length > 0 && (
+          <div className="flex items-center gap-3 py-2 mb-2">
+            <div className="flex-1 h-px bg-border" />
+            <span className="text-gray-600 text-xs font-semibold uppercase tracking-widest whitespace-nowrap">Listings</span>
+            <div className="flex-1 h-px bg-border" />
+          </div>
+        )}
+
         {/* ── Game sections ── */}
         {gameSections.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 gap-3 text-center">
@@ -227,31 +236,19 @@ export function HomeSections({ games, byCategory, listings }: Props) {
         ) : (
           <div className="space-y-10">
             {gameSections.map(({ game, items }) => {
-              const { bg, accent } = slugColor(game.slug)
               return (
               <section key={game.id}>
                 {/* Section header */}
-                <div className="relative rounded-xl overflow-hidden mb-3" style={{ height: '56px' }}>
-                  {/* Colored gradient — always visible */}
-                  <div className="absolute inset-0" style={{ background: `radial-gradient(ellipse at 30% 50%, ${accent}33 0%, ${bg} 65%)`, backgroundColor: bg }} />
-                  {/* Real banner overlaid on top if available */}
-                  {game.banner_url && (
-                    <img src={game.banner_url} alt="" className="absolute inset-0 w-full h-full object-cover opacity-40"
-                      onError={(e) => { e.currentTarget.style.display = 'none' }}
-                    />
-                  )}
-                  <div className="absolute inset-0 bg-linear-to-r from-black/80 to-black/30" />
-                  <div className="relative h-full flex items-center gap-3 px-4">
-                    <GameLogo src={game.logo_url} slug={game.slug} name={game.name} className="w-8 h-8 rounded-lg shrink-0" />
-                    <div className="min-w-0 flex-1">
-                      <p className="text-white font-bold text-sm truncate">{game.name}</p>
-                      <p className="text-gray-500 text-[10px]">{game.category}</p>
-                    </div>
-                    <Link href={`/market?game=${game.slug}`}
-                      className="flex items-center gap-0.5 text-accent text-xs font-medium hover:underline shrink-0">
-                      See all <ChevronRight size={12} />
-                    </Link>
+                <div className="flex items-center gap-3 mb-3 px-1">
+                  <GameLogo src={game.logo_url} slug={game.slug} name={game.name} className="w-7 h-7 rounded-lg shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <p className="text-white font-bold text-sm truncate">{game.name}</p>
+                    <p className="text-gray-600 text-[10px]">{game.category}</p>
                   </div>
+                  <Link href={`/market?game=${game.slug}`}
+                    className="flex items-center gap-0.5 text-accent text-xs font-medium hover:underline shrink-0">
+                    See all <ChevronRight size={12} />
+                  </Link>
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
@@ -265,16 +262,111 @@ export function HomeSections({ games, byCategory, listings }: Props) {
 
         {/* ── See more → Market ── */}
         {hasMore && (
-          <div className="flex flex-col items-center gap-2 py-10 border-t border-border mt-6">
-            <p className="text-gray-600 text-xs">{allGameSections.length - HOME_LIMIT} more games available</p>
+          <div className="flex items-center gap-3 px-1 mt-6">
+            <div className="flex-1 h-px bg-border" />
             <Link
               href="/market"
-              className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full border border-border text-gray-400 text-sm hover:text-white hover:border-white/30 transition-colors"
+              className="flex items-center gap-0.5 text-accent text-xs font-medium hover:underline shrink-0"
             >
-              See all in Market <ChevronRight size={14} />
+              See all in Market <ChevronRight size={12} />
             </Link>
           </div>
         )}
+
+        {/* ── How it works ── */}
+        <div className="mt-12 mb-12">
+          <div className="text-center mb-8">
+            <h2 className="text-xl md:text-2xl font-black text-white">How it works</h2>
+            <p className="text-gray-500 text-sm mt-1">Trade in-game items in 3 simple steps</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {[
+              {
+                step: '01',
+                title: 'List your item',
+                desc: 'Post what you want to sell',
+                icon: 'M12 4v16m8-8H4',
+              },
+              {
+                step: '02',
+                title: 'Buyer pays escrow',
+                desc: 'Payment is held securely in escrow until the trade is confirmed by both sides.',
+                icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
+              },
+              {
+                step: '03',
+                title: 'Confirm & receive',
+                desc: 'Deliver the item, buyer confirms, and funds are released to your wallet.',
+                icon: 'M5 13l4 4L19 7',
+              },
+            ].map(({ step, title, desc, icon }) => (
+              <div key={step} className="relative flex flex-col gap-3 p-5 rounded-2xl border border-border bg-surface">
+                <span className="text-4xl font-black text-white/5 absolute top-4 right-5 select-none">{step}</span>
+                <div className="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center shrink-0">
+                  <svg className="w-5 h-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d={icon} />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-white font-bold text-sm">{title}</p>
+                  <p className="text-gray-500 text-xs mt-1 leading-relaxed">{desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ── Trust & Safety ── */}
+        <div className="rounded-2xl border border-border bg-surface p-6 md:p-8 mb-8">
+          <div className="text-center mb-6">
+            <h2 className="text-xl md:text-2xl font-black text-white">Trust & Safety</h2>
+            <p className="text-gray-500 text-sm mt-1">Every trade is protected from start to finish</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              {
+                title: 'Escrow Protection',
+                desc: 'Funds are held until both parties confirm the trade is complete.',
+                icon: 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z',
+                color: 'text-accent',
+                bg: 'bg-accent/10 border-accent/20',
+              },
+              {
+                title: 'KYC Verified Sellers',
+                desc: 'Every seller is identity-verified before they can list items.',
+                icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
+                color: 'text-green-400',
+                bg: 'bg-green-500/10 border-green-500/20',
+              },
+              {
+                title: 'Dispute Resolution',
+                desc: 'Our team mediates any trade disputes to ensure a fair outcome.',
+                icon: 'M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3',
+                color: 'text-yellow-400',
+                bg: 'bg-yellow-500/10 border-yellow-500/20',
+              },
+              {
+                title: 'Crypto Payments',
+                desc: 'Pay with USDT, ETH, or BTC — fast, borderless, and secure.',
+                icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
+                color: 'text-purple-400',
+                bg: 'bg-purple-500/10 border-purple-500/20',
+              },
+            ].map(({ title, desc, icon, color, bg }) => (
+              <div key={title} className="flex flex-col gap-3">
+                <div className={`w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 ${bg}`}>
+                  <svg className={`w-5 h-5 ${color}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d={icon} />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-white font-bold text-sm">{title}</p>
+                  <p className="text-gray-500 text-xs mt-1 leading-relaxed">{desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
 
       </div>
     </div>

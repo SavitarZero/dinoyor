@@ -4,7 +4,9 @@ import { createClient } from '@/lib/supabase/server'
 import { notFound, redirect } from 'next/navigation'
 import { AutoReleaseTimer } from '@/components/orders/AutoReleaseTimer'
 import { ProofUpload } from '@/components/orders/ProofUpload'
+import { ChatWindow } from '@/components/orders/ChatWindow'
 import { buyerConfirmReceived, openDispute } from '@/lib/actions/orders'
+import type { Message } from '@/lib/types'
 
 const STEPS = [
   { key: 'awaiting_payment', label: 'Payment' },
@@ -44,10 +46,20 @@ export default async function OrderDetailPage({
   const isSeller = user.id === order.seller_id
   if (!isBuyer && !isSeller) notFound()
 
-  const { data: proofs } = await supabase
-    .from('order_proofs')
-    .select('screenshot_urls')
-    .eq('order_id', id)
+  const [{ data: proofs }, { data: conversation }] = await Promise.all([
+    supabase.from('order_proofs').select('screenshot_urls').eq('order_id', id),
+    supabase.from('conversations').select('id').eq('order_id', id).single(),
+  ])
+
+  let initialMessages: Message[] = []
+  if (conversation) {
+    const { data: msgs } = await supabase
+      .from('messages')
+      .select('id, body, created_at, sender_id')
+      .eq('conversation_id', conversation.id)
+      .order('created_at', { ascending: true })
+    initialMessages = (msgs ?? []) as Message[]
+  }
 
   const stepIndex   = getStepIndex(order.status)
   const isDisputed  = order.status === 'disputed'
@@ -274,6 +286,15 @@ export default async function OrderDetailPage({
           </svg>
           <p className="text-green-400 font-medium text-sm">Order completed successfully</p>
         </div>
+      )}
+
+      {/* Chat */}
+      {conversation && (
+        <ChatWindow
+          conversationId={conversation.id}
+          initialMessages={initialMessages}
+          currentUserId={user.id}
+        />
       )}
     </div>
   )

@@ -1,5 +1,6 @@
 'use server'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { revalidatePath } from 'next/cache'
 
 export async function submitKYC(formData: FormData) {
@@ -13,7 +14,8 @@ export async function submitKYC(formData: FormData) {
 
   const ext = idCardFile.name.split('.').pop()
   const path = `${user.id}/id-card.${ext}`
-  const { error: uploadError } = await supabase.storage
+  const admin = createAdminClient()
+  const { error: uploadError } = await admin.storage
     .from('kyc-documents')
     .upload(path, idCardFile, { upsert: true })
   if (uploadError) return { error: uploadError.message }
@@ -31,5 +33,6 @@ export async function submitKYC(formData: FormData) {
   await supabase.from('profiles').update({ kyc_status: 'pending' }).eq('id', user.id)
 
   revalidatePath('/profile/kyc')
+  revalidatePath('/profile')
   return { success: 'KYC submitted. We will review within 1-2 business days.' }
 }

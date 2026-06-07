@@ -1,5 +1,6 @@
 'use server'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
@@ -10,7 +11,7 @@ export async function createOrder(listingId: string) {
 
   const { data: listing } = await supabase
     .from('listings')
-    .select('id, seller_id, price_amount, price_currency, status')
+    .select('id, seller_id, price_amount, price_currency, status, title, delivery_time')
     .eq('id', listingId)
     .single()
   if (!listing || listing.status !== 'active') return { error: 'Listing not available' }
@@ -35,6 +36,25 @@ export async function createOrder(listingId: string) {
 
   if (error) return { error: error.message }
   await supabase.from('listings').update({ status: 'sold' }).eq('id', listingId)
+
+  // Create conversation + system message
+  const admin = createAdminClient()
+  const { data: conv } = await admin.from('conversations').insert({
+    order_id: order.id,
+    buyer_id: user.id,
+    seller_id: listing.seller_id,
+  }).select('id').single()
+
+  if (conv) {
+    const deliveryNote = listing.delivery_time
+      ? `\nEstimated delivery: ${listing.delivery_time}`
+      : ''
+    await admin.from('messages').insert({
+      conversation_id: conv.id,
+      sender_id: null,
+      body: `Order created\n\nItem: ${listing.title}\nPrice: $${listing.price_amount} USD\nOrder ID: #${order.id.slice(0, 8).toUpperCase()}${deliveryNote}\n\nUse this chat to coordinate delivery. Payment must be sent to escrow before the seller delivers.`,
+    })
+  }
 
   revalidatePath('/orders')
   redirect(`/orders/${order.id}`)

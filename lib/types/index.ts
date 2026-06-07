@@ -39,6 +39,7 @@ export interface Listing {
   game_id: string
   title: string
   description: string | null
+  delivery_time: string | null
   price_amount: number
   price_currency: Currency
   images: string[]
@@ -47,6 +48,23 @@ export interface Listing {
   sold_count: number
   created_at: string
   updated_at: string
+}
+
+export interface Message {
+  id: string
+  conversation_id: string
+  sender_id: string | null
+  body: string
+  created_at: string
+  profiles?: { username: string | null; avatar_url: string | null } | null
+}
+
+export interface Conversation {
+  id: string
+  order_id: string
+  buyer_id: string
+  seller_id: string
+  created_at: string
 }
 
 export interface ListingWithGame extends Listing {

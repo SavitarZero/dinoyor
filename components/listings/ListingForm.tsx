@@ -63,28 +63,35 @@ export function ListingForm({ games }: { games: Game[] }) {
         />
       </div>
 
-      {/* Price + Currency */}
-      <div className="grid grid-cols-3 gap-3">
-        <div className="col-span-2">
-          <label className={labelCls}>Price</label>
+      {/* Price */}
+      <div>
+        <label className={labelCls}>Price (USD)</label>
+        <div className="relative">
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-sm font-medium">$</span>
           <input
             name="price_amount"
             type="number"
-            step="0.00000001"
-            min="0.000001"
+            step="0.01"
+            min="0.01"
             required
             placeholder="0.00"
-            className={inputCls}
+            className={inputCls + ' pl-8'}
           />
         </div>
-        <div>
-          <label className={labelCls}>Currency</label>
-          <select name="price_currency" required className={inputCls + ' cursor-pointer'}>
-            <option value="USDT">USDT</option>
-            <option value="ETH">ETH</option>
-            <option value="BTC">BTC</option>
-          </select>
-        </div>
+        <input type="hidden" name="price_currency" value="USD" />
+      </div>
+
+      {/* Delivery time */}
+      <div>
+        <label className={labelCls}>Estimated Delivery Time</label>
+        <select name="delivery_time" className={inputCls + ' cursor-pointer'}>
+          <option value="">Not specified</option>
+          <option value="Instant">Instant</option>
+          <option value="< 1 hour">&lt; 1 hour</option>
+          <option value="1–3 hours">1–3 hours</option>
+          <option value="Same day">Same day</option>
+          <option value="1–2 days">1–2 days</option>
+        </select>
       </div>
 
       {/* Description */}

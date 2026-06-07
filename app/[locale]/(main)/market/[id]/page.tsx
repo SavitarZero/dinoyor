@@ -90,9 +90,10 @@ export default async function ListingDetailPage({
           {/* Price + Like */}
           <div className="flex items-center gap-4">
             <p className="text-3xl font-bold text-accent">
-              {listing.price_amount} <span className="text-xl text-accent/70">{listing.price_currency}</span>
+              {listing.price_currency === 'USD' || listing.price_currency === 'USDT' ? '$' : listing.price_currency === 'ETH' ? 'Ξ' : '₿'}{listing.price_amount}
+              {listing.price_currency !== 'USD' && <span className="text-lg text-accent/60 ml-1">{listing.price_currency}</span>}
             </p>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <LikeButton
                 listingId={listing.id}
                 initialLiked={userLiked}
@@ -101,6 +102,14 @@ export default async function ListingDetailPage({
                 isKycApproved={isKycApproved}
               />
               <span className="text-xs text-gray-500">{listing.sold_count ?? 0} sold</span>
+              {listing.delivery_time && (
+                <span className="flex items-center gap-1 text-xs text-gray-500">
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  {listing.delivery_time}
+                </span>
+              )}
             </div>
           </div>
 

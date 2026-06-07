@@ -3,14 +3,15 @@ import Link from 'next/link'
 import type { ListingWithGame } from '@/lib/types/index'
 import { GameBanner } from '@/components/games/GameImage'
 
-const CURRENCY_COLOR: Record<string, string> = {
-  USDT: 'text-green-400',
-  ETH:  'text-blue-400',
-  BTC:  'text-orange-400',
+const CURRENCY_SYMBOL: Record<string, string> = {
+  USD:  '$',
+  USDT: '$',
+  ETH:  'Ξ',
+  BTC:  '₿',
 }
 
 export function ListingCard({ listing, rank }: { listing: ListingWithGame; rank?: number }) {
-  const currency = listing.price_currency
+  const symbol = CURRENCY_SYMBOL[listing.price_currency] ?? listing.price_currency
   return (
     <Link
       href={`/market/${listing.id}`}
@@ -56,10 +57,9 @@ export function ListingCard({ listing, rank }: { listing: ListingWithGame; rank?
         </p>
         <div className="flex items-center justify-between gap-2 mt-auto">
           <div className="flex items-baseline gap-1">
-            <span className={`text-sm font-bold ${CURRENCY_COLOR[currency] ?? 'text-white'}`}>
-              {listing.price_amount}
+            <span className="text-sm font-bold text-white">
+              {symbol}{listing.price_amount}
             </span>
-            <span className="text-[10px] text-gray-600">{currency}</span>
             <span className="text-[10px] text-gray-600">· {listing.sold_count ?? 0} sold</span>
           </div>
           {listing.profiles?.username && (
