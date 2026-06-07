@@ -3,7 +3,12 @@ import { useState, useRef } from 'react'
 import { submitKYC } from '@/lib/actions/kyc'
 import type { KYCStatus } from '@/lib/types/index'
 
-export function KYCForm({ currentStatus }: { currentStatus: KYCStatus }) {
+export function KYCForm({ currentStatus, phone, submittedAt, reviewedAt }: {
+  currentStatus: KYCStatus
+  phone?: string | null
+  submittedAt?: string | null
+  reviewedAt?: string | null
+}) {
   const [message, setMessage] = useState('')
   const [error, setError]     = useState('')
   const [loading, setLoading] = useState(false)
@@ -12,9 +17,31 @@ export function KYCForm({ currentStatus }: { currentStatus: KYCStatus }) {
 
   if (currentStatus === 'approved') {
     return (
-      <div className="rounded-xl border border-green-800/50 bg-green-950/20 p-5">
-        <p className="text-green-400 text-sm font-medium">Identity verified</p>
-        <p className="text-gray-500 text-xs mt-1">You're verified and can list items for sale on Dinoyor.</p>
+      <div className="space-y-4">
+        <div className="rounded-xl border border-green-800/50 bg-green-950/20 p-5">
+          <p className="text-green-400 text-sm font-medium">Identity verified</p>
+          <p className="text-gray-500 text-xs mt-1">You're verified and can list items for sale on Dinoyor.</p>
+        </div>
+        <div className="rounded-xl border border-border bg-surface divide-y divide-border">
+          {phone && (
+            <div className="flex items-center justify-between px-4 py-3">
+              <p className="text-gray-500 text-xs">Phone</p>
+              <p className="text-white text-sm">{phone}</p>
+            </div>
+          )}
+          {submittedAt && (
+            <div className="flex items-center justify-between px-4 py-3">
+              <p className="text-gray-500 text-xs">Submitted</p>
+              <p className="text-white text-sm">{new Date(submittedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+            </div>
+          )}
+          {reviewedAt && (
+            <div className="flex items-center justify-between px-4 py-3">
+              <p className="text-gray-500 text-xs">Verified on</p>
+              <p className="text-white text-sm">{new Date(reviewedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+            </div>
+          )}
+        </div>
       </div>
     )
   }
@@ -26,14 +53,23 @@ export function KYCForm({ currentStatus }: { currentStatus: KYCStatus }) {
           <p className="text-yellow-400 text-sm font-medium">Under review</p>
           <p className="text-gray-500 text-xs mt-1">We're reviewing your submission. Usually takes 1–2 business days.</p>
         </div>
-        <div className="rounded-xl border border-border bg-surface p-4 space-y-2">
-          <p className="text-gray-400 text-xs font-medium">What happens next</p>
-          {['Our team reviews your ID document', 'We verify your phone number', 'You receive confirmation via email'].map((step, i) => (
-            <div key={i} className="flex items-center gap-2 text-xs text-gray-500">
-              <span className="w-4 h-4 rounded-full bg-background border border-border flex items-center justify-center shrink-0 text-gray-600 text-[10px]">{i + 1}</span>
-              {step}
+        <div className="rounded-xl border border-border bg-surface divide-y divide-border">
+          {phone && (
+            <div className="flex items-center justify-between px-4 py-3">
+              <p className="text-gray-500 text-xs">Phone</p>
+              <p className="text-white text-sm">{phone}</p>
             </div>
-          ))}
+          )}
+          {submittedAt && (
+            <div className="flex items-center justify-between px-4 py-3">
+              <p className="text-gray-500 text-xs">Submitted</p>
+              <p className="text-white text-sm">{new Date(submittedAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+            </div>
+          )}
+          <div className="flex items-center justify-between px-4 py-3">
+            <p className="text-gray-500 text-xs">Document</p>
+            <p className="text-gray-400 text-sm">Uploaded</p>
+          </div>
         </div>
       </div>
     )

@@ -15,6 +15,18 @@ export default async function KYCPage() {
     .eq('id', user.id)
     .single()
 
+  let kycData = null
+  if (profile?.kyc_status === 'approved' || profile?.kyc_status === 'pending') {
+    const { data } = await supabase
+      .from('kyc_submissions')
+      .select('phone, created_at, reviewed_at')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single()
+    kycData = data
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="max-w-lg">
@@ -29,7 +41,12 @@ export default async function KYCPage() {
             <p className="text-gray-600 text-xs mt-0.5">Required to sell items on Dinoyor</p>
           </div>
         </div>
-        <KYCForm currentStatus={(profile?.kyc_status ?? 'none') as KYCStatus} />
+        <KYCForm
+          currentStatus={(profile?.kyc_status ?? 'none') as KYCStatus}
+          phone={kycData?.phone ?? null}
+          submittedAt={kycData?.created_at ?? null}
+          reviewedAt={kycData?.reviewed_at ?? null}
+        />
       </div>
     </div>
   )
