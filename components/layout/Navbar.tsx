@@ -63,19 +63,15 @@ export async function Navbar() {
                 Orders
               </Link>
 
-              {/* MUI Divider */}
-              <span className="hidden md:block h-6 w-px bg-white/10 mx-2 shrink-0" />
-
-              {/* Sell — pill accent button */}
-              <Link
-                href="/listings/new"
-                className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-semibold bg-accent/15 text-accent border border-accent/30 hover:bg-accent/25 transition-colors whitespace-nowrap"
-              >
-                <Plus size={15} strokeWidth={2.5} />
+              <Link href="/listings/new" className={`hidden md:inline-flex ${textBtn}`}>
+                <Plus size={18} />
                 Sell
               </Link>
 
-              <div className="ml-2">
+              {/* MUI Divider */}
+              <span className="hidden md:block h-6 w-px bg-white/10 mx-2 shrink-0" />
+
+              <div className="">
                 <ProfileDropdown
                   avatarUrl={avatarUrl}
                   username={profile?.username ?? null}
@@ -112,11 +108,8 @@ export async function Navbar() {
         <div className="flex items-center gap-1.5">
           {user ? (
             <>
-              <Link
-                href="/listings/new"
-                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold bg-accent/15 text-accent border border-accent/30 hover:bg-accent/25 transition-colors"
-              >
-                <Plus size={13} strokeWidth={2.5} />
+              <Link href="/listings/new" className={textBtn}>
+                <Plus size={16} />
                 Sell
               </Link>
               <ProfileDropdown

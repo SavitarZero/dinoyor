@@ -105,7 +105,10 @@ export default async function ListingDetailPage({
           </div>
 
           {/* Seller */}
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-surface border border-border">
+          <Link
+            href={seller?.username ? `/seller/${seller.username}` : '#'}
+            className="flex items-center gap-3 p-3 rounded-xl bg-surface border border-border hover:border-accent/50 transition-colors group"
+          >
             <div className="w-9 h-9 rounded-full bg-background overflow-hidden shrink-0">
               {seller?.avatar_url ? (
                 <img src={seller.avatar_url} alt="" className="w-full h-full object-cover" />
@@ -115,11 +118,13 @@ export default async function ListingDetailPage({
                 </div>
               )}
             </div>
-            <div>
-              <p className="text-white text-sm font-medium">{seller?.username ?? 'Anonymous'}</p>
-              <p className="text-gray-500 text-xs">Seller</p>
+            <div className="flex-1 min-w-0">
+              <p className="text-white text-sm font-medium group-hover:text-accent transition-colors truncate">
+                {seller?.username ?? 'Anonymous'}
+              </p>
+              <p className="text-gray-500 text-xs">View store →</p>
             </div>
-          </div>
+          </Link>
 
           {/* Actions */}
           <div className="space-y-2 mt-auto">
