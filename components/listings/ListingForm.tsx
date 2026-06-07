@@ -51,14 +51,28 @@ export function ListingForm({ games }: { games: Game[] }) {
     g.name.toLowerCase().includes(gameSearch.toLowerCase())
   )
 
+  const [deliveryOpen, setDeliveryOpen] = useState(false)
+  const [selectedDelivery, setSelectedDelivery] = useState('')
+  const deliveryRef = useRef<HTMLDivElement>(null)
+
+  const deliveryOptions = [
+    { value: '', label: 'Not specified' },
+    { value: 'Instant', label: 'Instant' },
+    { value: '< 1 hour', label: '< 1 hour' },
+    { value: '1–3 hours', label: '1–3 hours' },
+    { value: 'Same day', label: 'Same day' },
+    { value: '1–2 days', label: '1–2 days' },
+  ]
+
   useEffect(() => {
-    if (!gameOpen) return
+    if (!gameOpen && !deliveryOpen) return
     function handleClick(e: MouseEvent) {
-      if (gameRef.current && !gameRef.current.contains(e.target as Node)) setGameOpen(false)
+      if (gameOpen && gameRef.current && !gameRef.current.contains(e.target as Node)) setGameOpen(false)
+      if (deliveryOpen && deliveryRef.current && !deliveryRef.current.contains(e.target as Node)) setDeliveryOpen(false)
     }
     document.addEventListener('mousedown', handleClick)
     return () => document.removeEventListener('mousedown', handleClick)
-  }, [gameOpen])
+  }, [gameOpen, deliveryOpen])
 
   async function handleCover(files: FileList | null) {
     setCoverError('')
@@ -318,14 +332,40 @@ export function ListingForm({ games }: { games: Game[] }) {
               </div>
               <div>
                 <label className={labelCls}>Delivery time</label>
-                <select name="delivery_time" className={inputCls}>
-                  <option value="">Not specified</option>
-                  <option value="Instant">Instant</option>
-                  <option value="< 1 hour">&lt; 1 hour</option>
-                  <option value="1–3 hours">1–3 hours</option>
-                  <option value="Same day">Same day</option>
-                  <option value="1–2 days">1–2 days</option>
-                </select>
+                <input type="hidden" name="delivery_time" value={selectedDelivery} />
+                <div className="relative" ref={deliveryRef}>
+                  <button
+                    type="button"
+                    onClick={() => setDeliveryOpen(v => !v)}
+                    className={`${inputCls} flex items-center justify-between text-left`}
+                  >
+                    <span className={selectedDelivery ? 'text-white' : 'text-gray-600'}>
+                      {selectedDelivery || 'Not specified'}
+                    </span>
+                    <svg
+                      className={`w-4 h-4 text-gray-500 shrink-0 transition-transform ${deliveryOpen ? 'rotate-180' : ''}`}
+                      fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {deliveryOpen && (
+                    <div className="absolute z-20 top-full left-0 right-0 mt-1 rounded-xl border border-border bg-surface shadow-xl max-h-52 overflow-y-auto">
+                      {deliveryOptions.map(opt => (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          onClick={() => { setSelectedDelivery(opt.value); setDeliveryOpen(false) }}
+                          className={`w-full text-left px-3 py-2.5 text-sm hover:bg-white/5 transition-colors ${
+                            selectedDelivery === opt.value ? 'text-accent' : 'text-white'
+                          }`}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
