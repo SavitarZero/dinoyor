@@ -41,6 +41,12 @@ export default function LoginPage() {
         <button type="submit" className="w-full py-2 rounded-lg bg-accent text-black font-semibold hover:opacity-90">
           {t('signIn')}
         </button>
+        <div className="flex items-center justify-end gap-2">
+          <div className="flex-1 h-px bg-border" />
+          <Link href="/forgot-password" className="text-gray-500 text-xs hover:text-accent transition-colors shrink-0">
+            Forgot password?
+          </Link>
+        </div>
       </form>
       <div className="my-4 text-center text-gray-500 text-sm">{t('orContinueWith')}</div>
       <GoogleButton label={t('continueWithGoogle')} />

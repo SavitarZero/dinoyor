@@ -78,7 +78,6 @@ export interface Order {
   buyer_id: string
   seller_id: string
   amount: number
-  currency: Currency
   platform_fee_pct: number
   status: OrderStatus
   auto_release_at: string | null

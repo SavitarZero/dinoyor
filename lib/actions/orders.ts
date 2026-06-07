@@ -102,7 +102,7 @@ export async function buyerConfirmReceived(orderId: string) {
 
   const { data: order } = await supabase
     .from('orders')
-    .select('id, buyer_id, seller_id, amount, currency, platform_fee_pct, status')
+    .select('id, buyer_id, seller_id, amount, platform_fee_pct, status')
     .eq('id', orderId)
     .single()
   if (!order || order.buyer_id !== user.id) return { error: 'Unauthorized' }
@@ -115,7 +115,7 @@ export async function buyerConfirmReceived(orderId: string) {
 
   await supabase.rpc('increment_seller_balance', {
     p_seller_id: order.seller_id,
-    p_currency: 'USD',
+    p_currency: 'USDT',
     p_amount: sellerAmount,
   })
 

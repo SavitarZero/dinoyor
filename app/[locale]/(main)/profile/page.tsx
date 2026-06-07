@@ -18,7 +18,7 @@ export default async function DashboardPage() {
     { data: recentOrders },
     { data: balances },
   ] = await Promise.all([
-    supabase.from('profiles').select('username, avatar_url, kyc_status, role').eq('id', user.id).single(),
+    supabase.from('profiles').select('username, avatar_url, kyc_status, role, pending_email').eq('id', user.id).single(),
     supabase.from('listings').select('*', { count: 'exact', head: true }).eq('seller_id', user.id).eq('status', 'active'),
     supabase.from('orders').select('*', { count: 'exact', head: true })
       .or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`)
@@ -29,7 +29,7 @@ export default async function DashboardPage() {
       .order('created_at', { ascending: false })
       .limit(3),
     supabase.from('orders')
-      .select('id, amount, currency, status, created_at, listings(title, images), buyer:buyer_id(username), seller:seller_id(username)')
+      .select('id, amount, status, created_at, listings(title, images), buyer:buyer_id(username), seller:seller_id(username)')
       .or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`)
       .order('created_at', { ascending: false })
       .limit(3),
@@ -38,6 +38,10 @@ export default async function DashboardPage() {
 
   const displayAvatar = profile?.avatar_url || avatarUrl
   const displayName = profile?.username || user.email?.split('@')[0] || 'User'
+
+  const isOAuthUser = user.app_metadata?.provider && user.app_metadata.provider !== 'email'
+  const hasRealEmail = user.email && !user.email.endsWith('@dinoyor.internal')
+  const pendingEmail = profile?.pending_email ?? null
 
   const kycColor = profile?.kyc_status === 'approved'
     ? 'text-green-400' : profile?.kyc_status === 'pending'
@@ -89,6 +93,36 @@ export default async function DashboardPage() {
           </div>
           <Link href="/profile/kyc" className="px-3 py-1.5 rounded-lg bg-yellow-600 hover:bg-yellow-500 text-white text-sm font-medium transition-colors">
             Verify Now
+          </Link>
+        </div>
+      )}
+
+      {/* Email verification card — only for username/password users */}
+      {!isOAuthUser && (
+        <div className="rounded-xl border border-border bg-surface p-4 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3 min-w-0">
+            <svg className="w-5 h-5 text-gray-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+            </svg>
+            <div className="min-w-0">
+              <p className="text-white text-sm font-medium">Recovery Email</p>
+              {hasRealEmail ? (
+                <p className="text-green-400 text-xs flex items-center gap-1 mt-0.5">
+                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                  {user.email} · Verified
+                </p>
+              ) : pendingEmail ? (
+                <p className="text-yellow-400 text-xs mt-0.5">Waiting for verification · {pendingEmail}</p>
+              ) : (
+                <p className="text-gray-500 text-xs mt-0.5">No email — required for password reset</p>
+              )}
+            </div>
+          </div>
+          <Link
+            href="/profile/email"
+            className="shrink-0 px-3 py-1.5 rounded-lg border border-border text-gray-400 text-xs font-medium hover:text-white hover:border-accent transition-colors"
+          >
+            {hasRealEmail ? 'Change' : 'Add email'}
           </Link>
         </div>
       )}
@@ -214,7 +248,7 @@ export default async function DashboardPage() {
                     <p className={`text-xs capitalize ${orderStatusColor[o.status] ?? 'text-gray-400'}`}>{o.status.replace(/_/g, ' ')}</p>
                   </div>
                   <div className="text-right shrink-0">
-                    <p className="text-white text-sm font-semibold">{o.amount} {o.currency}</p>
+                    <p className="text-white text-sm font-semibold">{o.amount} USD</p>
                   </div>
                 </Link>
               ))}

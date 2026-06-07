@@ -64,3 +64,48 @@ export async function signOut() {
   await supabase.auth.signOut()
   redirect('/login')
 }
+
+export async function updateEmail(email: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Not authenticated' }
+
+  // Block Google/OAuth users — their email is managed by the provider
+  const provider = user.app_metadata?.provider
+  if (provider && provider !== 'email') {
+    return { error: 'Email is managed by your login provider and cannot be changed here' }
+  }
+
+  const trimmed = email.trim().toLowerCase()
+
+  // Let Supabase handle uniqueness — it rejects if another verified account has this email
+  const { error } = await supabase.auth.updateUser({ email: trimmed })
+  if (error) {
+    if (error.message.toLowerCase().includes('already')) {
+      return { error: 'This email is already used by another account' }
+    }
+    return { error: error.message }
+  }
+
+  // Store pending email so we can show "awaiting verification" state
+  await supabase.from('profiles').update({ pending_email: trimmed }).eq('id', user.id)
+
+  return { success: true }
+}
+
+export async function requestPasswordReset(email: string) {
+  const supabase = await createClient()
+  const { error } = await supabase.auth.resetPasswordForEmail(email.trim().toLowerCase(), {
+    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?next=/reset-password`,
+  })
+  // Always return success to avoid email enumeration
+  if (error) console.error('[resetPassword]', error.message)
+  return { success: true }
+}
+
+export async function resetPassword(password: string) {
+  const supabase = await createClient()
+  const { error } = await supabase.auth.updateUser({ password })
+  if (error) return { error: error.message }
+  return { success: true }
+}

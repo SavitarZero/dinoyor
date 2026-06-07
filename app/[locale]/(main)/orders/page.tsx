@@ -35,7 +35,7 @@ export default async function OrdersPage({ searchParams }: Props) {
 
   let q = supabase
     .from('orders')
-    .select('id, amount, currency, status, created_at, buyer_id, seller_id, listings(title, images)')
+    .select('id, amount, status, created_at, buyer_id, seller_id, listings(title, images)')
     .or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`)
     .order('created_at', { ascending: false })
 

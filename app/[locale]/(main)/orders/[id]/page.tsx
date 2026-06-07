@@ -46,10 +46,14 @@ export default async function OrderDetailPage({
   const isSeller = user.id === order.seller_id
   if (!isBuyer && !isSeller) notFound()
 
-  const [{ data: proofs }, { data: conversation }] = await Promise.all([
+  const [{ data: proofs }, { data: conversation }, { data: escrowSettings }] = await Promise.all([
     supabase.from('order_proofs').select('screenshot_urls').eq('order_id', id),
     supabase.from('conversations').select('id').eq('order_id', id).single(),
+    supabase.from('platform_settings').select('key, value').in('key', ['escrow_wallet_address', 'escrow_wallet_network']),
   ])
+
+  const escrowAddress = escrowSettings?.find(s => s.key === 'escrow_wallet_address')?.value ?? ''
+  const escrowNetwork = escrowSettings?.find(s => s.key === 'escrow_wallet_network')?.value ?? 'TRC20'
 
   let initialMessages: Message[] = []
   if (conversation) {
@@ -199,10 +203,16 @@ export default async function OrderDetailPage({
             <span className="text-white font-bold">${order.amount} USD</span>
             {' '}to the platform escrow wallet. Payment must be confirmed before delivery begins.
           </p>
-          <div className="rounded-lg bg-background border border-border p-3">
-            <p className="text-gray-600 text-xs mb-1">Escrow wallet address</p>
-            <p className="text-gray-400 text-sm font-mono">Contact support to get the address →</p>
-          </div>
+          {escrowAddress ? (
+            <div className="rounded-lg bg-background border border-border p-3 space-y-1">
+              <p className="text-gray-600 text-xs">{escrowNetwork} — USDT only</p>
+              <p className="text-white text-sm font-mono break-all select-all">{escrowAddress}</p>
+            </div>
+          ) : (
+            <div className="rounded-lg bg-background border border-border p-3">
+              <p className="text-gray-600 text-xs">Escrow wallet address not configured yet. Contact support.</p>
+            </div>
+          )}
         </div>
       )}
 

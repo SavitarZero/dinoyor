@@ -104,7 +104,7 @@ export function ChatWindow({ conversationId, initialMessages, currentUserId }: P
                   : 'bg-background border border-border text-white rounded-bl-sm'
               }`}>
                 <p className="text-sm leading-snug">{msg.body}</p>
-                <p className={`text-[10px] mt-1 ${isMe ? 'text-black/50' : 'text-gray-600'}`}>
+                <p suppressHydrationWarning className={`text-[10px] mt-1 ${isMe ? 'text-black/50' : 'text-gray-600'}`}>
                   {new Date(msg.created_at).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
                 </p>
               </div>

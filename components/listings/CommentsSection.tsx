@@ -97,7 +97,7 @@ export function CommentsSection({ listingId, initialComments, isAuthenticated, h
                 <div className="flex items-baseline gap-2 mb-1">
                   <span className="text-white text-xs font-semibold">{c.profiles?.username ?? 'Buyer'}</span>
                   <span className="text-gray-600 text-[10px]">
-                    {new Date(c.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+                    {new Date(c.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' })}
                   </span>
                 </div>
                 <p className="text-gray-400 text-sm leading-relaxed">{c.body}</p>
