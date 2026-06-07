@@ -6,46 +6,59 @@ import { redirect } from 'next/navigation'
 export async function signInWithUsername(username: string, password: string) {
   const supabase = await createClient()
 
-  // Look up the generated email from profiles
   const { data: profile } = await supabase
     .from('profiles')
     .select('email')
     .eq('username', username)
     .maybeSingle()
 
-  if (!profile?.email) return { error: 'Username or password is incorrect' }
+  const authEmail = profile?.email ?? `${username}@dinoyor.internal`
 
-  const { error } = await supabase.auth.signInWithPassword({ email: profile.email, password })
+  const { error } = await supabase.auth.signInWithPassword({ email: authEmail, password })
   if (error) return { error: 'Username or password is incorrect' }
-  redirect('/profile')
+  redirect('/')
 }
 
-export async function signUpWithUsername(username: string, password: string) {
+export async function signUpWithUsername(username: string, password: string, email?: string) {
   const supabase = await createClient()
 
   if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
     return { error: 'Username must be 3–20 characters, letters, numbers or underscore only' }
   }
 
-  // Check username taken
   const { data: existing } = await supabase
-    .from('profiles')
-    .select('id')
-    .eq('username', username)
-    .maybeSingle()
-
+    .from('profiles').select('id').eq('username', username).maybeSingle()
   if (existing) return { error: 'Username is already taken' }
 
-  // Use admin client to create user with email pre-confirmed (no email sent)
   const admin = createAdminClient()
-  const { error } = await admin.auth.admin.createUser({
-    email: `${username}@dinoyor.internal`,
-    password,
-    email_confirm: true,
-    user_metadata: { user_name: username },
-  })
 
-  if (error) return { error: error.message }
+  if (email) {
+    const normalizedEmail = email.trim().toLowerCase()
+    const { data, error } = await supabase.auth.signUp({
+      email: normalizedEmail,
+      password,
+      options: {
+        data: { user_name: username },
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
+      },
+    })
+    if (error) {
+      if (error.message.toLowerCase().includes('already')) return { error: 'Email is already registered' }
+      return { error: error.message }
+    }
+    if (data.user) {
+      await admin.from('profiles').update({ username, email: normalizedEmail }).eq('id', data.user.id)
+    }
+  } else {
+    const { error } = await admin.auth.admin.createUser({
+      email: `${username}@dinoyor.internal`,
+      password,
+      email_confirm: true,
+      user_metadata: { user_name: username },
+    })
+    if (error) return { error: error.message }
+  }
+
   return { success: true }
 }
 
