@@ -19,6 +19,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     <div className="flex min-h-screen">
       <nav className="w-52 border-r border-border bg-surface p-6 space-y-1">
         <p className="text-accent font-bold text-lg mb-6">Admin</p>
+        <Link href="/admin/orders" className="block text-gray-400 hover:text-white py-2 px-3 rounded-lg hover:bg-background text-sm">
+          Orders
+        </Link>
         <Link href="/admin/kyc" className="block text-gray-400 hover:text-white py-2 px-3 rounded-lg hover:bg-background text-sm">
           KYC Queue
         </Link>

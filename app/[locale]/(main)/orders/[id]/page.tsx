@@ -5,8 +5,11 @@ import { notFound, redirect } from 'next/navigation'
 import { AutoReleaseTimer } from '@/components/orders/AutoReleaseTimer'
 import { ProofUpload } from '@/components/orders/ProofUpload'
 import { ChatWindow } from '@/components/orders/ChatWindow'
+import { PaymentSection } from '@/components/orders/PaymentSection'
 import { buyerConfirmReceived, openDispute } from '@/lib/actions/orders'
 import type { Message } from '@/lib/types'
+
+const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === 'true'
 
 const STEPS = [
   { key: 'awaiting_payment', label: 'Payment' },
@@ -52,8 +55,10 @@ export default async function OrderDetailPage({
     supabase.from('platform_settings').select('key, value').in('key', ['escrow_wallet_address', 'escrow_wallet_network']),
   ])
 
-  const escrowAddress = escrowSettings?.find(s => s.key === 'escrow_wallet_address')?.value ?? ''
-  const escrowNetwork = escrowSettings?.find(s => s.key === 'escrow_wallet_network')?.value ?? 'TRC20'
+  const addrKey    = IS_TESTNET ? 'escrow_wallet_address_testnet' : 'escrow_wallet_address'
+  const networkKey = IS_TESTNET ? 'escrow_wallet_network_testnet' : 'escrow_wallet_network'
+  const escrowAddress = escrowSettings?.find(s => s.key === addrKey)?.value ?? ''
+  const escrowNetwork = escrowSettings?.find(s => s.key === networkKey)?.value ?? 'TRC20'
 
   let initialMessages: Message[] = []
   if (conversation) {
@@ -191,27 +196,30 @@ export default async function OrderDetailPage({
 
       {/* Payment instructions (buyer, awaiting) */}
       {order.status === 'awaiting_payment' && isBuyer && (
-        <div className="rounded-xl border border-yellow-700/50 bg-yellow-900/10 p-5 space-y-3">
-          <div className="flex items-center gap-2">
-            <svg className="w-5 h-5 text-yellow-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <p className="text-yellow-400 font-semibold text-sm">Payment Pending</p>
+        <PaymentSection
+          orderId={id}
+          amount={order.amount}
+          escrowAddress={escrowAddress}
+          escrowNetwork={escrowNetwork}
+          isTestnet={IS_TESTNET}
+          alreadyNotified={!!(order as any).payment_notified_at}
+        />
+      )}
+
+      {/* Payment pending (seller view) */}
+      {order.status === 'awaiting_payment' && isSeller && (
+        <div className="rounded-xl border border-border bg-surface p-4 flex items-center gap-3">
+          <svg className="w-5 h-5 text-gray-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <div>
+            <p className="text-white text-sm font-medium">Waiting for buyer payment</p>
+            <p className="text-gray-500 text-xs mt-0.5">You will be notified once payment is confirmed.</p>
           </div>
-          <p className="text-gray-400 text-sm">
-            Send exactly{' '}
-            <span className="text-white font-bold">${order.amount} USD</span>
-            {' '}to the platform escrow wallet. Payment must be confirmed before delivery begins.
-          </p>
-          {escrowAddress ? (
-            <div className="rounded-lg bg-background border border-border p-3 space-y-1">
-              <p className="text-gray-600 text-xs">{escrowNetwork} — USDT only</p>
-              <p className="text-white text-sm font-mono break-all select-all">{escrowAddress}</p>
-            </div>
-          ) : (
-            <div className="rounded-lg bg-background border border-border p-3">
-              <p className="text-gray-600 text-xs">Escrow wallet address not configured yet. Contact support.</p>
-            </div>
+          {(order as any).payment_notified_at && (
+            <span className="ml-auto shrink-0 px-2 py-1 rounded-full bg-yellow-900/30 border border-yellow-700/40 text-yellow-400 text-xs font-medium">
+              Buyer notified
+            </span>
           )}
         </div>
       )}
