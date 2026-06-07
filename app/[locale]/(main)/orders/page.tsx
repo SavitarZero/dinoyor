@@ -25,14 +25,14 @@ const STATUS_STYLE: Record<OrderStatus, string> = {
 const ACTIVE_STATUSES = ['awaiting_payment', 'paid_escrow', 'delivered']
 const PER_PAGE = 5
 
-interface Props { searchParams: Promise<{ tab?: string; page?: string }> }
+interface Props { searchParams: Promise<{ tab?: string; page?: string; role?: string }> }
 
 export default async function OrdersPage({ searchParams }: Props) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const { tab = 'all', page = '1' } = await searchParams
+  const { tab = 'all', page = '1', role = 'all' } = await searchParams
   const currentPage = Math.max(1, parseInt(page) || 1)
   const from = (currentPage - 1) * PER_PAGE
   const to = from + PER_PAGE - 1
@@ -40,9 +40,12 @@ export default async function OrdersPage({ searchParams }: Props) {
   let q = supabase
     .from('orders')
     .select('id, amount, status, created_at, buyer_id, seller_id, listings(title, images)', { count: 'exact' })
-    .or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`)
     .order('created_at', { ascending: false })
     .range(from, to)
+
+  if (role === 'buying') q = q.eq('buyer_id', user.id)
+  else if (role === 'selling') q = q.eq('seller_id', user.id)
+  else q = q.or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`)
 
   if (tab === 'active')    q = q.in('status', ACTIVE_STATUSES)
   if (tab === 'completed') q = q.eq('status', 'completed')
@@ -54,6 +57,7 @@ export default async function OrdersPage({ searchParams }: Props) {
 
   function buildUrl(p: number) {
     const params = new URLSearchParams()
+    if (role !== 'all') params.set('role', role)
     if (tab !== 'all') params.set('tab', tab)
     if (p > 1) params.set('page', String(p))
     const qs = params.toString()
@@ -67,7 +71,7 @@ export default async function OrdersPage({ searchParams }: Props) {
         <span className="text-gray-600 text-sm">{count ?? 0} orders</span>
       </div>
 
-      <OrderTabs active={tab} />
+      <OrderTabs activeRole={role} activeStatus={tab} />
 
       {!orders?.length ? (
         <div className="text-center py-20">
