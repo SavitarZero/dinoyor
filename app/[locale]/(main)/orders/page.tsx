@@ -49,7 +49,8 @@ export default async function OrdersPage({ searchParams }: Props) {
   if (tab === 'disputed')  q = q.eq('status', 'disputed')
 
   const { data: orders, count } = await q
-  const totalPages = Math.ceil((count ?? 0) / PER_PAGE)
+  const total = count ?? 0
+  const totalPages = Math.ceil(total / PER_PAGE)
 
   function buildUrl(p: number) {
     const params = new URLSearchParams()
@@ -141,37 +142,44 @@ export default async function OrdersPage({ searchParams }: Props) {
         </div>
       )}
 
-      {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 mt-6">
-          {currentPage > 1 && (
+      {total > 0 && (
+        <div className="flex items-center justify-between mt-6">
+          <p className="text-gray-600 text-xs">
+            {from + 1}–{Math.min(from + PER_PAGE, total)} of {total}
+          </p>
+          <div className="flex items-center gap-1.5">
             <Link
               href={buildUrl(currentPage - 1)}
-              className="px-3 py-2 rounded-xl border border-border text-gray-400 text-sm hover:text-white hover:border-accent transition-colors"
-            >
-              ← Prev
-            </Link>
-          )}
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-            <Link
-              key={p}
-              href={buildUrl(p)}
-              className={`w-9 h-9 rounded-xl flex items-center justify-center text-sm font-medium transition-colors ${
-                p === currentPage
-                  ? 'bg-accent text-black'
-                  : 'border border-border text-gray-400 hover:text-white hover:border-accent'
+              className={`px-3 py-2 rounded-xl border border-border text-sm transition-colors ${
+                currentPage <= 1 ? 'text-gray-700 pointer-events-none' : 'text-gray-400 hover:text-white hover:border-accent'
               }`}
+              aria-disabled={currentPage <= 1}
             >
-              {p}
+              ←
             </Link>
-          ))}
-          {currentPage < totalPages && (
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+              <Link
+                key={p}
+                href={buildUrl(p)}
+                className={`w-9 h-9 rounded-xl flex items-center justify-center text-sm font-medium transition-colors ${
+                  p === currentPage
+                    ? 'bg-accent text-black'
+                    : 'border border-border text-gray-400 hover:text-white hover:border-accent'
+                }`}
+              >
+                {p}
+              </Link>
+            ))}
             <Link
               href={buildUrl(currentPage + 1)}
-              className="px-3 py-2 rounded-xl border border-border text-gray-400 text-sm hover:text-white hover:border-accent transition-colors"
+              className={`px-3 py-2 rounded-xl border border-border text-sm transition-colors ${
+                currentPage >= totalPages ? 'text-gray-700 pointer-events-none' : 'text-gray-400 hover:text-white hover:border-accent'
+              }`}
+              aria-disabled={currentPage >= totalPages}
             >
-              Next →
+              →
             </Link>
-          )}
+          </div>
         </div>
       )}
     </div>
