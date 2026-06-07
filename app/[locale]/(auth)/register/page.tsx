@@ -3,6 +3,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { signUpWithUsername } from '@/lib/actions/auth'
+import { GoogleButton } from '@/components/auth/GoogleButton'
 import { useTranslations } from 'next-intl'
 
 export default function RegisterPage() {
@@ -65,15 +66,7 @@ export default function RegisterPage() {
         </button>
       </form>
       <div className="my-4 text-center text-gray-500 text-sm">{t('orContinueWith')}</div>
-      <button
-        onClick={async () => {
-          const { signInWithOAuth } = await import('@/lib/actions/auth')
-          signInWithOAuth('google')
-        }}
-        className="w-full py-2 rounded-lg border border-border text-white hover:border-accent text-sm"
-      >
-        {t('continueWithGoogle')}
-      </button>
+      <GoogleButton label={t('continueWithGoogle')} />
       <p className="mt-4 text-center text-gray-500 text-sm">
         {t('haveAccount')}{' '}
         <Link href="/login" className="text-accent hover:underline">{t('signIn')}</Link>

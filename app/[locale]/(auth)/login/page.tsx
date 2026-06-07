@@ -1,7 +1,8 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
-import { signInWithUsername, signInWithOAuth } from '@/lib/actions/auth'
+import { signInWithUsername } from '@/lib/actions/auth'
+import { GoogleButton } from '@/components/auth/GoogleButton'
 import { useTranslations } from 'next-intl'
 
 export default function LoginPage() {
@@ -42,12 +43,7 @@ export default function LoginPage() {
         </button>
       </form>
       <div className="my-4 text-center text-gray-500 text-sm">{t('orContinueWith')}</div>
-      <button
-        onClick={() => signInWithOAuth('google')}
-        className="w-full py-2 rounded-lg border border-border text-white hover:border-accent text-sm"
-      >
-        {t('continueWithGoogle')}
-      </button>
+      <GoogleButton label={t('continueWithGoogle')} />
       <p className="mt-4 text-center text-gray-500 text-sm">
         {t('noAccount')}{' '}
         <Link href="/register" className="text-accent hover:underline">{t('register')}</Link>
