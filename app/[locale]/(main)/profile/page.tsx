@@ -2,6 +2,14 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { ProfileOrderTabs } from '@/components/profile/ProfileOrderTabs'
+import { EmailForm } from '@/components/profile/EmailForm'
+
+function orderStatusColor(status: string) {
+  if (status === 'completed') return 'text-green-400'
+  if (status === 'cancelled') return 'text-gray-500'
+  if (status === 'disputed') return 'text-red-400'
+  return 'text-gray-400'
+}
 
 export default async function ProfilePage() {
   const supabase = await createClient()
@@ -13,10 +21,14 @@ export default async function ProfilePage() {
     { count: activeListings },
     { data: balances },
   ] = await Promise.all([
-    supabase.from('profiles').select('username, avatar_url, kyc_status, role, wallet_address, wallet_network, created_at').eq('id', user.id).single(),
+    supabase.from('profiles').select('username, avatar_url, kyc_status, role, wallet_address, wallet_network, created_at, pending_email').eq('id', user.id).single(),
     supabase.from('listings').select('*', { count: 'exact', head: true }).eq('seller_id', user.id).eq('status', 'active'),
     supabase.from('seller_balances').select('pending_amount, currency').eq('seller_id', user.id),
   ])
+
+  const isOAuthUser = user.app_metadata?.provider && user.app_metadata.provider !== 'email'
+  const hasRealEmail = !!user.email && !user.email.endsWith('@dinoyor.internal')
+  const pendingEmail = (profile as any)?.pending_email ?? null
 
   const role = profile?.role ?? 'user'
   const isSeller = role === 'seller' || role === 'admin'
@@ -137,6 +149,42 @@ export default async function ProfilePage() {
         </div>
       )}
 
+      {/* Recovery email — username/password accounts only */}
+      {!isOAuthUser && (
+        <div className="rounded-xl border border-border bg-surface p-5 space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-white text-sm font-semibold">Recovery Email</p>
+              <p className="text-gray-500 text-xs mt-0.5">Required for password reset</p>
+            </div>
+            {hasRealEmail && (
+              <span className="px-2 py-0.5 rounded-full bg-green-900/30 border border-green-700/40 text-green-400 text-xs font-medium">Verified</span>
+            )}
+            {!hasRealEmail && pendingEmail && (
+              <span className="px-2 py-0.5 rounded-full bg-yellow-900/30 border border-yellow-700/40 text-yellow-400 text-xs font-medium">Pending</span>
+            )}
+          </div>
+
+          {hasRealEmail && (
+            <div className="flex items-center gap-2 px-3 py-2.5 rounded-xl bg-background border border-border">
+              <svg className="w-4 h-4 text-green-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+              </svg>
+              <span className="text-white text-sm">{user.email}</span>
+            </div>
+          )}
+          {!hasRealEmail && pendingEmail && (
+            <div className="px-3 py-2.5 rounded-xl bg-yellow-900/10 border border-yellow-800/40 space-y-1">
+              <p className="text-yellow-400 text-xs font-medium">Awaiting verification</p>
+              <p className="text-gray-400 text-xs">{pendingEmail} — check your inbox and click the link</p>
+            </div>
+          )}
+          {!hasRealEmail && (
+            <EmailForm currentEmail={null} />
+          )}
+        </div>
+      )}
+
       <div>
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-white font-semibold">Orders</h2>
@@ -175,11 +223,7 @@ export default async function ProfilePage() {
                 </div>
                 <div className="text-right shrink-0">
                   <p className="text-white text-sm font-medium">${Number(o.amount).toFixed(2)}</p>
-                  <p className={`text-xs capitalize ${
-                    o.status === 'completed' ? 'text-green-400' :
-                    o.status === 'cancelled' ? 'text-gray-500' :
-                    o.status === 'disputed' ? 'text-red-400' : 'text-gray-400'
-                  }`}>{o.status.replace(/_/g, ' ')}</p>
+                  <p className={`text-xs capitalize ${orderStatusColor(o.status)}`}>{o.status.replaceAll('_', ' ')}</p>
                 </div>
               </Link>
             ))}
