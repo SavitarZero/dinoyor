@@ -6,7 +6,7 @@ import type { OrderStatus } from '@/lib/types/index'
 
 const STATUS_LABEL: Record<OrderStatus, string> = {
   awaiting_payment: 'Awaiting Payment',
-  paid_escrow:      'In Escrow',
+  paid_escrow:      'Awaiting Delivery',
   delivered:        'Delivered',
   completed:        'Completed',
   disputed:         'Disputed',

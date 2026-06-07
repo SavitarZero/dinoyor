@@ -13,7 +13,7 @@ const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === 'true'
 
 const STEPS = [
   { key: 'awaiting_payment', label: 'Payment' },
-  { key: 'paid_escrow',      label: 'In Escrow' },
+  { key: 'paid_escrow',      label: 'Awaiting Delivery' },
   { key: 'delivered',        label: 'Delivered' },
   { key: 'completed',        label: 'Complete' },
 ]
