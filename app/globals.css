@@ -46,3 +46,13 @@ select:-webkit-autofill:focus {
   caret-color: var(--foreground);
   transition: background-color 9999s ease-in-out 0s;
 }
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
