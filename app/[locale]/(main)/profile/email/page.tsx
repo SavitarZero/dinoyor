@@ -3,13 +3,40 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { EmailForm } from '@/components/profile/EmailForm'
 
+function CurrentEmailStatus({ email, pendingEmail, hasRealEmail }: Readonly<{ email: string | undefined; pendingEmail: string | null; hasRealEmail: boolean }>) {
+  if (hasRealEmail) return (
+    <div className="flex items-center gap-3">
+      <div className="w-8 h-8 rounded-lg bg-green-500/10 border border-green-500/20 flex items-center justify-center shrink-0">
+        <svg className="w-4 h-4 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
+      <div>
+        <p className="text-white text-sm">{email}</p>
+        <p className="text-green-400 text-xs">Verified</p>
+      </div>
+    </div>
+  )
+  if (pendingEmail) return (
+    <div className="flex items-center gap-3">
+      <div className="w-8 h-8 rounded-lg bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center shrink-0">
+        <svg className="w-4 h-4 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      <div>
+        <p className="text-white text-sm">{pendingEmail}</p>
+        <p className="text-yellow-400 text-xs">Pending — check your inbox</p>
+      </div>
+    </div>
+  )
+  return <p className="text-gray-500 text-sm">No email set</p>
+}
+
 export default async function ProfileEmailPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
-
-  const provider = user.app_metadata?.provider
-  if (provider && provider !== 'email') redirect('/profile')
 
   const { data: profile } = await supabase
     .from('profiles')
@@ -17,8 +44,11 @@ export default async function ProfileEmailPage() {
     .eq('id', user.id)
     .single()
 
-  const hasRealEmail = user.email && !user.email.endsWith('@dinoyor.internal')
+  const provider = user.app_metadata?.provider as string | undefined
+  const isOAuthUser = !!(provider && provider !== 'email')
+  const hasRealEmail = !!(user.email && !user.email.endsWith('@dinoyor.internal'))
   const pendingEmail = profile?.pending_email ?? null
+
   const displayAvatar = profile?.avatar_url || (user.user_metadata?.avatar_url as string | undefined) || null
   const displayName = profile?.username || user.email?.split('@')[0] || 'User'
   const isSeller = profile?.role === 'seller' || profile?.role === 'admin'
@@ -88,53 +118,51 @@ export default async function ProfileEmailPage() {
         <main className="flex-1 min-w-0 space-y-6">
 
           <div>
-            <h2 className="text-white text-base font-bold">Recovery Email</h2>
-            <p className="text-gray-500 text-xs mt-0.5">Used for password reset. Must be unique to your account.</p>
+            <h2 className="text-white text-base font-bold">Email</h2>
+            <p className="text-gray-500 text-xs mt-0.5">
+              {isOAuthUser ? 'Your email is managed by your login provider.' : 'Used for password reset. Must be unique to your account.'}
+            </p>
           </div>
 
-          <div className="rounded-2xl border border-border bg-surface overflow-hidden">
-            <div className="px-4 py-3 border-b border-border">
-              <p className="text-gray-500 text-xs font-medium uppercase tracking-wide">Current</p>
-            </div>
-            <div className="px-4 py-4">
-              {hasRealEmail ? (
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-green-500/10 border border-green-500/20 flex items-center justify-center shrink-0">
-                    <svg className="w-4 h-4 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-white text-sm">{user.email}</p>
-                    <p className="text-green-400 text-xs">Verified</p>
-                  </div>
+          {isOAuthUser ? (
+            <div className="rounded-2xl border border-border bg-surface overflow-hidden">
+              <div className="px-4 py-3 border-b border-border flex items-center justify-between">
+                <p className="text-gray-500 text-xs font-medium uppercase tracking-wide">Connected account</p>
+                <span className="px-2 py-0.5 rounded-full bg-blue-900/30 border border-blue-700/40 text-blue-400 text-xs font-medium capitalize">{provider}</span>
+              </div>
+              <div className="px-4 py-4 flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-green-500/10 border border-green-500/20 flex items-center justify-center shrink-0">
+                  <svg className="w-4 h-4 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
                 </div>
-              ) : pendingEmail ? (
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center shrink-0">
-                    <svg className="w-4 h-4 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-white text-sm">{pendingEmail}</p>
-                    <p className="text-yellow-400 text-xs">Pending — check your inbox</p>
-                  </div>
+                <div>
+                  <p className="text-white text-sm">{user.email}</p>
+                  <p className="text-gray-500 text-xs">Managed by {provider} — cannot be changed here</p>
                 </div>
-              ) : (
-                <p className="text-gray-500 text-sm">No email set</p>
-              )}
+              </div>
             </div>
-          </div>
+          ) : (
+            <>
+              <div className="rounded-2xl border border-border bg-surface overflow-hidden">
+                <div className="px-4 py-3 border-b border-border">
+                  <p className="text-gray-500 text-xs font-medium uppercase tracking-wide">Current</p>
+                </div>
+                <div className="px-4 py-4">
+                  <CurrentEmailStatus email={user.email} pendingEmail={pendingEmail} hasRealEmail={hasRealEmail} />
+                </div>
+              </div>
 
-          <div className="rounded-2xl border border-border bg-surface overflow-hidden">
-            <div className="px-4 py-3 border-b border-border">
-              <p className="text-white text-sm font-semibold">{hasRealEmail ? 'Change email' : 'Add email'}</p>
-            </div>
-            <div className="px-4 py-4">
-              <EmailForm currentEmail={hasRealEmail ? user.email! : null} />
-            </div>
-          </div>
+              <div className="rounded-2xl border border-border bg-surface overflow-hidden">
+                <div className="px-4 py-3 border-b border-border">
+                  <p className="text-white text-sm font-semibold">{hasRealEmail ? 'Change email' : 'Add email'}</p>
+                </div>
+                <div className="px-4 py-4">
+                  <EmailForm currentEmail={hasRealEmail ? user.email! : null} />
+                </div>
+              </div>
+            </>
+          )}
 
         </main>
       </div>

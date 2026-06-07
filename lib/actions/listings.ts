@@ -22,6 +22,7 @@ export async function createListing(formData: FormData) {
   const priceCurrency = formData.get('price_currency') as string
   const description = formData.get('description') as string
   const deliveryTime = (formData.get('delivery_time') as string) || null
+  const itemTypeId = (formData.get('item_type_id') as string) || null
   const coverFile = formData.get('cover') as File | null
   const additionalFiles = formData.getAll('additional') as File[]
 
@@ -66,6 +67,7 @@ export async function createListing(formData: FormData) {
   const { data, error } = await supabase.from('listings').insert({
     seller_id: user.id,
     game_id: gameId,
+    item_type_id: itemTypeId,
     title,
     description: description || null,
     delivery_time: deliveryTime,

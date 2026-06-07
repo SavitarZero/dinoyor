@@ -4,6 +4,7 @@ import imageCompression from 'browser-image-compression'
 import { createListing } from '@/lib/actions/listings'
 
 interface Game { id: string; name: string }
+interface ItemType { id: string; name: string; slug: string }
 
 const COVER_MAX_MB       = 2
 const ADDITIONAL_MAX_MB  = 3
@@ -51,6 +52,11 @@ export function ListingForm({ games }: { games: Game[] }) {
     g.name.toLowerCase().includes(gameSearch.toLowerCase())
   )
 
+  const [itemTypes, setItemTypes] = useState<ItemType[]>([])
+  const [selectedItemType, setSelectedItemType] = useState<ItemType | null>(null)
+  const [itemTypeOpen, setItemTypeOpen] = useState(false)
+  const itemTypeRef = useRef<HTMLDivElement>(null)
+
   const [deliveryOpen, setDeliveryOpen] = useState(false)
   const [selectedDelivery, setSelectedDelivery] = useState('')
   const deliveryRef = useRef<HTMLDivElement>(null)
@@ -64,15 +70,30 @@ export function ListingForm({ games }: { games: Game[] }) {
     { value: '1–2 days', label: '1–2 days' },
   ]
 
+  // Fetch item types whenever selected game changes
   useEffect(() => {
-    if (!gameOpen && !deliveryOpen) return
+    const url = selectedGame
+      ? `/api/item-types?game_id=${selectedGame.id}`
+      : '/api/item-types'
+    fetch(url)
+      .then(r => r.json())
+      .then(d => { setItemTypes(d.types ?? []); setSelectedItemType(null) })
+      .catch(() => { setItemTypes([]); setSelectedItemType(null) })
+  }, [selectedGame])
+
+  useEffect(() => {
+    if (!gameOpen && !deliveryOpen && !itemTypeOpen) return
+    function outside(ref: React.RefObject<HTMLDivElement | null>, e: MouseEvent) {
+      return !ref.current?.contains(e.target as Node)
+    }
     function handleClick(e: MouseEvent) {
-      if (gameOpen && gameRef.current && !gameRef.current.contains(e.target as Node)) setGameOpen(false)
-      if (deliveryOpen && deliveryRef.current && !deliveryRef.current.contains(e.target as Node)) setDeliveryOpen(false)
+      if (gameOpen && outside(gameRef, e)) setGameOpen(false)
+      if (deliveryOpen && outside(deliveryRef, e)) setDeliveryOpen(false)
+      if (itemTypeOpen && outside(itemTypeRef, e)) setItemTypeOpen(false)
     }
     document.addEventListener('mousedown', handleClick)
     return () => document.removeEventListener('mousedown', handleClick)
-  }, [gameOpen, deliveryOpen])
+  }, [gameOpen, deliveryOpen, itemTypeOpen])
 
   async function handleCover(files: FileList | null) {
     setCoverError('')
@@ -202,6 +223,45 @@ export function ListingForm({ games }: { games: Game[] }) {
                         }`}
                       >
                         {g.name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+            <div>
+              <label className={labelCls}>Item type</label>
+              <input type="hidden" name="item_type_id" value={selectedItemType?.id ?? ''} />
+              <div className="relative" ref={itemTypeRef}>
+                <button
+                  type="button"
+                  onClick={() => setItemTypeOpen(v => !v)}
+                  className={`${inputCls} flex items-center justify-between text-left`}
+                >
+                  <span className={selectedItemType ? 'text-white' : 'text-gray-600'}>
+                    {selectedItemType?.name ?? 'Select type…'}
+                  </span>
+                  <svg
+                    className={`w-4 h-4 text-gray-500 shrink-0 transition-transform ${itemTypeOpen ? 'rotate-180' : ''}`}
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                {itemTypeOpen && (
+                  <div className="absolute z-20 top-full left-0 right-0 mt-1 rounded-xl border border-border bg-surface shadow-xl max-h-52 overflow-y-auto">
+                    {itemTypes.length === 0 ? (
+                      <p className="px-3 py-2.5 text-gray-500 text-sm">No types available</p>
+                    ) : itemTypes.map(t => (
+                      <button
+                        key={t.id}
+                        type="button"
+                        onClick={() => { setSelectedItemType(t); setItemTypeOpen(false) }}
+                        className={`w-full text-left px-3 py-2.5 text-sm hover:bg-white/5 transition-colors ${
+                          selectedItemType?.id === t.id ? 'text-accent' : 'text-white'
+                        }`}
+                      >
+                        {t.name}
                       </button>
                     ))}
                   </div>
