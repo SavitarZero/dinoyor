@@ -65,7 +65,7 @@ export default async function DashboardPage() {
           </div>
         )}
         <div>
-          <h1 className="text-2xl font-bold text-white">Welcome back, {displayName}</h1>
+          <h1 className="text-2xl font-bold text-white">{displayName}</h1>
           <p className="text-gray-500 text-sm">{user.email}</p>
         </div>
       </div>

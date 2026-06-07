@@ -27,9 +27,12 @@ export function ChatWindow({ conversationId, initialMessages, currentUserId }: P
         table: 'messages',
         filter: `conversation_id=eq.${conversationId}`,
       }, payload => {
+        const incoming = payload.new as Message
         setMessages(prev => {
-          if (prev.some(m => m.id === payload.new.id)) return prev
-          return [...prev, payload.new as Message]
+          if (prev.some(m => m.id === incoming.id)) return prev
+          // Own messages are added optimistically — skip realtime echo
+          if (incoming.sender_id === currentUserId) return prev
+          return [...prev, incoming]
         })
       })
       .subscribe()
@@ -43,10 +46,29 @@ export function ChatWindow({ conversationId, initialMessages, currentUserId }: P
 
   async function handleSend(e: React.FormEvent) {
     e.preventDefault()
-    if (!body.trim() || sending) return
+    const trimmed = body.trim()
+    if (!trimmed || sending) return
+
     setSending(true)
-    await sendMessage(conversationId, body)
     setBody('')
+
+    // Optimistic update — show immediately without waiting for realtime
+    const tempId = `temp-${Date.now()}`
+    const tempMsg: Message = {
+      id: tempId,
+      conversation_id: conversationId,
+      sender_id: currentUserId,
+      body: trimmed,
+      created_at: new Date().toISOString(),
+    }
+    setMessages(prev => [...prev, tempMsg])
+
+    const result = await sendMessage(conversationId, trimmed)
+    if (result?.error) {
+      // Rollback on failure
+      setMessages(prev => prev.filter(m => m.id !== tempId))
+    }
+
     setSending(false)
   }
 

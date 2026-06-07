@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { getCachedGames } from '@/lib/cache/games'
 import { HomeSections } from '@/components/home/HomeSections'
 import { getHotListingIds } from '@/lib/utils/hotListings'
 import type { ListingWithGame, GameWithStats } from '@/lib/types/index'
@@ -6,11 +7,8 @@ import type { ListingWithGame, GameWithStats } from '@/lib/types/index'
 export default async function HomePage() {
   const supabase = await createClient()
 
-  const [{ data: gamesRaw, error: e1 }, { data: listingCounts, error: e2 }, { data: listings, error: e3 }, hotIds] = await Promise.all([
-    supabase
-      .from('games')
-      .select('id, name, slug, category, logo_url, banner_url')
-      .order('category').order('name'),
+  const [gamesRaw, { data: listingCounts, error: e2 }, { data: listings, error: e3 }, hotIds] = await Promise.all([
+    getCachedGames(),
 
     supabase.from('listings').select('game_id').eq('status', 'active'),
 
@@ -25,7 +23,6 @@ export default async function HomePage() {
     getHotListingIds(supabase),
   ])
 
-  if (e1) console.error('[home] games:', e1.message)
   if (e2) console.error('[home] counts:', e2.message)
   if (e3) console.error('[home] listings:', e3.message)
 
@@ -34,7 +31,7 @@ export default async function HomePage() {
     countMap[row.game_id] = (countMap[row.game_id] ?? 0) + 1
   }
 
-  const games: GameWithStats[] = (gamesRaw ?? []).map(g => ({
+  const games: GameWithStats[] = gamesRaw.map(g => ({
     ...g,
     category: g.category ?? null,
     banner_url: g.banner_url ?? null,

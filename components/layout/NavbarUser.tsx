@@ -1,0 +1,111 @@
+import { cache } from 'react'
+import Link from 'next/link'
+import { createClient } from '@/lib/supabase/server'
+import { ProfileDropdown } from './ProfileDropdown'
+import { Store, Package, Plus } from 'lucide-react'
+
+const textBtn =
+  'inline-flex items-center gap-2 px-3 py-2 rounded text-sm font-medium tracking-wide text-gray-400 hover:text-white hover:bg-white/[0.08] active:bg-white/[0.12] transition-colors whitespace-nowrap select-none'
+
+const getNavbarData = cache(async () => {
+  const supabase = await createClient()
+  const { data: { session } } = await supabase.auth.getSession()
+  const user = session?.user ?? null
+
+  let profile = null
+  let isAdmin = false
+  if (user) {
+    const { data } = await supabase
+      .from('profiles')
+      .select('username, avatar_url, role')
+      .eq('id', user.id)
+      .single()
+    profile = data
+    isAdmin = profile?.role === 'admin'
+  }
+
+  const avatarUrl =
+    profile?.avatar_url ||
+    (user?.user_metadata?.avatar_url as string | undefined) ||
+    null
+
+  return { user, profile, isAdmin, avatarUrl }
+})
+
+export async function NavbarUser() {
+  const { user, profile, isAdmin, avatarUrl } = await getNavbarData()
+
+  if (!user) {
+    return (
+      <>
+        <Link href="/market" className={textBtn}>Market</Link>
+        <Link href="/login" className={textBtn}>Sign in</Link>
+        <Link
+          href="/register"
+          className="ml-1 inline-flex items-center px-4 py-2 rounded text-sm font-medium tracking-wide bg-accent text-black shadow-sm hover:shadow-md hover:brightness-110 transition-all"
+        >
+          Register
+        </Link>
+      </>
+    )
+  }
+
+  return (
+    <>
+      <Link href="/market" className={`hidden lg:inline-flex ${textBtn}`}>
+        <Store size={18} />
+        Market
+      </Link>
+      <Link href="/orders" className={`hidden md:inline-flex ${textBtn}`}>
+        <Package size={18} />
+        Orders
+      </Link>
+      <Link href="/listings/new" className={`hidden md:inline-flex ${textBtn}`}>
+        <Plus size={18} />
+        Sell
+      </Link>
+      <span className="hidden md:block h-6 w-px bg-white/10 mx-2 shrink-0" />
+      <ProfileDropdown
+        avatarUrl={avatarUrl}
+        username={profile?.username ?? null}
+        email={user.email ?? ''}
+        isAdmin={isAdmin}
+      />
+    </>
+  )
+}
+
+export async function NavbarUserMobile() {
+  const { user, profile, isAdmin, avatarUrl } = await getNavbarData()
+
+  if (!user) {
+    return (
+      <>
+        <Link href="/login" className="text-sm text-gray-400 hover:text-white transition-colors px-2">
+          Sign in
+        </Link>
+        <Link
+          href="/register"
+          className="px-3 py-1.5 rounded text-xs font-medium tracking-wide bg-accent text-black shadow-sm hover:brightness-110 transition-all"
+        >
+          Register
+        </Link>
+      </>
+    )
+  }
+
+  return (
+    <>
+      <Link href="/listings/new" className={textBtn}>
+        <Plus size={16} />
+        Sell
+      </Link>
+      <ProfileDropdown
+        avatarUrl={avatarUrl}
+        username={profile?.username ?? null}
+        email={user.email ?? ''}
+        isAdmin={isAdmin}
+      />
+    </>
+  )
+}

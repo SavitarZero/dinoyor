@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { getCachedGames } from '@/lib/cache/games'
 import { ListingCard } from '@/components/listings/ListingCard'
 import { GameLogo } from '@/components/games/GameImage'
 import { GameFilter } from '@/components/market/GameFilter'
@@ -30,13 +31,7 @@ export default async function MarketPage({
 
   const supabase = await createClient()
 
-  // Resolve game_id(s) from slug/category params before querying listings
-  const { data: allGames } = await supabase
-    .from('games')
-    .select('id, name, slug, category, logo_url')
-    .order('name')
-
-  const games = allGames ?? []
+  const games = await getCachedGames()
 
   // Find game_ids to filter by
   let filterGameIds: string[] | null = null

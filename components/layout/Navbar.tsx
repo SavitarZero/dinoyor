@@ -1,42 +1,18 @@
+import { Suspense } from 'react'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
-import { ProfileDropdown } from './ProfileDropdown'
 import { NavbarSearch } from './NavbarSearch'
-import { Store, Package, Plus } from 'lucide-react'
+import { NavbarUser, NavbarUserMobile } from './NavbarUser'
 
-export async function Navbar() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+function NavbarUserSkeleton() {
+  return <div className="w-8 h-8 rounded-full bg-white/10 animate-pulse shrink-0" />
+}
 
-  let profile = null
-  let isAdmin = false
-  if (user) {
-    const { data } = await supabase
-      .from('profiles')
-      .select('username, avatar_url, role')
-      .eq('id', user.id)
-      .single()
-    profile = data
-    isAdmin = profile?.role === 'admin'
-  }
-
-  const avatarUrl =
-    profile?.avatar_url ||
-    (user?.user_metadata?.avatar_url as string | undefined) ||
-    null
-
-  /* MUI "text button" style */
-  const textBtn =
-    'inline-flex items-center gap-2 px-3 py-2 rounded text-sm font-medium tracking-wide text-gray-400 hover:text-white hover:bg-white/[0.08] active:bg-white/[0.12] transition-colors whitespace-nowrap select-none'
-
+export function Navbar() {
   return (
-    /* MUI AppBar — elevation via shadow, no border */
     <header className="sticky top-0 z-50 bg-surface shadow-[0_1px_4px_rgba(0,0,0,0.6)]">
 
       {/* ── Desktop ── */}
       <div className="hidden md:flex items-center max-w-7xl mx-auto px-4 h-16 gap-3">
-
-        {/* Logo */}
         <Link
           href="/"
           className="font-black text-sm tracking-[0.25em] text-accent hover:opacity-75 transition-opacity shrink-0"
@@ -44,58 +20,14 @@ export async function Navbar() {
           DINOYOR
         </Link>
 
-        {/* Search — flex-1 so it doesn't collide with actions */}
         <div className="flex-1 min-w-0 max-w-lg">
           <NavbarSearch />
         </div>
 
-        {/* Actions */}
         <div className="ml-auto shrink-0 flex items-center gap-0.5">
-          {user ? (
-            <>
-              <Link href="/market" className={`hidden lg:inline-flex ${textBtn}`}>
-                <Store size={18} />
-                Market
-              </Link>
-
-              <Link href="/orders" className={`hidden md:inline-flex ${textBtn}`}>
-                <Package size={18} />
-                Orders
-              </Link>
-
-              <Link href="/listings/new" className={`hidden md:inline-flex ${textBtn}`}>
-                <Plus size={18} />
-                Sell
-              </Link>
-
-              {/* MUI Divider */}
-              <span className="hidden md:block h-6 w-px bg-white/10 mx-2 shrink-0" />
-
-              <div className="">
-                <ProfileDropdown
-                  avatarUrl={avatarUrl}
-                  username={profile?.username ?? null}
-                  email={user.email ?? ''}
-                  isAdmin={isAdmin}
-                />
-              </div>
-            </>
-          ) : (
-            <>
-              <Link href="/market" className={textBtn}>
-                Market
-              </Link>
-              <Link href="/login" className={textBtn}>
-                Sign in
-              </Link>
-              <Link
-                href="/register"
-                className="ml-1 inline-flex items-center px-4 py-2 rounded text-sm font-medium tracking-wide bg-accent text-black shadow-sm hover:shadow-md hover:brightness-110 transition-all"
-              >
-                Register
-              </Link>
-            </>
-          )}
+          <Suspense fallback={<NavbarUserSkeleton />}>
+            <NavbarUser />
+          </Suspense>
         </div>
       </div>
 
@@ -106,32 +38,9 @@ export async function Navbar() {
         </Link>
         <div className="flex-1" />
         <div className="flex items-center gap-1.5">
-          {user ? (
-            <>
-              <Link href="/listings/new" className={textBtn}>
-                <Plus size={16} />
-                Sell
-              </Link>
-              <ProfileDropdown
-                avatarUrl={avatarUrl}
-                username={profile?.username ?? null}
-                email={user.email ?? ''}
-                isAdmin={isAdmin}
-              />
-            </>
-          ) : (
-            <>
-              <Link href="/login" className="text-sm text-gray-400 hover:text-white transition-colors px-2">
-                Sign in
-              </Link>
-              <Link
-                href="/register"
-                className="px-3 py-1.5 rounded text-xs font-medium tracking-wide bg-accent text-black shadow-sm hover:brightness-110 transition-all"
-              >
-                Register
-              </Link>
-            </>
-          )}
+          <Suspense fallback={<NavbarUserSkeleton />}>
+            <NavbarUserMobile />
+          </Suspense>
         </div>
       </div>
 
