@@ -90,8 +90,27 @@ export async function updateEmail(email: string) {
   }
 
   const trimmed = email.trim().toLowerCase()
+  const isInternalEmail = user.email?.endsWith('@dinoyor.internal')
 
-  // Let Supabase handle uniqueness — it rejects if another verified account has this email
+  if (isInternalEmail) {
+    // Old email is fake — Secure Email Change would fail trying to send to @dinoyor.internal.
+    // Use admin to update directly; user is already authenticated so this is safe.
+    const admin = createAdminClient()
+    const { error } = await admin.auth.admin.updateUserById(user.id, {
+      email: trimmed,
+      email_confirm: true,
+    })
+    if (error) {
+      if (error.message.toLowerCase().includes('already')) {
+        return { error: 'This email is already used by another account' }
+      }
+      return { error: error.message }
+    }
+    await supabase.from('profiles').update({ email: trimmed, pending_email: null }).eq('id', user.id)
+    return { success: true, immediate: true }
+  }
+
+  // User already has a real email — go through normal Secure Email Change (sends link to new email)
   const { error } = await supabase.auth.updateUser({ email: trimmed })
   if (error) {
     if (error.message.toLowerCase().includes('already')) {
@@ -100,9 +119,7 @@ export async function updateEmail(email: string) {
     return { error: error.message }
   }
 
-  // Store pending email so we can show "awaiting verification" state
   await supabase.from('profiles').update({ pending_email: trimmed }).eq('id', user.id)
-
   return { success: true }
 }
 
