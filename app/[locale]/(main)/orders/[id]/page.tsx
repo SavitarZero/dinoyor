@@ -63,8 +63,8 @@ export default async function OrderDetailPage({
   const trc20Address = escrowSettings?.find(s => s.key === `escrow_wallet_trc20${suffix}`)?.value ?? ''
 
   const escrowWallets: EscrowWallet[] = [
-    { network: 'ERC20', label: 'ERC20 (Ethereum)', address: erc20Address },
     { network: 'TRC20', label: 'TRC20 (Tron)',     address: trc20Address },
+    { network: 'ERC20', label: 'ERC20 (Ethereum)', address: erc20Address },
   ]
 
   let initialMessages: Message[] = []
@@ -179,8 +179,8 @@ export default async function OrderDetailPage({
           </p>
         </div>
         <div className="text-right shrink-0">
-          <p className="text-accent font-bold text-lg">{order.amount}</p>
-          <p className="text-gray-500 text-xs">USD</p>
+          <p className="text-accent font-bold text-lg">{order.amount} USDT</p>
+          <p className="text-gray-500 text-xs">≈ ${order.amount} USD</p>
         </div>
       </div>
 
