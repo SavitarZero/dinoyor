@@ -426,8 +426,6 @@ export function ListingForm({ games }: { games: Game[] }) {
             >
               {loading ? 'Publishing…' : 'Publish listing'}
             </button>
-            <p className="text-gray-600 text-xs text-center">Funds held in escrow until buyer confirms receipt</p>
-
           </div>
         </div>
       </div>
