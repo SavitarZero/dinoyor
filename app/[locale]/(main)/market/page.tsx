@@ -3,10 +3,11 @@ import { getCachedGames } from '@/lib/cache/games'
 import { ListingCard } from '@/components/listings/ListingCard'
 import { GameLogo } from '@/components/games/GameImage'
 import { GameFilter } from '@/components/market/GameFilter'
+import { CategoryFilter } from '@/components/market/CategoryFilter'
 import Link from 'next/link'
 import type { ListingWithGame } from '@/lib/types'
 
-interface SearchParams { game?: string; category?: string; cat?: string; q?: string; currency?: string; page?: string }
+interface SearchParams { game?: string; cat?: string; q?: string; currency?: string; page?: string }
 
 const PAGE_SIZE = 20
 const NULL_UUID  = '00000000-0000-0000-0000-000000000000'
@@ -22,22 +23,15 @@ function buildHref(params: Record<string, string | undefined>, overrides: Record
   return qs ? `/market?${qs}` : '/market'
 }
 
-function getFilterGameIds(games: { id: string; slug: string; category_id?: string | null }[], params: SearchParams) {
-  if (params.game) {
-    const match = games.find(g => g.slug === params.game)
-    return match ? [match.id] : [NULL_UUID]
-  }
-  if (params.category) {
-    const ids = games.filter(g => g.category_id === params.category).map(g => g.id)
-    return ids.length > 0 ? ids : [NULL_UUID]
-  }
-  return null
+function getFilterGameIds(games: { id: string; slug: string }[], params: SearchParams) {
+  if (!params.game) return null
+  const match = games.find(g => g.slug === params.game)
+  return match ? [match.id] : [NULL_UUID]
 }
 
-function buildActiveFilters(activeGame: string | null, activeCategory: string | null) {
+function buildActiveFilters(activeGame: string | null) {
   const filters: Record<string, string | undefined> = {}
   if (activeGame) filters.game = activeGame
-  else if (activeCategory) filters.category = activeCategory
   return filters
 }
 
@@ -88,12 +82,8 @@ export default async function MarketPage({
   if (params.currency) query = query.eq('price_currency', params.currency)
   if (filterGameIds)   query = query.in('game_id', filterGameIds)
   if (activeCat) {
-    const gameIdsInCat = games.filter(g => g.category_id === activeCat).map(g => g.id)
-    if (gameIdsInCat.length > 0) {
-      query = query.in('game_id', gameIdsInCat)
-    } else {
-      query = query.eq('game_id', NULL_UUID)
-    }
+    const ids = games.filter(g => g.category_id === activeCat).map(g => g.id)
+    query = query.in('game_id', ids.length > 0 ? ids : [NULL_UUID])
   }
 
   const listingsRes = await query
@@ -102,12 +92,10 @@ export default async function MarketPage({
   const totalCount = listingsRes.count ?? 0
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE))
 
-  const activeGame     = params.game ?? null
-  const activeCategory = params.category ?? null
-  const gameCategories = (dbCategories ?? []).filter(cat => games.some(g => g.category_id === cat.id))
+  const activeGame    = params.game ?? null
 
   const filterParams  = { q: params.q, currency: params.currency, cat: params.cat }
-  const activeFilters = buildActiveFilters(activeGame, activeCategory)
+  const activeFilters = buildActiveFilters(activeGame)
   const pageItems     = buildPageItems(totalPages, page)
 
   return (
@@ -123,70 +111,39 @@ export default async function MarketPage({
 
         {/* Sidebar filters */}
         <aside className="hidden md:block w-52 shrink-0">
-          <div className="lg:sticky lg:top-24 space-y-4">
+          <div className="sticky top-24 space-y-3">
 
-            <div className="rounded-2xl border border-border bg-surface overflow-hidden">
-              <div className="px-4 py-3 border-b border-border">
-                <p className="text-gray-500 text-xs font-medium uppercase tracking-wide">Filter</p>
-              </div>
-              <div className="p-2">
-                <Link
-                  href={buildHref(filterParams, {})}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
-                    !activeGame && !activeCategory && !activeCat ? 'bg-accent/10 text-accent font-semibold' : 'text-gray-400 hover:text-white hover:bg-white/[0.02]'
-                  }`}
-                >
-                  All listings
-                </Link>
-              </div>
-            </div>
+            {/* All */}
+            <nav className="rounded border border-border bg-surface overflow-hidden">
+              <Link
+                href={buildHref(filterParams, {})}
+                className={`flex items-center gap-2 px-4 py-2.5 text-sm transition-colors border-l-2 ${
+                  !activeGame && !activeCat
+                    ? 'text-white bg-white/3 border-accent'
+                    : 'text-gray-400 hover:text-white hover:bg-white/2 border-transparent'
+                }`}
+              >
+                All listings
+              </Link>
+            </nav>
 
+            {/* Category (listing type) */}
             {itemCategories.length > 0 && (
-              <div className="rounded-2xl border border-border bg-surface overflow-hidden">
-                <div className="px-4 py-3 border-b border-border">
-                  <p className="text-gray-500 text-xs font-medium uppercase tracking-wide">Category</p>
+              <nav className="rounded border border-border bg-surface overflow-hidden">
+                <p className="px-4 py-2 text-[10px] font-semibold uppercase tracking-widest text-gray-600 border-b border-border">Category</p>
+                <div className="p-2">
+                  <CategoryFilter
+                    categories={itemCategories}
+                    activeCat={activeCat}
+                    filterParams={filterParams}
+                  />
                 </div>
-                <div className="p-2 space-y-0.5">
-                  {itemCategories.map(cat => (
-                    <Link
-                      key={cat.id}
-                      href={buildHref(filterParams, { cat: cat.id })}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
-                        activeCat === cat.id ? 'bg-accent/10 text-accent font-semibold' : 'text-gray-400 hover:text-white hover:bg-white/[0.02]'
-                      }`}
-                    >
-                      {cat.name}
-                    </Link>
-                  ))}
-                </div>
-              </div>
+              </nav>
             )}
 
-            {gameCategories.length > 0 && (
-              <div className="rounded-2xl border border-border bg-surface overflow-hidden">
-                <div className="px-4 py-3 border-b border-border">
-                  <p className="text-gray-500 text-xs font-medium uppercase tracking-wide">Genre</p>
-                </div>
-                <div className="p-2 space-y-0.5">
-                  {gameCategories.map(cat => (
-                    <Link
-                      key={cat.id}
-                      href={buildHref(filterParams, { category: cat.id })}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
-                        activeCategory === cat.id && !activeGame ? 'bg-accent/10 text-accent font-semibold' : 'text-gray-400 hover:text-white hover:bg-white/[0.02]'
-                      }`}
-                    >
-                      {cat.name}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <div className="rounded-2xl border border-border bg-surface overflow-hidden">
-              <div className="px-4 py-3 border-b border-border">
-                <p className="text-gray-500 text-xs font-medium uppercase tracking-wide">Game</p>
-              </div>
+            {/* Game search */}
+            <nav className="rounded border border-border bg-surface overflow-hidden">
+              <p className="px-4 py-2 text-[10px] font-semibold uppercase tracking-widest text-gray-600 border-b border-border">Game</p>
               <div className="p-2">
                 <GameFilter
                   games={games}
@@ -194,7 +151,7 @@ export default async function MarketPage({
                   filterParams={filterParams}
                 />
               </div>
-            </div>
+            </nav>
 
           </div>
         </aside>
@@ -206,18 +163,12 @@ export default async function MarketPage({
           <div className="md:hidden flex gap-2 overflow-x-auto pb-3 scrollbar-none mb-4">
             <Link href={buildHref(filterParams, {})}
               className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
-                !activeGame && !activeCategory ? 'bg-accent text-black border-accent' : 'border-border text-gray-400'
+                !activeGame && !activeCat ? 'bg-accent text-black border-accent' : 'border-border text-gray-400'
               }`}>All</Link>
             {itemCategories.map(cat => (
               <Link key={cat.id} href={buildHref(filterParams, { cat: cat.id })}
                 className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap ${
                   activeCat === cat.id ? 'bg-accent text-black border-accent' : 'border-border text-gray-400'
-                }`}>{cat.name}</Link>
-            ))}
-            {gameCategories.map(cat => (
-              <Link key={cat.id} href={buildHref(filterParams, { category: cat.id })}
-                className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap ${
-                  activeCategory === cat.id && !activeGame ? 'bg-accent text-black border-accent' : 'border-border text-gray-400'
                 }`}>{cat.name}</Link>
             ))}
             {games.map(g => (
