@@ -23,7 +23,7 @@ export default async function ListingDetailPage({
 
   const { data: { user } } = await supabase.auth.getUser()
 
-  const [{ data: listing }, { data: likes }, { data: comments }, { data: purchase }] = await Promise.all([
+  const [{ data: listing }, { data: likes }, { data: comments }, { data: purchase }, { data: profile }, { data: balanceRow }] = await Promise.all([
     supabase
       .from('listings')
       .select('*, games(name, slug, logo_url, banner_url), seller:profiles!seller_id(username, avatar_url)')
@@ -44,6 +44,14 @@ export default async function ListingDetailPage({
     user
       ? supabase.from('orders').select('id').eq('listing_id', id).eq('buyer_id', user.id).eq('status', 'completed').maybeSingle()
       : Promise.resolve({ data: null }),
+
+    user
+      ? supabase.from('profiles').select('kyc_status').eq('id', user.id).single()
+      : Promise.resolve({ data: null }),
+
+    user
+      ? supabase.from('user_balances').select('balance').eq('user_id', user.id).eq('currency', 'USDT').maybeSingle()
+      : Promise.resolve({ data: null }),
   ])
 
   if (!listing) notFound()
@@ -53,6 +61,8 @@ export default async function ListingDetailPage({
   const likeCount   = likes?.length ?? 0
   const userLiked   = !!(user && likes?.some(l => l.user_id === user.id))
   const hasPurchased = !!purchase
+  const kycStatus    = profile?.kyc_status ?? null
+  const buyerBalance = Number(balanceRow?.balance ?? 0)
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8 space-y-10">
@@ -92,7 +102,7 @@ export default async function ListingDetailPage({
           <div className="flex items-center gap-4">
             <p className="text-3xl font-bold text-accent">
               {currencyPrefix(listing.price_currency)}{listing.price_amount}
-              <span className="text-lg text-accent/60 ml-1">{listing.price_currency === 'USD' ? 'USDT' : listing.price_currency}</span>
+              <span className="text-lg text-accent/60 ml-1">AMO</span>
             </p>
             <div className="flex items-center gap-3">
               <LikeButton
@@ -138,7 +148,7 @@ export default async function ListingDetailPage({
           {/* Actions */}
           <div className="space-y-2 mt-auto">
             {!isSeller && user && listing.status === 'active' && (
-              <BuyButton listingId={listing.id} />
+              <BuyButton listingId={listing.id} price={listing.price_amount} kycStatus={kycStatus} isLoggedIn={!!user} buyerBalance={buyerBalance} />
             )}
             {!user && (
               <div className="p-4 rounded-xl bg-surface border border-border text-center">

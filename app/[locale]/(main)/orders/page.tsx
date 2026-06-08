@@ -29,7 +29,8 @@ interface Props { searchParams: Promise<{ tab?: string; page?: string; role?: st
 
 export default async function OrdersPage({ searchParams }: Props) {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { session } } = await supabase.auth.getSession()
+  const user = session?.user
   if (!user) redirect('/login')
 
   const { tab = 'all', page = '1', role = 'all' } = await searchParams
@@ -134,7 +135,7 @@ export default async function OrdersPage({ searchParams }: Props) {
                 </div>
 
                 <div className="text-right shrink-0">
-                  <p className="text-white text-sm font-bold">${o.amount}</p>
+                  <p className="text-white text-sm font-bold">{o.amount} AMO</p>
                 </div>
 
                 <svg className="w-4 h-4 text-gray-600 group-hover:text-accent transition-colors shrink-0 hidden sm:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

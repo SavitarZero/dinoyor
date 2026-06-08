@@ -35,7 +35,8 @@ export default async function OrderDetailPage({
 }) {
   const { id } = await params
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { session } } = await supabase.auth.getSession()
+  const user = session?.user
   if (!user) redirect('/login')
 
   const { data: order } = await supabase
@@ -200,7 +201,7 @@ export default async function OrderDetailPage({
                 </div>
               </div>
               <div className="text-right shrink-0">
-                <p className="text-white text-sm font-bold">{order.amount} USDT</p>
+                <p className="text-white text-sm font-bold">{order.amount} AMO</p>
               </div>
             </div>
           </div>
@@ -332,7 +333,7 @@ export default async function OrderDetailPage({
 
         {/* Right — Chat */}
         {conversation && (
-          <div className="lg:w-[380px] shrink-0">
+          <div className="lg:w-95 shrink-0">
             <div className="lg:sticky lg:top-24">
               <ChatWindow
                 conversationId={conversation.id}
