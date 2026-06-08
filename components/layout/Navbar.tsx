@@ -9,22 +9,22 @@ function NavbarUserSkeleton() {
 
 export function Navbar() {
   return (
-    <header className="sticky top-0 z-50 bg-surface shadow-[0_1px_4px_rgba(0,0,0,0.6)]">
+    <header className="sticky top-0 z-50 bg-surface border-b-2 border-accent/60 shadow-[0_2px_12px_rgba(0,0,0,0.7)]">
 
       {/* ── Desktop ── */}
-      <div className="hidden md:flex items-center max-w-7xl mx-auto px-4 h-16 gap-3">
+      <div className="hidden md:flex items-center max-w-7xl mx-auto px-4 h-14 gap-4">
         <Link
           href="/"
-          className="font-black text-sm tracking-[0.25em] text-accent hover:opacity-75 transition-opacity shrink-0"
+          className="font-black text-base tracking-[0.12em] text-accent hover:text-accent-gold transition-colors shrink-0"
         >
-          DINOYOR
+          AMMONITE
         </Link>
 
-        <div className="flex-1 min-w-0 max-w-lg">
+        <div className="flex-1 min-w-0 max-w-xl">
           <NavbarSearch />
         </div>
 
-        <div className="ml-auto shrink-0 flex items-center gap-0.5">
+        <div className="ml-auto shrink-0 flex items-center gap-1">
           <Suspense fallback={<NavbarUserSkeleton />}>
             <NavbarUser />
           </Suspense>
@@ -32,9 +32,9 @@ export function Navbar() {
       </div>
 
       {/* ── Mobile row ── */}
-      <div className="flex md:hidden items-center px-4 h-14 gap-3">
-        <Link href="/" className="shrink-0 font-black text-sm tracking-[0.25em] text-accent hover:opacity-75 transition-opacity">
-          DINOYOR
+      <div className="flex md:hidden items-center px-4 h-12 gap-3">
+        <Link href="/" className="shrink-0 font-black text-sm tracking-[0.12em] text-accent">
+          AMMONITE
         </Link>
         <div className="flex-1" />
         <div className="flex items-center gap-1.5">
@@ -45,7 +45,7 @@ export function Navbar() {
       </div>
 
       {/* ── Mobile search ── */}
-      <div className="md:hidden px-4 pb-3">
+      <div className="md:hidden px-4 pb-2.5">
         <NavbarSearch />
       </div>
 

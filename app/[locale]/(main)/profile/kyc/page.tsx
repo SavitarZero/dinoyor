@@ -98,7 +98,7 @@ export default async function KYCPage() {
 
           <div>
             <h2 className="text-white text-base font-bold">Identity Verification</h2>
-            <p className="text-gray-500 text-xs mt-0.5">Required to sell items on Dinoyor</p>
+            <p className="text-gray-500 text-xs mt-0.5">Required to sell items on Ammonite</p>
           </div>
 
           <KYCForm

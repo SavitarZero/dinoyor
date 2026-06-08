@@ -22,7 +22,7 @@ export default function VerifyEmailPage() {
         <ol className="space-y-1.5 text-gray-500 text-xs list-none">
           <li className="flex items-start gap-2">
             <span className="w-4 h-4 rounded-full bg-accent/20 text-accent text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">{'1'}</span>
-            <span>Open the email from Dinoyor</span>
+            <span>Open the email from Ammonite</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="w-4 h-4 rounded-full bg-accent/20 text-accent text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">{'2'}</span>

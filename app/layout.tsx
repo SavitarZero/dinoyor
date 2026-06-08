@@ -9,7 +9,7 @@ const geist = Geist({
 })
 
 export const metadata: Metadata = {
-  title: "Dinoyor — Gaming Item Marketplace",
+  title: "Ammonite — Gaming Item Marketplace",
   description: "Buy and sell in-game items with crypto. Protected by escrow. For SEA gamers.",
 }
 
@@ -17,7 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${geist.variable} h-full`} suppressHydrationWarning>
       <body className="min-h-full antialiased">
-        <NextTopLoader color="#00e5ff" shadow={false} showSpinner={false} height={2} />
+        <NextTopLoader color="#E5B26D" shadow={false} showSpinner={false} height={2} />
         {children}
       </body>
     </html>

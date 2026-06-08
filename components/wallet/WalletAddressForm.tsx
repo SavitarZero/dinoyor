@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { updateWalletAddress } from '@/lib/actions/wallet'
+import { CustomSelect } from '@/components/ui/CustomSelect'
 
 const NETWORKS = [
   { value: 'TRC20', label: 'USDT TRC20 (Tron)' },
@@ -33,51 +34,38 @@ export function WalletAddressForm({ currentAddress, currentNetwork }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
-      {error && (
-        <div className="rounded-xl bg-red-900/20 border border-red-700/50 px-4 py-3">
-          <p className="text-red-400 text-sm">{error}</p>
-        </div>
-      )}
-      {saved && (
-        <div className="rounded-xl bg-green-900/20 border border-green-700/50 px-4 py-3">
-          <p className="text-green-400 text-sm">Wallet address saved.</p>
-        </div>
-      )}
+      {error && <p className="text-red-400 text-sm">{error}</p>}
+      {saved && <p className="text-green-400 text-sm">Wallet address saved.</p>}
 
       <div>
-        <label className="block text-xs font-medium text-gray-500 mb-1.5">Network</label>
-        <select
+        <label className="block text-gray-500 text-xs font-medium uppercase tracking-wide mb-1.5">Network</label>
+        <CustomSelect
           value={network}
-          onChange={e => setNetwork(e.target.value)}
-          className="w-full px-4 py-3 rounded-xl bg-background border border-border text-white text-sm focus:outline-none focus:border-accent transition-colors"
-        >
-          {NETWORKS.map(n => (
-            <option key={n.value} value={n.value}>{n.label}</option>
-          ))}
-        </select>
+          onChange={setNetwork}
+          options={NETWORKS}
+          placeholder="Select network…"
+        />
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-gray-500 mb-1.5">Wallet address</label>
+        <label className="block text-gray-500 text-xs font-medium uppercase tracking-wide mb-1.5">Wallet address</label>
         <input
           type="text"
           value={address}
           onChange={e => setAddress(e.target.value)}
           placeholder="e.g. TXyz... / 0x..."
           required
-          className="w-full px-4 py-3 rounded-xl bg-background border border-border text-white text-sm font-mono placeholder-gray-600 focus:outline-none focus:border-accent transition-colors"
+          className="w-full px-3 py-2 rounded-lg bg-background border border-border text-white text-sm font-mono placeholder-gray-600 focus:outline-none focus:border-accent transition-colors"
         />
-        <p className="text-gray-600 text-xs mt-1.5">
-          This is where your payout will be sent. Double-check the address and network — incorrect addresses cannot be recovered.
-        </p>
+        <p className="text-gray-600 text-xs mt-1">Double-check the address and network — incorrect addresses cannot be recovered.</p>
       </div>
 
       <button
         type="submit"
         disabled={loading}
-        className="w-full py-3 rounded-xl bg-accent text-black font-bold text-sm hover:opacity-90 disabled:opacity-50 transition-opacity"
+        className="px-4 py-1.5 rounded-lg bg-accent text-black text-xs font-bold hover:opacity-90 disabled:opacity-50"
       >
-        {loading ? 'Saving…' : 'Save wallet address'}
+        {loading ? 'Saving…' : 'Save address'}
       </button>
     </form>
   )

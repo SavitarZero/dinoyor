@@ -1,12 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0a0a0b;
-  --surface: #111114;
-  --border-color: #1e1e24;
-  --accent: #00e5ff;
-  --foreground: #e2e2e2;
-  --muted: #6b7280;
+  --background:   #111110;
+  --surface:      #1a1917;
+  --surface-2:    #242220;
+  --border-color: #2e2c2a;
+  --accent:       #C68B45;
+  --accent-gold:  #E5B26D;
+  --foreground:   #f0e8d8;
+  --muted:        #7a6a58;
 }
 
 .scrollbar-none {
@@ -16,13 +18,37 @@
   display: none;
 }
 
+/* Styled scrollbar — gaming platform standard */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+::-webkit-scrollbar-thumb {
+  background: #3a3835;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+
+/* Text selection */
+::selection {
+  background: rgba(198, 139, 69, 0.35);
+  color: var(--foreground);
+}
+
 @theme inline {
   --color-background: var(--background);
-  --color-surface: var(--surface);
-  --color-border: var(--border-color);
-  --color-accent: var(--accent);
+  --color-surface:    var(--surface);
+  --color-surface-2:  var(--surface-2);
+  --color-border:     var(--border-color);
+  --color-accent:     var(--accent);
+  --color-accent-gold: var(--accent-gold);
   --color-foreground: var(--foreground);
-  --color-muted: var(--muted);
+  --color-muted:      var(--muted);
 }
 
 body {
@@ -41,7 +67,7 @@ textarea:-webkit-autofill:focus,
 select:-webkit-autofill,
 select:-webkit-autofill:hover,
 select:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0 1000px var(--background) inset !important;
+  -webkit-box-shadow: 0 0 0 1000px var(--surface) inset !important;
   -webkit-text-fill-color: var(--foreground) !important;
   caret-color: var(--foreground);
   transition: background-color 9999s ease-in-out 0s;

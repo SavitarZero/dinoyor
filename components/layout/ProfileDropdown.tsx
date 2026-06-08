@@ -70,7 +70,7 @@ export function ProfileDropdown({ avatarUrl, username, email, role, amoBalance }
       </button>
 
       {/* Dropdown */}
-      <div className={`absolute right-0 mt-2.5 w-56 rounded-xl border border-border bg-surface shadow-2xl z-50 overflow-hidden
+      <div className={`absolute right-0 mt-1.5 w-56 rounded border border-border bg-surface shadow-[0_8px_24px_rgba(0,0,0,0.8)] z-[60] overflow-hidden
                       transition-all duration-150
                       ${open ? 'visible opacity-100 translate-y-0' : 'invisible opacity-0 translate-y-1'}`}>
 
@@ -86,7 +86,7 @@ export function ProfileDropdown({ avatarUrl, username, email, role, amoBalance }
           <div className="min-w-0">
             <p className="text-white text-sm font-semibold truncate">{username || 'User'}</p>
             <p className="text-gray-500 text-xs truncate">{email}</p>
-            <p className="text-accent text-xs font-bold mt-0.5">{amoBalance.toFixed(2)} coin</p>
+            <p className="text-accent-gold text-xs font-bold mt-0.5 tabular-nums">{amoBalance.toFixed(2)} coin</p>
           </div>
         </div>
 

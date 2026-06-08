@@ -27,7 +27,7 @@ export function KYCForm({ currentStatus, phone, submittedAt, reviewedAt }: {
             </div>
             <div>
               <p className="text-green-400 text-sm font-semibold">Identity verified</p>
-              <p className="text-gray-500 text-xs">You can list items for sale on Dinoyor.</p>
+              <p className="text-gray-500 text-xs">You can list items for sale on Ammonite.</p>
             </div>
           </div>
           <div className="divide-y divide-border">

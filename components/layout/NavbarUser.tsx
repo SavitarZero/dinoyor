@@ -5,7 +5,7 @@ import { ProfileDropdown } from './ProfileDropdown'
 import { Store, Package, Plus } from 'lucide-react'
 
 const textBtn =
-  'inline-flex items-center gap-2 px-3 py-2 rounded text-sm font-medium tracking-wide text-gray-400 hover:text-white hover:bg-white/[0.08] active:bg-white/[0.12] transition-colors whitespace-nowrap select-none'
+  'inline-flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium tracking-wide text-gray-400 hover:text-foreground hover:bg-surface-2 active:bg-surface-2 transition-colors whitespace-nowrap select-none'
 
 const getNavbarData = cache(async () => {
   const supabase = await createClient()
@@ -70,6 +70,13 @@ export async function NavbarUser() {
         </Link>
       )}
       <span className="hidden md:block h-6 w-px bg-white/10 mx-2 shrink-0" />
+      <Link
+        href="/wallet"
+        className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded border border-border bg-surface-2 hover:border-accent/50 transition-colors mr-3"
+      >
+        <span className="text-accent-gold text-xs font-bold tabular-nums">{amoBalance.toFixed(2)}</span>
+        <span className="text-muted text-[10px] font-medium">coin</span>
+      </Link>
       <ProfileDropdown
         avatarUrl={avatarUrl}
         username={profile?.username ?? null}
@@ -104,6 +111,13 @@ export async function NavbarUserMobile() {
 
   return (
     <>
+      <Link
+        href="/wallet"
+        className="flex items-center gap-1.5 px-2.5 py-1 rounded border border-border bg-surface-2 hover:border-accent/50 transition-colors"
+      >
+        <span className="text-accent-gold text-xs font-bold tabular-nums">{amoBalance.toFixed(2)}</span>
+        <span className="text-muted text-[10px] font-medium">coin</span>
+      </Link>
       {isSeller && (
         <Link href="/listings/new" className={textBtn}>
           <Plus size={16} />

@@ -53,7 +53,7 @@ export function HomeSections({ games, byCategory, listings, hotIds }: Props) {
     <div>
 
       {/* ── Sticky filter bar: categories + games ── */}
-      <div className="sticky top-16 z-40 bg-background/95 backdrop-blur-md border-b border-border">
+      <div className="sticky top-14.5 z-40 bg-background/95 backdrop-blur-md border-b border-border">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex gap-1.5 overflow-x-auto py-2.5 scrollbar-none">
 
@@ -320,7 +320,7 @@ export function HomeSections({ games, byCategory, listings, hotIds }: Props) {
         {/* ── Trust & Safety ── */}
         <div className="rounded-2xl border border-border bg-surface p-6 md:p-8 mb-8">
           <div className="text-center mb-6">
-            <h2 className="text-xl md:text-2xl font-black text-white">Why trade on Dinoyor?</h2>
+            <h2 className="text-xl md:text-2xl font-black text-white">Why trade on Ammonite?</h2>
             <p className="text-gray-500 text-sm mt-1">Built for safe, fast game item trading</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

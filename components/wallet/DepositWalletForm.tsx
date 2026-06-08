@@ -1,10 +1,11 @@
 'use client'
 import { useState } from 'react'
 import { saveDepositWallet } from '@/lib/actions/deposits'
+import { CustomSelect } from '@/components/ui/CustomSelect'
 
-const NETWORKS: { value: 'TRC20' | 'ERC20'; label: string; placeholder: string }[] = [
-  { value: 'TRC20', label: 'USDT TRC20 (Tron)', placeholder: 'e.g. TXyz...' },
-  { value: 'ERC20', label: 'USDT ERC20 (Ethereum)', placeholder: 'e.g. 0x...' },
+const NETWORKS = [
+  { value: 'TRC20', label: 'USDT TRC20 (Tron)' },
+  { value: 'ERC20', label: 'USDT ERC20 (Ethereum)' },
 ]
 
 interface Props {
@@ -14,9 +15,7 @@ interface Props {
 
 export function DepositWalletForm({ currentAddress, currentNetwork }: Props) {
   const [address, setAddress] = useState(currentAddress ?? '')
-  const [network, setNetwork] = useState<'TRC20' | 'ERC20'>(
-    (currentNetwork as 'TRC20' | 'ERC20') ?? 'TRC20'
-  )
+  const [network, setNetwork] = useState(currentNetwork ?? 'TRC20')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [saved, setSaved] = useState(false)
@@ -26,72 +25,56 @@ export function DepositWalletForm({ currentAddress, currentNetwork }: Props) {
     setError('')
     setSaved(false)
     setLoading(true)
-    const result = await saveDepositWallet(address, network)
+    const result = await saveDepositWallet(address, network as 'TRC20' | 'ERC20')
     setLoading(false)
     if (result?.error) { setError(result.error); return }
     setSaved(true)
   }
 
-  const selectedNetwork = NETWORKS.find(n => n.value === network) ?? NETWORKS[0]
+  const placeholder = network === 'ERC20' ? 'e.g. 0x...' : 'e.g. TXyz...'
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {currentAddress && (
-        <div className="rounded-xl bg-surface border border-border px-4 py-3">
-          <p className="text-xs font-medium text-gray-500 mb-1.5">Current deposit wallet</p>
-          <div className="flex items-center gap-2 min-w-0">
-            <span className="shrink-0 rounded-md bg-accent/10 text-accent text-xs font-bold px-2 py-0.5">
-              {currentNetwork ?? 'TRC20'}
-            </span>
-            <span className="text-white text-sm font-mono truncate">{currentAddress}</span>
-          </div>
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="shrink-0 rounded bg-accent/10 text-accent text-xs font-bold px-2 py-0.5">
+            {currentNetwork ?? 'TRC20'}
+          </span>
+          <span className="text-white text-sm font-mono truncate">{currentAddress}</span>
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-3">
-        {error && (
-          <div className="rounded-xl bg-red-900/20 border border-red-700/50 px-4 py-3">
-            <p className="text-red-400 text-sm">{error}</p>
-          </div>
-        )}
-        {saved && (
-          <div className="rounded-xl bg-green-900/20 border border-green-700/50 px-4 py-3">
-            <p className="text-green-400 text-sm">Deposit wallet saved.</p>
-          </div>
-        )}
+        {error && <p className="text-red-400 text-sm">{error}</p>}
+        {saved && <p className="text-green-400 text-sm">Deposit wallet saved.</p>}
 
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1.5">Network</label>
-          <select
+          <label className="block text-gray-500 text-xs font-medium uppercase tracking-wide mb-1.5">Network</label>
+          <CustomSelect
             value={network}
-            onChange={e => setNetwork(e.target.value as 'TRC20' | 'ERC20')}
-            className="w-full px-4 py-3 rounded-xl bg-background border border-border text-white text-sm focus:outline-none focus:border-accent transition-colors"
-          >
-            {NETWORKS.map(n => (
-              <option key={n.value} value={n.value}>{n.label}</option>
-            ))}
-          </select>
+            onChange={setNetwork}
+            options={NETWORKS}
+            placeholder="Select network…"
+          />
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1.5">Sender wallet address</label>
+          <label className="block text-gray-500 text-xs font-medium uppercase tracking-wide mb-1.5">Sender wallet address</label>
           <input
             type="text"
             value={address}
             onChange={e => setAddress(e.target.value)}
-            placeholder={selectedNetwork.placeholder}
+            placeholder={placeholder}
             required
-            className="w-full px-4 py-3 rounded-xl bg-background border border-border text-white text-sm font-mono placeholder-gray-600 focus:outline-none focus:border-accent transition-colors"
+            className="w-full px-3 py-2 rounded-lg bg-background border border-border text-white text-sm font-mono placeholder-gray-600 focus:outline-none focus:border-accent transition-colors"
           />
-          <p className="text-gray-600 text-xs mt-1.5">
-            This is the address you will send funds FROM. Only deposits sent from this address will be accepted.
-          </p>
+          <p className="text-gray-600 text-xs mt-1">Only deposits sent from this address will be accepted.</p>
         </div>
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-3 rounded-xl bg-accent text-black font-bold text-sm hover:opacity-90 disabled:opacity-50 transition-opacity"
+          className="px-4 py-1.5 rounded-lg bg-accent text-black text-xs font-bold hover:opacity-90 disabled:opacity-50"
         >
           {loading ? 'Saving…' : 'Save deposit wallet'}
         </button>

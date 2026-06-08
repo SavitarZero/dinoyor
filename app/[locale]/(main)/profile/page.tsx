@@ -28,7 +28,7 @@ function KycCard({ status }: Readonly<{ status: string | null | undefined }>) {
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-green-400 text-sm font-semibold">Identity Verified</p>
-          <p className="text-gray-500 text-xs">You can buy and sell on Dinoyor.</p>
+          <p className="text-gray-500 text-xs">You can buy and sell on Ammonite.</p>
         </div>
         <Link href="/profile/kyc" className="text-gray-500 text-xs hover:text-accent transition-colors shrink-0">View →</Link>
       </div>
@@ -58,9 +58,9 @@ function KycCard({ status }: Readonly<{ status: string | null | undefined }>) {
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-white text-sm font-semibold">Verify your identity</p>
-        <p className="text-gray-400 text-xs mt-0.5">Required to buy and sell items on Dinoyor. Takes less than 5 minutes.</p>
+        <p className="text-gray-400 text-xs mt-0.5">Required to buy and sell items on Ammonite. Takes less than 5 minutes.</p>
       </div>
-      <Link href="/profile/kyc" className="sm:shrink-0 py-2.5 px-5 rounded-xl bg-accent text-black text-sm font-bold hover:opacity-90 transition-opacity text-center">
+      <Link href="/profile/kyc" className="sm:shrink-0 px-4 py-1.5 rounded-lg bg-accent text-black text-xs font-bold hover:opacity-90 text-center">
         Verify now
       </Link>
     </div>
@@ -190,44 +190,25 @@ export default async function ProfilePage() {
 
             {/* Navigation */}
             <nav className="rounded-2xl border border-border bg-surface overflow-hidden">
-              <Link href="/profile" className="flex items-center gap-3 px-4 py-3 text-sm text-white bg-white/3 border-l-2 border-accent">
-                <svg className="w-4 h-4 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                </svg>
-                Overview
-              </Link>
-              <Link href="/orders" className="flex items-center gap-3 px-4 py-3 text-sm text-gray-400 hover:text-white hover:bg-white/2 transition-colors border-l-2 border-transparent">
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                </svg>
-                Orders
-              </Link>
-              <Link href="/profile/listings" className="flex items-center gap-3 px-4 py-3 text-sm text-gray-400 hover:text-white hover:bg-white/2 transition-colors border-l-2 border-transparent">
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                </svg>
-                <span className="flex-1">My Listings</span>
-                {activeListings ? <span className="text-[10px] font-bold bg-accent/10 text-accent px-1.5 py-0.5 rounded-full">{activeListings}</span> : null}
-              </Link>
-              <Link href="/profile/email" className="flex items-center gap-3 px-4 py-3 text-sm text-gray-400 hover:text-white hover:bg-white/2 transition-colors border-l-2 border-transparent">
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-                Email
-              </Link>
-              <Link href="/wallet" className="flex items-center gap-3 px-4 py-3 text-sm text-gray-400 hover:text-white hover:bg-white/2 transition-colors border-l-2 border-transparent">
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                </svg>
-                Wallet
-              </Link>
-              <Link href="/profile/kyc" className={`flex items-center gap-3 px-4 py-3 text-sm hover:bg-white/2 transition-colors border-l-2 border-transparent ${kycNavClass(kycStatus)}`}>
+              <a href="#identity" className="flex items-center gap-3 px-4 py-3 text-sm text-gray-400 hover:text-white hover:bg-white/2 transition-colors border-l-2 border-transparent">
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
                 </svg>
-                <span className="flex-1">Verify</span>
+                <span className="flex-1">Identity</span>
                 <KycNavBadge status={kycStatus} />
-              </Link>
+              </a>
+              <a href="#wallet-settings" className="flex items-center gap-3 px-4 py-3 text-sm text-gray-400 hover:text-white hover:bg-white/2 transition-colors border-l-2 border-transparent">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                </svg>
+                Wallet Settings
+              </a>
+              <a href="#recent-orders" className="flex items-center gap-3 px-4 py-3 text-sm text-gray-400 hover:text-white hover:bg-white/2 transition-colors border-l-2 border-transparent">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+                Recent Orders
+              </a>
             </nav>
 
           </div>
@@ -236,10 +217,12 @@ export default async function ProfilePage() {
         {/* Main content */}
         <main className="flex-1 min-w-0 space-y-6">
 
-          <KycCard status={kycStatus} />
+          <div id="identity">
+            <KycCard status={kycStatus} />
+          </div>
 
           {/* Wallet Settings */}
-          <div className="rounded-2xl border border-border bg-surface overflow-hidden">
+          <div id="wallet-settings" className="rounded-2xl border border-border bg-surface">
             <div className="px-4 py-3 border-b border-border">
               <p className="text-white text-sm font-semibold">Wallet Settings</p>
             </div>
@@ -277,7 +260,7 @@ export default async function ProfilePage() {
                 <p className="text-gray-500 text-xs">coin Balance</p>
                 <p className="text-2xl font-bold text-accent mt-0.5">{amoBalance.toFixed(2)} <span className="text-base font-medium text-gray-500">coin</span></p>
               </div>
-              <Link href="/wallet" className="px-4 py-2 rounded-xl border border-border text-gray-400 text-sm hover:text-white hover:border-accent/50 transition-colors shrink-0">
+              <Link href="/wallet" className="px-4 py-1.5 rounded-lg border border-border text-gray-400 text-xs font-bold hover:text-white hover:border-accent/50 transition-colors shrink-0">
                 Deposit →
               </Link>
             </div>
@@ -312,7 +295,7 @@ export default async function ProfilePage() {
           )}
 
           {/* Orders */}
-          <div>
+          <div id="recent-orders">
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-white text-base font-bold">Recent Orders</h2>
               <Link href="/orders" className="text-gray-500 text-xs hover:text-accent transition-colors">View all</Link>

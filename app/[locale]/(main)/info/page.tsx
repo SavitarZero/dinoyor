@@ -9,14 +9,14 @@ export default function InfoPage() {
       <div className="text-center">
         <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border border-accent/30 bg-accent/5 text-accent text-xs font-medium mb-4">
           <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-          About Dinoyor
+          About Ammonite
         </span>
         <h1 className="text-3xl md:text-4xl font-black text-white mb-3">
           The safest way to trade<br />
           <span className="text-accent">gaming items in SEA</span>
         </h1>
         <p className="text-gray-400 max-w-lg mx-auto text-sm md:text-base">
-          Dinoyor is a peer-to-peer marketplace for gaming items — built for Southeast Asian gamers with crypto escrow and zero trust required.
+          Ammonite is a peer-to-peer marketplace for gaming items — built for Southeast Asian gamers with crypto escrow and zero trust required.
         </p>
       </div>
 
@@ -39,9 +39,9 @@ export default function InfoPage() {
         </div>
       </section>
 
-      {/* Why Dinoyor */}
+      {/* Why Ammonite */}
       <section>
-        <h2 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-6 text-center">Why Dinoyor</h2>
+        <h2 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-6 text-center">Why Ammonite</h2>
         <div className="grid sm:grid-cols-2 gap-4">
           {[
             { Icon: ShieldCheck, title: 'Crypto Escrow',     desc: 'Funds are held in escrow until both parties confirm. No chargebacks, no fraud.' },
