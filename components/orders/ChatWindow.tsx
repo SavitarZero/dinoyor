@@ -73,7 +73,7 @@ export function ChatWindow({ conversationId, initialMessages, currentUserId }: P
   }
 
   return (
-    <div className="flex flex-col rounded-xl border border-border bg-surface overflow-hidden">
+    <div className="flex flex-col rounded border border-border bg-surface overflow-hidden">
       {/* Header */}
       <div className="px-4 py-3 border-b border-border">
         <p className="text-white text-sm font-semibold">Chat</p>
@@ -89,7 +89,7 @@ export function ChatWindow({ conversationId, initialMessages, currentUserId }: P
           if (isSystem) {
             return (
               <div key={msg.id} className="flex justify-center">
-                <div className="max-w-xs rounded-xl bg-background border border-border px-3 py-2 text-center">
+                <div className="max-w-xs rounded bg-background border border-border px-3 py-2 text-center">
                   <p className="text-gray-400 text-xs whitespace-pre-wrap">{msg.body}</p>
                 </div>
               </div>
@@ -98,7 +98,7 @@ export function ChatWindow({ conversationId, initialMessages, currentUserId }: P
 
           return (
             <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-[75%] rounded-2xl px-3 py-2 ${
+              <div className={`max-w-[75%] rounded px-3 py-2 ${
                 isMe
                   ? 'bg-accent text-black rounded-br-sm'
                   : 'bg-background border border-border text-white rounded-bl-sm'
@@ -121,12 +121,12 @@ export function ChatWindow({ conversationId, initialMessages, currentUserId }: P
           value={body}
           onChange={e => setBody(e.target.value)}
           placeholder="Type a message..."
-          className="flex-1 min-w-0 px-3 py-2 rounded-xl bg-background border border-border text-white text-sm placeholder-gray-600 focus:outline-none focus:border-accent/60 transition-colors"
+          className="flex-1 min-w-0 px-3 py-2 rounded bg-background border border-border text-white text-sm placeholder-gray-600 focus:outline-none focus:border-accent/60 transition-colors"
         />
         <button
           type="submit"
           disabled={!body.trim() || sending}
-          className="px-4 py-2 rounded-xl bg-accent text-black text-sm font-semibold disabled:opacity-40 hover:opacity-90 transition-opacity shrink-0"
+          className="px-4 py-2 rounded bg-accent text-black text-sm font-semibold disabled:opacity-40 hover:opacity-90 transition-opacity shrink-0"
         >
           Send
         </button>

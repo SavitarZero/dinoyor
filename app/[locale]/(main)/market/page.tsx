@@ -88,7 +88,7 @@ export default async function MarketPage({
             <p className="text-gray-600 text-xs font-semibold uppercase tracking-widest mb-2">Filter</p>
             <Link
               href={buildHref(filterParams, {})}
-              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
+              className={`flex items-center gap-2 px-3 py-2 rounded text-sm transition-colors ${
                 !activeGame && !activeCategory ? 'bg-accent/10 text-accent font-semibold' : 'text-gray-400 hover:text-white'
               }`}
             >
@@ -103,7 +103,7 @@ export default async function MarketPage({
                 <Link
                   key={cat}
                   href={buildHref(filterParams, { category: cat! })}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
+                  className={`flex items-center gap-2 px-3 py-2 rounded text-sm transition-colors ${
                     activeCategory === cat && !activeGame ? 'bg-accent/10 text-accent font-semibold' : 'text-gray-400 hover:text-white'
                   }`}
                 >
@@ -163,10 +163,10 @@ export default async function MarketPage({
                   {page > 1 ? (
                     <Link
                       href={buildHref({ ...filterParams, ...(activeGame ? { game: activeGame } : activeCategory ? { category: activeCategory } : {}) }, { page: String(page - 1) })}
-                      className="px-3 py-2 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-white/8 transition-colors"
+                      className="px-3 py-2 rounded text-sm text-gray-400 hover:text-white hover:bg-white/8 transition-colors"
                     >←</Link>
                   ) : (
-                    <span className="px-3 py-2 rounded-lg text-sm text-gray-700 cursor-not-allowed">←</span>
+                    <span className="px-3 py-2 rounded text-sm text-gray-700 cursor-not-allowed">←</span>
                   )}
 
                   {Array.from({ length: totalPages }, (_, i) => i + 1)
@@ -183,7 +183,7 @@ export default async function MarketPage({
                         <Link
                           key={p}
                           href={buildHref({ ...filterParams, ...(activeGame ? { game: activeGame } : activeCategory ? { category: activeCategory } : {}) }, { page: p === 1 ? undefined : String(p) })}
-                          className={`w-9 h-9 flex items-center justify-center rounded-lg text-sm font-medium transition-colors ${
+                          className={`w-9 h-9 flex items-center justify-center rounded text-sm font-medium transition-colors ${
                             p === page ? 'bg-accent text-black' : 'text-gray-400 hover:text-white hover:bg-white/8'
                           }`}
                         >{p}</Link>
@@ -194,10 +194,10 @@ export default async function MarketPage({
                   {page < totalPages ? (
                     <Link
                       href={buildHref({ ...filterParams, ...(activeGame ? { game: activeGame } : activeCategory ? { category: activeCategory } : {}) }, { page: String(page + 1) })}
-                      className="px-3 py-2 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-white/8 transition-colors"
+                      className="px-3 py-2 rounded text-sm text-gray-400 hover:text-white hover:bg-white/8 transition-colors"
                     >→</Link>
                   ) : (
-                    <span className="px-3 py-2 rounded-lg text-sm text-gray-700 cursor-not-allowed">→</span>
+                    <span className="px-3 py-2 rounded text-sm text-gray-700 cursor-not-allowed">→</span>
                   )}
                 </div>
               )}

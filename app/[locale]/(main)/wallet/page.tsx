@@ -53,7 +53,7 @@ export default async function WalletPage() {
         <div className="grid lg:grid-cols-3 gap-5">
 
           {/* Balance card */}
-          <div className="rounded-xl border border-accent/20 bg-accent/5 p-5 flex flex-col gap-2">
+          <div className="rounded border border-accent/20 bg-accent/5 p-5 flex flex-col gap-2">
             <p className="text-gray-500 text-xs uppercase tracking-wide">Spendable Balance</p>
             <p className="text-3xl font-bold text-accent">
               {buyerBalance.toFixed(2)}
@@ -63,7 +63,7 @@ export default async function WalletPage() {
           </div>
 
           {/* Deposit history */}
-          <div className="lg:col-span-2 rounded-xl border border-border bg-surface">
+          <div className="lg:col-span-2 rounded border border-border bg-surface">
             <div className="px-4 py-3 border-b border-border">
               <p className="text-white text-sm font-medium">Deposit History</p>
             </div>
@@ -100,7 +100,7 @@ export default async function WalletPage() {
         </div>
 
         {/* Deposit form */}
-        <div className="mt-5 rounded-xl border border-border bg-surface p-5">
+        <div className="mt-5 rounded border border-border bg-surface p-5">
           <p className="text-white text-sm font-semibold mb-4">Top up balance</p>
           <DepositForm
             escrowAddresses={escrowAddresses}
@@ -118,7 +118,7 @@ export default async function WalletPage() {
             <div className="lg:col-span-2 space-y-5">
 
               {/* Withdraw requirements */}
-              <div className="rounded-xl border border-border bg-surface p-4 space-y-2">
+              <div className="rounded border border-border bg-surface p-4 space-y-2">
                 <p className="text-gray-400 text-xs font-semibold uppercase tracking-wide">Withdraw Requirements</p>
                 <div className="space-y-2">
                   {[
@@ -151,7 +151,7 @@ export default async function WalletPage() {
                 </div>
               </div>
 
-              <div className="rounded-xl border border-border bg-surface p-5">
+              <div className="rounded border border-border bg-surface p-5">
                 <p className="text-gray-500 text-xs uppercase tracking-wide mb-3">Pending Balance</p>
                 <div className="space-y-3">
                   {sellerBalances.map((b: any) => {
@@ -173,7 +173,7 @@ export default async function WalletPage() {
                               'use server'
                               await requestPayout(b.currency)
                             }}>
-                              <button className="px-4 py-2 rounded-xl bg-accent text-black text-sm font-semibold hover:opacity-90">
+                              <button className="px-4 py-2 rounded bg-accent text-black text-sm font-semibold hover:opacity-90">
                                 Request Payout
                               </button>
                             </form>
@@ -186,13 +186,13 @@ export default async function WalletPage() {
                 </div>
               </div>
 
-              <div className="rounded-xl border border-border bg-surface p-5 space-y-4">
+              <div className="rounded border border-border bg-surface p-5 space-y-4">
                 <div className="flex items-center justify-between">
                   <p className="text-white text-sm font-medium">Payout Wallet</p>
                   {profile?.wallet_address && <span className="text-green-400 text-xs">Connected</span>}
                 </div>
                 {profile?.wallet_address && (
-                  <div className="rounded-lg bg-background border border-border px-3 py-2.5">
+                  <div className="rounded bg-background border border-border px-3 py-2.5">
                     <p className="text-gray-500 text-xs">{profile.wallet_network}</p>
                     <p className="text-white text-sm font-mono break-all">{profile.wallet_address}</p>
                   </div>
@@ -203,7 +203,7 @@ export default async function WalletPage() {
             </div>
 
             <div className="space-y-5">
-              <div className="rounded-xl border border-border bg-surface">
+              <div className="rounded border border-border bg-surface">
                 <div className="px-4 py-3 border-b border-border">
                   <p className="text-white text-sm font-medium">Earning History</p>
                 </div>
@@ -234,7 +234,7 @@ export default async function WalletPage() {
                 )}
               </div>
 
-              <div className="rounded-xl border border-border bg-surface">
+              <div className="rounded border border-border bg-surface">
                 <div className="px-4 py-3 border-b border-border">
                   <p className="text-white text-sm font-medium">Payouts</p>
                 </div>

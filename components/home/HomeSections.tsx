@@ -115,14 +115,14 @@ export function HomeSections({ games, byCategory, listings, hotIds }: Props) {
         {/* ── Hero carousel ── */}
         {!activeGame && !activeCategory && featuredGames.length > 0 && heroGame && (
           <div className="pt-5 pb-5">
-            <div className="relative rounded-2xl overflow-hidden group" style={{ height: 'clamp(180px, 30vw, 400px)' }}>
+            <div className="relative rounded overflow-hidden group" style={{ height: 'clamp(180px, 30vw, 400px)' }}>
               <div className="absolute inset-0">
                 <GameBanner src={heroGame.banner_url} slug={heroGame.slug} name={heroGame.name} className="w-full h-full transition-all duration-500" />
               </div>
               <div className="absolute inset-0 bg-linear-to-r from-black/80 via-black/30 to-transparent" />
               <div className="absolute inset-0 flex items-end p-6 md:p-10">
                 <div className="flex items-end gap-4">
-                  <GameLogo src={heroGame.logo_url} slug={heroGame.slug} name={heroGame.name} className="hidden sm:flex w-16 h-16 md:w-20 md:h-20 rounded-2xl shadow-2xl shrink-0 items-center justify-center" />
+                  <GameLogo src={heroGame.logo_url} slug={heroGame.slug} name={heroGame.name} className="hidden sm:flex w-16 h-16 md:w-20 md:h-20 rounded shadow-2xl shrink-0 items-center justify-center" />
                   <div>
                     <span className="inline-block px-2 py-0.5 rounded bg-accent/20 border border-accent/40 text-accent text-[10px] font-bold uppercase tracking-widest mb-2">
                       {heroGame.category ?? 'Featured'}
@@ -166,7 +166,7 @@ export function HomeSections({ games, byCategory, listings, hotIds }: Props) {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pb-8">
             {featuredGames.filter((_, i) => i !== heroIndex).slice(0, 4).map(g => (
               <button key={g.id} onClick={() => setActiveGame(g.slug)}
-                className="group relative rounded-xl overflow-hidden text-left"
+                className="group relative rounded overflow-hidden text-left"
                 style={{ height: 'clamp(70px, 10vw, 130px)' }}
               >
                 <div className="absolute inset-0 group-hover:scale-105 transition-transform duration-300">
@@ -199,11 +199,11 @@ export function HomeSections({ games, byCategory, listings, hotIds }: Props) {
         {/* ── Selected game banner ── */}
         {selectedGame && (
           <div className="pt-5 pb-5">
-            <div className="relative rounded-2xl overflow-hidden" style={{ height: 'clamp(100px, 18vw, 200px)' }}>
+            <div className="relative rounded overflow-hidden" style={{ height: 'clamp(100px, 18vw, 200px)' }}>
               <GameBanner src={selectedGame.banner_url} slug={selectedGame.slug} name={selectedGame.name} className="w-full h-full" />
               <div className="absolute inset-0 bg-linear-to-r from-black/80 via-black/40 to-transparent" />
               <div className="absolute inset-0 flex items-center px-5 gap-4">
-                <GameLogo src={selectedGame.logo_url} slug={selectedGame.slug} name={selectedGame.name} className="w-12 h-12 md:w-16 md:h-16 rounded-2xl shadow-lg shrink-0" />
+                <GameLogo src={selectedGame.logo_url} slug={selectedGame.slug} name={selectedGame.name} className="w-12 h-12 md:w-16 md:h-16 rounded shadow-lg shrink-0" />
                 <div>
                   <p className="text-gray-400 text-xs mb-0.5">{selectedGame.category}</p>
                   <p className="text-white text-xl md:text-3xl font-black">{selectedGame.name}</p>
@@ -241,7 +241,7 @@ export function HomeSections({ games, byCategory, listings, hotIds }: Props) {
               <section key={game.id}>
                 {/* Section header */}
                 <div className="flex items-center gap-3 mb-3 px-1">
-                  <GameLogo src={game.logo_url} slug={game.slug} name={game.name} className="w-7 h-7 rounded-lg shrink-0" />
+                  <GameLogo src={game.logo_url} slug={game.slug} name={game.name} className="w-7 h-7 rounded shrink-0" />
                   <div className="min-w-0 flex-1">
                     <p className="text-white font-bold text-sm truncate">{game.name}</p>
                     <p className="text-gray-600 text-[10px]">{game.category}</p>
@@ -301,9 +301,9 @@ export function HomeSections({ games, byCategory, listings, hotIds }: Props) {
                 icon: 'M5 13l4 4L19 7',
               },
             ].map(({ step, title, desc, icon }) => (
-              <div key={step} className="relative flex flex-col gap-3 p-5 rounded-2xl border border-border bg-surface">
+              <div key={step} className="relative flex flex-col gap-3 p-5 rounded border border-border bg-surface">
                 <span className="text-4xl font-black text-white/5 absolute top-4 right-5 select-none">{step}</span>
-                <div className="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center shrink-0">
+                <div className="w-10 h-10 rounded bg-accent/10 border border-accent/20 flex items-center justify-center shrink-0">
                   <svg className="w-5 h-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
                     <path strokeLinecap="round" strokeLinejoin="round" d={icon} />
                   </svg>
@@ -318,7 +318,7 @@ export function HomeSections({ games, byCategory, listings, hotIds }: Props) {
         </div>
 
         {/* ── Trust & Safety ── */}
-        <div className="rounded-2xl border border-border bg-surface p-6 md:p-8 mb-8">
+        <div className="rounded border border-border bg-surface p-6 md:p-8 mb-8">
           <div className="text-center mb-6">
             <h2 className="text-xl md:text-2xl font-black text-white">Why trade on Ammonite?</h2>
             <p className="text-gray-500 text-sm mt-1">Built for safe, fast game item trading</p>
@@ -355,7 +355,7 @@ export function HomeSections({ games, byCategory, listings, hotIds }: Props) {
               },
             ].map(({ title, desc, icon, color, bg }) => (
               <div key={title} className="flex flex-col gap-3">
-                <div className={`w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 ${bg}`}>
+                <div className={`w-10 h-10 rounded border flex items-center justify-center shrink-0 ${bg}`}>
                   <svg className={`w-5 h-5 ${color}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
                     <path strokeLinecap="round" strokeLinejoin="round" d={icon} />
                   </svg>

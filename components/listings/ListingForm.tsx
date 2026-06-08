@@ -8,9 +8,9 @@ interface ItemType { id: string; name: string; slug: string }
 
 function KycSellBanner({ kycStatus }: Readonly<{ kycStatus: string | null }>) {
   return (
-    <div className="rounded-xl border border-border bg-surface p-4 space-y-3">
+    <div className="rounded border border-border bg-surface p-4 space-y-3">
       <div className="flex items-start gap-3">
-        <div className="w-8 h-8 rounded-lg bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center shrink-0">
+        <div className="w-8 h-8 rounded bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center shrink-0">
           <svg className="w-4 h-4 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
           </svg>
@@ -27,7 +27,7 @@ function KycSellBanner({ kycStatus }: Readonly<{ kycStatus: string | null }>) {
       {kycStatus !== 'pending' && (
         <a
           href="/profile/kyc"
-          className="w-full py-2.5 rounded-xl bg-accent text-black text-sm font-bold text-center hover:opacity-90 transition-opacity flex items-center justify-center"
+          className="w-full py-2.5 rounded bg-accent text-black text-sm font-bold text-center hover:opacity-90 transition-opacity flex items-center justify-center"
         >
           Verify identity
         </a>
@@ -215,7 +215,7 @@ export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ ga
   const youReceive = Math.max(0, priceNum - percentFeeAmt - resolvedFlatFee)
   const fee = percentFeeAmt
 
-  const inputCls = 'w-full px-3 py-2.5 rounded-xl bg-background border border-border text-white placeholder-gray-600 text-sm focus:outline-none focus:border-accent transition-colors'
+  const inputCls = 'w-full px-3 py-2.5 rounded bg-background border border-border text-white placeholder-gray-600 text-sm focus:outline-none focus:border-accent transition-colors'
   const labelCls = 'block text-xs font-medium text-gray-400 mb-1.5'
 
   return (
@@ -225,7 +225,7 @@ export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ ga
       <div className="grid lg:grid-cols-3 gap-5">
         <div className="lg:col-span-2 space-y-5">
 
-          <div className="rounded-xl border border-border bg-surface p-5 space-y-4">
+          <div className="rounded border border-border bg-surface p-5 space-y-4">
             <div>
               <label className={labelCls}>Game</label>
               <input type="hidden" name="game_id" value={selectedGame?.id ?? ''} />
@@ -250,7 +250,7 @@ export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ ga
                   </svg>
                 </div>
                 {gameOpen && (
-                  <div className="absolute z-20 top-full left-0 right-0 mt-1 rounded-xl border border-border bg-surface shadow-xl max-h-52 overflow-y-auto">
+                  <div className="absolute z-20 top-full left-0 right-0 mt-1 rounded border border-border bg-surface shadow-xl max-h-52 overflow-y-auto">
                     {filteredGames.length === 0 ? (
                       <p className="px-3 py-2.5 text-gray-500 text-sm">No games found</p>
                     ) : filteredGames.map(g => (
@@ -289,7 +289,7 @@ export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ ga
                   </svg>
                 </button>
                 {itemTypeOpen && (
-                  <div className="absolute z-20 top-full left-0 right-0 mt-1 rounded-xl border border-border bg-surface shadow-xl max-h-52 overflow-y-auto">
+                  <div className="absolute z-20 top-full left-0 right-0 mt-1 rounded border border-border bg-surface shadow-xl max-h-52 overflow-y-auto">
                     {itemTypes.length === 0 ? (
                       <p className="px-3 py-2.5 text-gray-500 text-sm">No types available</p>
                     ) : itemTypes.map(t => (
@@ -330,7 +330,7 @@ export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ ga
             </div>
           </div>
 
-          <div className="rounded-xl border border-border bg-surface p-5 space-y-4">
+          <div className="rounded border border-border bg-surface p-5 space-y-4">
             <div>
               <label className={labelCls}>Cover image</label>
               <input
@@ -342,11 +342,11 @@ export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ ga
                 className="hidden"
               />
               {coverCompressing ? (
-                <div className="aspect-[4/3] rounded-xl border border-border bg-background flex items-center justify-center">
+                <div className="aspect-[4/3] rounded border border-border bg-background flex items-center justify-center">
                   <span className="text-gray-500 text-xs">Compressing…</span>
                 </div>
               ) : coverPreview ? (
-                <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-background border border-border group cursor-pointer" onClick={() => coverRef.current?.click()}>
+                <div className="relative aspect-[4/3] rounded overflow-hidden bg-background border border-border group cursor-pointer" onClick={() => coverRef.current?.click()}>
                   <img src={coverPreview} alt="cover" className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <span className="text-white text-xs">Change</span>
@@ -356,7 +356,7 @@ export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ ga
                 <button
                   type="button"
                   onClick={() => coverRef.current?.click()}
-                  className="w-full aspect-[4/3] rounded-xl border-2 border-dashed border-border hover:border-accent transition-colors flex flex-col items-center justify-center gap-2"
+                  className="w-full aspect-[4/3] rounded border-2 border-dashed border-border hover:border-accent transition-colors flex flex-col items-center justify-center gap-2"
                 >
                   <svg className="w-8 h-8 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0022.5 18.75V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z" />
@@ -383,7 +383,7 @@ export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ ga
               />
               <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
                 {additionalPreviews.map((img, i) => (
-                  <div key={i} className="relative aspect-square rounded-xl overflow-hidden bg-background border border-border group">
+                  <div key={i} className="relative aspect-square rounded overflow-hidden bg-background border border-border group">
                     <img src={img.url} alt="" className="w-full h-full object-cover" />
                     <button
                       type="button"
@@ -395,7 +395,7 @@ export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ ga
                   </div>
                 ))}
                 {additionalCompressing && (
-                  <div className="aspect-square rounded-xl border border-border bg-background flex items-center justify-center">
+                  <div className="aspect-square rounded border border-border bg-background flex items-center justify-center">
                     <span className="text-xs text-gray-600">…</span>
                   </div>
                 )}
@@ -403,7 +403,7 @@ export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ ga
                   <button
                     type="button"
                     onClick={() => additionalRef.current?.click()}
-                    className="aspect-square rounded-xl border-2 border-dashed border-border hover:border-accent transition-colors flex items-center justify-center"
+                    className="aspect-square rounded border-2 border-dashed border-border hover:border-accent transition-colors flex items-center justify-center"
                   >
                     <span className="text-gray-500 text-lg">+</span>
                   </button>
@@ -413,7 +413,7 @@ export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ ga
             </div>
           </div>
 
-          <div className="rounded-xl border border-border bg-surface p-5 space-y-4">
+          <div className="rounded border border-border bg-surface p-5 space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className={labelCls}>Price (coin)</label>
@@ -444,7 +444,7 @@ export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ ga
                 </div>
                 {/* Fee breakdown */}
                 {priceNum > 0 && (
-                  <div className="mt-2 rounded-xl bg-background border border-border p-4 space-y-1.5 text-sm">
+                  <div className="mt-2 rounded bg-background border border-border p-4 space-y-1.5 text-sm">
                     <div className="flex justify-between text-gray-400">
                       <span>Price</span>
                       <span>{priceNum.toFixed(2)} coin</span>
@@ -485,7 +485,7 @@ export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ ga
                     </svg>
                   </button>
                   {deliveryOpen && (
-                    <div className="absolute z-20 top-full left-0 right-0 mt-1 rounded-xl border border-border bg-surface shadow-xl max-h-52 overflow-y-auto">
+                    <div className="absolute z-20 top-full left-0 right-0 mt-1 rounded border border-border bg-surface shadow-xl max-h-52 overflow-y-auto">
                       {deliveryOptions.map(opt => (
                         <button
                           key={opt.value}
@@ -510,7 +510,7 @@ export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ ga
         <div className="lg:col-span-1">
           <div className="lg:sticky lg:top-0 space-y-4">
 
-            <div className="rounded-xl border border-border bg-surface overflow-hidden">
+            <div className="rounded border border-border bg-surface overflow-hidden">
               <div className="aspect-[4/3] bg-background">
                 {coverPreview ? (
                   <img src={coverPreview} alt="preview" className="w-full h-full object-cover" />
@@ -522,7 +522,7 @@ export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ ga
               </div>
             </div>
 
-            <div className="rounded-xl border border-border bg-surface p-4 space-y-3">
+            <div className="rounded border border-border bg-surface p-4 space-y-3">
               <p className="text-xs font-medium text-gray-400">Pricing summary</p>
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
@@ -548,7 +548,7 @@ export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ ga
               <button
                 type="submit"
                 disabled={loading || coverCompressing || additionalCompressing}
-                className="w-full py-3 rounded-xl bg-accent text-black font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-40"
+                className="w-full py-3 rounded bg-accent text-black font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-40"
               >
                 {loading ? 'Publishing…' : 'Publish listing'}
               </button>

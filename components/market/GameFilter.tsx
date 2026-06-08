@@ -43,7 +43,7 @@ export function GameFilter({ games, activeGame, filterParams }: Props) {
           value={q}
           onChange={e => setQ(e.target.value)}
           placeholder="Search game..."
-          className="w-full bg-background border border-border rounded-lg px-3 py-1.5 text-xs text-white placeholder-gray-600 focus:outline-none focus:border-accent/60 transition-colors"
+          className="w-full bg-background border border-border rounded px-3 py-1.5 text-xs text-white placeholder-gray-600 focus:outline-none focus:border-accent/60 transition-colors"
         />
         {q && (
           <button
@@ -65,7 +65,7 @@ export function GameFilter({ games, activeGame, filterParams }: Props) {
             <Link
               key={g.id}
               href={buildHref(filterParams, g.slug)}
-              className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
+              className={`flex items-center gap-2 px-3 py-2 rounded text-sm transition-colors ${
                 activeGame === g.slug
                   ? 'bg-accent/10 text-accent font-semibold'
                   : 'text-gray-400 hover:text-white'

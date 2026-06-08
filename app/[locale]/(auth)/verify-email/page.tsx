@@ -17,7 +17,7 @@ export default function VerifyEmailPage() {
         </p>
       </div>
 
-      <div className="rounded-xl border border-border bg-surface px-5 py-4 text-left space-y-2">
+      <div className="rounded border border-border bg-surface px-5 py-4 text-left space-y-2">
         <p className="text-white text-xs font-semibold">Next steps</p>
         <ol className="space-y-1.5 text-gray-500 text-xs list-none">
           <li className="flex items-start gap-2">
@@ -39,7 +39,7 @@ export default function VerifyEmailPage() {
 
       <Link
         href="/login"
-        className="inline-block px-5 py-2 rounded-xl border border-border text-gray-400 text-sm hover:text-white hover:border-accent transition-colors"
+        className="inline-block px-5 py-2 rounded border border-border text-gray-400 text-sm hover:text-white hover:border-accent transition-colors"
       >
         Back to sign in
       </Link>

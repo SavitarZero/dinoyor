@@ -30,7 +30,7 @@ export default function RegisterPage() {
     router.push('/login')
   }
 
-  const inputCls = 'w-full px-4 py-2.5 rounded-xl bg-background border border-border text-white text-sm placeholder-gray-600 focus:outline-none focus:border-accent transition-colors'
+  const inputCls = 'w-full px-4 py-2.5 rounded bg-background border border-border text-white text-sm placeholder-gray-600 focus:outline-none focus:border-accent transition-colors'
 
   return (
     <div>
@@ -38,7 +38,7 @@ export default function RegisterPage() {
       <p className="text-gray-500 text-sm mb-6">Add your email now or later — required for password reset.</p>
 
       {error && (
-        <div className="mb-4 px-3 py-2.5 rounded-xl bg-red-900/20 border border-red-700/40">
+        <div className="mb-4 px-3 py-2.5 rounded bg-red-900/20 border border-red-700/40">
           <p className="text-red-400 text-sm">{error}</p>
         </div>
       )}
@@ -106,7 +106,7 @@ export default function RegisterPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-2.5 rounded-xl bg-accent text-black font-bold text-sm hover:opacity-90 disabled:opacity-50 transition-opacity mt-1"
+          className="w-full py-2.5 rounded bg-accent text-black font-bold text-sm hover:opacity-90 disabled:opacity-50 transition-opacity mt-1"
         >
           {loading ? 'Creating account…' : t('register')}
         </button>

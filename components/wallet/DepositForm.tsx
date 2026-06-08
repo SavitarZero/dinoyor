@@ -44,7 +44,7 @@ export function DepositForm({ escrowAddresses, hasDepositWallet, minDeposit }: R
 
   if (!hasDepositWallet) {
     return (
-      <div className="rounded-xl border border-yellow-700/40 bg-yellow-900/10 p-5 space-y-3">
+      <div className="rounded border border-yellow-700/40 bg-yellow-900/10 p-5 space-y-3">
         <div className="flex items-start gap-3">
           <svg className="w-5 h-5 text-yellow-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
@@ -63,7 +63,7 @@ export function DepositForm({ escrowAddresses, hasDepositWallet, minDeposit }: R
 
   if (success) {
     return (
-      <div className="rounded-xl border border-green-700/40 bg-green-900/10 p-5 space-y-2">
+      <div className="rounded border border-green-700/40 bg-green-900/10 p-5 space-y-2">
         <div className="flex items-center gap-2">
           <svg className="w-5 h-5 text-green-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
@@ -84,7 +84,7 @@ export function DepositForm({ escrowAddresses, hasDepositWallet, minDeposit }: R
         <p className="text-white text-sm font-semibold">Step 1 — Send coin to the platform wallet</p>
 
         {/* Network selector */}
-        <div className="flex rounded-xl overflow-hidden border border-border">
+        <div className="flex rounded overflow-hidden border border-border">
           {(['TRC20', 'ERC20'] as const).map(n => (
             <button
               key={n}
@@ -101,7 +101,7 @@ export function DepositForm({ escrowAddresses, hasDepositWallet, minDeposit }: R
         </div>
 
         {/* Address */}
-        <div className="rounded-xl bg-background border border-border p-4 space-y-2">
+        <div className="rounded bg-background border border-border p-4 space-y-2">
           {address ? (
             <>
               <p className="text-gray-500 text-xs uppercase tracking-wide">Deposit address ({network})</p>
@@ -110,7 +110,7 @@ export function DepositForm({ escrowAddresses, hasDepositWallet, minDeposit }: R
                 <button
                   type="button"
                   onClick={handleCopy}
-                  className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
+                  className={`shrink-0 px-3 py-1.5 rounded text-xs font-medium transition-all border ${
                     copied
                       ? 'bg-green-900/30 border-green-700/50 text-green-400'
                       : 'bg-surface border-border text-gray-400 hover:text-white hover:border-accent'
@@ -140,7 +140,7 @@ export function DepositForm({ escrowAddresses, hasDepositWallet, minDeposit }: R
               value={amount}
               onChange={e => setAmount(e.target.value)}
               placeholder="e.g. 50"
-              className="w-full px-4 py-3 rounded-xl bg-background border border-border text-white text-sm placeholder-gray-600 focus:outline-none focus:border-accent transition-colors"
+              className="w-full px-4 py-3 rounded bg-background border border-border text-white text-sm placeholder-gray-600 focus:outline-none focus:border-accent transition-colors"
             />
             <p className="text-gray-600 text-xs mt-1.5">Minimum deposit: {minDeposit} coin</p>
           </div>
@@ -151,7 +151,7 @@ export function DepositForm({ escrowAddresses, hasDepositWallet, minDeposit }: R
               value={txHash}
               onChange={e => setTxHash(e.target.value)}
               placeholder={network === 'TRC20' ? 'e.g. a1b2c3d4...' : 'e.g. 0xa1b2c3...'}
-              className="w-full px-4 py-3 rounded-xl bg-background border border-border text-white text-sm font-mono placeholder-gray-600 focus:outline-none focus:border-accent transition-colors"
+              className="w-full px-4 py-3 rounded bg-background border border-border text-white text-sm font-mono placeholder-gray-600 focus:outline-none focus:border-accent transition-colors"
             />
             <p className="text-gray-600 text-xs mt-1.5">Find the TX ID in your wallet or exchange after sending</p>
           </div>
@@ -161,7 +161,7 @@ export function DepositForm({ escrowAddresses, hasDepositWallet, minDeposit }: R
           <button
             type="submit"
             disabled={loading || !address}
-            className="w-full py-3 rounded-xl bg-accent text-black font-bold text-sm hover:opacity-90 disabled:opacity-40 transition-opacity"
+            className="w-full py-3 rounded bg-accent text-black font-bold text-sm hover:opacity-90 disabled:opacity-40 transition-opacity"
           >
             {loading ? 'Submitting…' : 'Submit deposit'}
           </button>

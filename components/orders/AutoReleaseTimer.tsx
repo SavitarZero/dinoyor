@@ -22,7 +22,7 @@ export function AutoReleaseTimer({ autoReleaseAt }: { autoReleaseAt: string }) {
   }, [autoReleaseAt])
 
   return (
-    <div className="rounded-lg bg-yellow-900/20 border border-yellow-700 px-3 py-2">
+    <div className="rounded bg-yellow-900/20 border border-yellow-700 px-3 py-2">
       <p className="text-yellow-400 text-sm">{remaining}</p>
     </div>
   )

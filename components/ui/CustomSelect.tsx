@@ -33,7 +33,7 @@ export function CustomSelect({ value, onChange, options, placeholder = 'Selectâ€
       <button
         type="button"
         onClick={() => setOpen(v => !v)}
-        className="w-full px-3 py-2 rounded-lg bg-background border border-border text-sm flex items-center justify-between text-left focus:outline-none focus:border-accent transition-colors"
+        className="w-full px-3 py-2 rounded bg-background border border-border text-sm flex items-center justify-between text-left focus:outline-none focus:border-accent transition-colors"
       >
         <span className={selected ? 'text-white' : 'text-gray-600'}>
           {selected?.label ?? placeholder}
@@ -46,7 +46,7 @@ export function CustomSelect({ value, onChange, options, placeholder = 'Selectâ€
         </svg>
       </button>
       {open && (
-        <div className="absolute z-20 top-full left-0 right-0 mt-1 rounded-lg border border-border bg-surface shadow-xl max-h-52 overflow-y-auto">
+        <div className="absolute z-20 top-full left-0 right-0 mt-1 rounded border border-border bg-surface shadow-xl max-h-52 overflow-y-auto">
           {options.map(opt => (
             <button
               key={opt.value}

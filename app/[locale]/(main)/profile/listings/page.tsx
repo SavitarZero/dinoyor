@@ -73,7 +73,7 @@ export default async function MyListingsPage({
         </div>
         <Link
           href="/listings/new"
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-accent text-black text-sm font-bold hover:opacity-90 transition-opacity shrink-0"
+          className="flex items-center gap-2 px-4 py-2.5 rounded bg-accent text-black text-sm font-bold hover:opacity-90 transition-opacity shrink-0"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -90,7 +90,7 @@ export default async function MyListingsPage({
           { label: 'Total sold items', value: listings?.filter(l => l.status === 'sold').reduce((s, l) => s + (l.sold_count ?? 0), 0) ?? 0, color: 'text-white' },
           { label: 'Total listed', value: (listings?.length ?? 0) + (filter !== 'all' ? 0 : 0), color: 'text-white' },
         ].map(({ label, value, color }) => (
-          <div key={label} className="rounded-xl border border-border bg-surface p-4">
+          <div key={label} className="rounded border border-border bg-surface p-4">
             <p className="text-gray-500 text-xs">{label}</p>
             <p className={`text-2xl font-bold mt-0.5 ${color}`}>{value}</p>
           </div>
@@ -98,12 +98,12 @@ export default async function MyListingsPage({
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-surface border border-border rounded-xl p-1 w-fit">
+      <div className="flex gap-1 bg-surface border border-border rounded p-1 w-fit">
         {tabs.map(tab => (
           <Link
             key={tab.value}
             href={tab.value === 'all' ? '/profile/listings' : `/profile/listings?status=${tab.value}`}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+            className={`flex items-center gap-1.5 px-4 py-2 rounded text-sm font-medium transition-colors ${
               filter === tab.value
                 ? 'bg-accent text-black'
                 : 'text-gray-400 hover:text-white'
@@ -123,7 +123,7 @@ export default async function MyListingsPage({
 
       {/* Listing grid */}
       {!listings?.length ? (
-        <div className="rounded-xl border border-border bg-surface p-16 text-center space-y-3">
+        <div className="rounded border border-border bg-surface p-16 text-center space-y-3">
           <svg className="w-12 h-12 text-gray-700 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
           </svg>
@@ -141,7 +141,7 @@ export default async function MyListingsPage({
           {listings.map((listing: any) => (
             <div
               key={listing.id}
-              className={`flex flex-col rounded-xl border bg-surface overflow-hidden transition-colors ${
+              className={`flex flex-col rounded border bg-surface overflow-hidden transition-colors ${
                 listing.status === 'cancelled' ? 'border-border opacity-60' : 'border-border hover:border-accent/40'
               }`}
             >
@@ -190,7 +190,7 @@ export default async function MyListingsPage({
               <div className="border-t border-border px-3 py-2.5 flex gap-2">
                 <Link
                   href={`/market/${listing.id}`}
-                  className="flex-1 py-1.5 rounded-lg border border-border text-gray-400 text-xs font-medium text-center hover:text-white hover:border-accent/50 transition-colors"
+                  className="flex-1 py-1.5 rounded border border-border text-gray-400 text-xs font-medium text-center hover:text-white hover:border-accent/50 transition-colors"
                 >
                   View
                 </Link>
@@ -201,7 +201,7 @@ export default async function MyListingsPage({
                   }}>
                     <button
                       type="submit"
-                      className="px-3 py-1.5 rounded-lg border border-red-700/40 text-red-400 text-xs font-medium hover:bg-red-900/20 transition-colors"
+                      className="px-3 py-1.5 rounded border border-red-700/40 text-red-400 text-xs font-medium hover:bg-red-900/20 transition-colors"
                     >
                       Cancel
                     </button>

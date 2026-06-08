@@ -81,7 +81,7 @@ export default async function ListingDetailPage({
         <div className="flex flex-col gap-4">
           {/* Game tag */}
           {(listing as any).games?.name && (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface border border-border text-accent text-xs font-medium w-fit">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface border border-border text-accent text-xs font-medium w-fit">
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/>
               </svg>
@@ -92,7 +92,7 @@ export default async function ListingDetailPage({
           <div>
             <h1 className="text-2xl font-bold text-white">{listing.title}</h1>
             {listing.status !== 'active' && (
-              <span className="mt-2 inline-block px-2.5 py-1 rounded-lg bg-surface border border-border text-gray-400 text-xs capitalize">
+              <span className="mt-2 inline-block px-2.5 py-1 rounded bg-surface border border-border text-gray-400 text-xs capitalize">
                 {listing.status}
               </span>
             )}
@@ -126,7 +126,7 @@ export default async function ListingDetailPage({
           {/* Seller */}
           <Link
             href={seller?.username ? `/seller/${seller.username}` : '#'}
-            className="flex items-center gap-3 p-3 rounded-xl bg-surface border border-border hover:border-accent/50 transition-colors group"
+            className="flex items-center gap-3 p-3 rounded bg-surface border border-border hover:border-accent/50 transition-colors group"
           >
             <div className="w-9 h-9 rounded-full bg-background overflow-hidden shrink-0">
               {seller?.avatar_url ? (
@@ -151,7 +151,7 @@ export default async function ListingDetailPage({
               <BuyButton listingId={listing.id} price={listing.price_amount} kycStatus={kycStatus} isLoggedIn={!!user} buyerBalance={buyerBalance} />
             )}
             {!user && (
-              <div className="p-4 rounded-xl bg-surface border border-border text-center">
+              <div className="p-4 rounded bg-surface border border-border text-center">
                 <p className="text-gray-400 text-sm">
                   <Link href="/login" className="text-accent hover:underline font-medium">Sign in</Link>
                   {' '}to purchase this item
@@ -163,7 +163,7 @@ export default async function ListingDetailPage({
                 'use server'
                 await cancelListing(id)
               }}>
-                <button className="w-full py-2.5 rounded-xl border border-red-700/50 text-red-400 text-sm font-medium hover:bg-red-900/20 transition-colors">
+                <button className="w-full py-2.5 rounded border border-red-700/50 text-red-400 text-sm font-medium hover:bg-red-900/20 transition-colors">
                   Cancel Listing
                 </button>
               </form>

@@ -19,7 +19,7 @@ export default async function AdminKYCPage() {
       )}
       <div className="space-y-4">
         {submissions?.map(s => (
-          <div key={s.id} className="rounded-xl border border-border bg-surface p-5 space-y-3">
+          <div key={s.id} className="rounded border border-border bg-surface p-5 space-y-3">
             <div>
               <p className="text-white font-medium">{(s as any).profiles?.username ?? 'Unknown'}</p>
               <p className="text-gray-500 text-xs">{s.user_id}</p>
@@ -41,7 +41,7 @@ export default async function AdminKYCPage() {
                 'use server'
                 await reviewKYC(s.id, 'approved')
               }}>
-                <button className="px-4 py-2 rounded-lg bg-green-700 text-white text-sm font-medium hover:bg-green-600">
+                <button className="px-4 py-2 rounded bg-green-700 text-white text-sm font-medium hover:bg-green-600">
                   Approve
                 </button>
               </form>
@@ -53,9 +53,9 @@ export default async function AdminKYCPage() {
                   name="reason"
                   placeholder="Rejection reason"
                   required
-                  className="px-3 py-1 rounded-lg bg-background border border-border text-white text-sm w-48"
+                  className="px-3 py-1 rounded bg-background border border-border text-white text-sm w-48"
                 />
-                <button className="px-4 py-2 rounded-lg bg-red-700 text-white text-sm font-medium hover:bg-red-600">
+                <button className="px-4 py-2 rounded bg-red-700 text-white text-sm font-medium hover:bg-red-600">
                   Reject
                 </button>
               </form>

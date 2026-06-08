@@ -57,21 +57,21 @@ export function CommentsSection({ listingId, initialComments, isAuthenticated, h
             placeholder="Share your experience with this item..."
             maxLength={500}
             rows={3}
-            className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 resize-none focus:outline-none focus:border-accent/50 transition-colors"
+            className="w-full bg-surface border border-border rounded px-4 py-3 text-sm text-white placeholder-gray-600 resize-none focus:outline-none focus:border-accent/50 transition-colors"
           />
           <div className="flex items-center justify-between">
             <span className="text-gray-700 text-xs">{body.length}/500</span>
             <button
               type="submit"
               disabled={pending || !body.trim()}
-              className="px-4 py-2 rounded-xl bg-accent text-black text-sm font-bold disabled:opacity-40 hover:opacity-90 transition-opacity"
+              className="px-4 py-2 rounded bg-accent text-black text-sm font-bold disabled:opacity-40 hover:opacity-90 transition-opacity"
             >
               Post Review
             </button>
           </div>
         </form>
       ) : (
-        <div className="mb-6 p-4 rounded-xl border border-border bg-surface/50 text-center">
+        <div className="mb-6 p-4 rounded border border-border bg-surface/50 text-center">
           {!isAuthenticated ? (
             <p className="text-gray-500 text-sm">
               <button onClick={() => router.push('/login')} className="text-accent hover:underline font-medium">Sign in</button>
