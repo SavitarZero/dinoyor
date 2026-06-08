@@ -69,6 +69,14 @@ export async function resolveDispute(
       p_currency: order.currency,
       p_amount: sellerAmount,
     })
+    await supabase.from('balance_transactions').insert({
+      seller_id: order.seller_id,
+      order_id: dispute.order_id,
+      type: 'credit',
+      amount: sellerAmount,
+      currency: order.currency,
+      note: `Dispute resolved — released to seller`,
+    })
     await supabase.from('orders').update({ status: 'completed' }).eq('id', dispute.order_id)
   } else {
     await supabase.from('orders').update({ status: 'cancelled' }).eq('id', dispute.order_id)
