@@ -10,7 +10,7 @@ export async function requestPayout(currency: string) {
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('wallet_address, wallet_network, kyc_status, payout_min_amount')
+    .select('wallet_address, wallet_network, kyc_status')
     .eq('id', user.id)
     .single()
 
@@ -26,9 +26,24 @@ export async function requestPayout(currency: string) {
 
   if (!balance || balance.pending_amount <= 0) return { error: 'No balance available' }
 
-  const minAmount = Number(profile?.payout_min_amount ?? 10)
-  if (Number(balance.pending_amount) < minAmount) {
-    return { error: `Minimum payout is ${minAmount} USDT` }
+  // Require at least 1 completed sale before first withdrawal
+  const { count: completedSales } = await supabase
+    .from('orders')
+    .select('*', { count: 'exact', head: true })
+    .eq('seller_id', user.id)
+    .eq('status', 'completed')
+  if ((completedSales ?? 0) < 1) {
+    return { error: 'At least 1 completed sale is required before withdrawing' }
+  }
+
+  // NEW — read from platform_settings
+  const { data: settingsRows } = await supabase
+    .from('platform_settings')
+    .select('key, value')
+    .eq('key', 'min_withdraw_amo')
+  const minWithdraw = Number(settingsRows?.[0]?.value ?? 200)
+  if (Number(balance.pending_amount) < minWithdraw) {
+    return { error: `Minimum withdrawal is ${minWithdraw} AMO` }
   }
 
   const { data: existing } = await supabase
