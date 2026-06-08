@@ -313,25 +313,17 @@ export function ListingForm({ games, categories, kycStatus, feePct, flatFee }: R
             {categories.length > 0 && (
               <div>
                 <label htmlFor="category_id" className={labelCls}>Category</label>
-                <div className="relative">
-                  <select
-                    id="category_id"
-                    name="category_id"
-                    className={`${inputCls} appearance-none pr-8`}
-                    defaultValue=""
-                  >
-                    <option value="">— No category —</option>
-                    {categories.map(c => (
-                      <option key={c.id} value={c.id}>{c.name}</option>
-                    ))}
-                  </select>
-                  <svg
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none"
-                    fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
-                  >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </div>
+                <select
+                  id="category_id"
+                  name="category_id"
+                  className="w-full px-3 py-2.5 rounded bg-background border border-border text-white text-sm appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%236b7280%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-size-[16px] bg-position-[right_0.75rem_center] bg-no-repeat pr-8 focus:outline-none focus:border-accent transition-colors"
+                  defaultValue=""
+                >
+                  <option value="">— No category —</option>
+                  {categories.map(c => (
+                    <option key={c.id} value={c.id}>{c.name}</option>
+                  ))}
+                </select>
               </div>
             )}
             <div>
