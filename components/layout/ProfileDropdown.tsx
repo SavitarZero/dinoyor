@@ -6,7 +6,6 @@ import {
   LayoutDashboard,
   Package,
   Wallet,
-  ShieldCheck,
   LogOut,
   Store,
 } from 'lucide-react'
@@ -20,9 +19,8 @@ interface Props {
 }
 
 const BASE_ITEMS = [
-  { href: '/profile',     label: 'Profile',         Icon: LayoutDashboard },
-  { href: '/orders',      label: 'Orders',          Icon: Package },
-  { href: '/profile/kyc', label: 'Become a Seller', Icon: ShieldCheck },
+  { href: '/profile', label: 'Profile', Icon: LayoutDashboard },
+  { href: '/orders',  label: 'Orders',  Icon: Package },
 ]
 
 const SELLER_ITEMS = [
