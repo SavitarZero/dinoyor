@@ -20,7 +20,7 @@ export function ProofUpload({ orderId }: { orderId: string }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3 p-4 rounded border border-border bg-background">
+    <form onSubmit={handleSubmit} className="space-y-3 p-4 rounded-xl border border-border bg-background">
       <p className="text-white font-medium">Mark as Delivered</p>
       <p className="text-gray-500 text-xs">Upload at least one screenshot as proof of delivery.</p>
       <input
@@ -36,7 +36,7 @@ export function ProofUpload({ orderId }: { orderId: string }) {
       <button
         type="submit"
         disabled={loading}
-        className="px-4 py-2 rounded bg-accent text-black font-semibold disabled:opacity-50"
+        className="px-4 py-2 rounded-lg bg-accent text-black font-semibold disabled:opacity-50"
       >
         {loading ? 'Uploading...' : 'Confirm Delivery'}
       </button>

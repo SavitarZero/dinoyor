@@ -6,7 +6,7 @@ import { EmailForm } from '@/components/profile/EmailForm'
 function CurrentEmailStatus({ email, pendingEmail, hasRealEmail }: Readonly<{ email: string | undefined; pendingEmail: string | null; hasRealEmail: boolean }>) {
   if (hasRealEmail) return (
     <div className="flex items-center gap-3">
-      <div className="w-8 h-8 rounded bg-green-500/10 border border-green-500/20 flex items-center justify-center shrink-0">
+      <div className="w-8 h-8 rounded-lg bg-green-500/10 border border-green-500/20 flex items-center justify-center shrink-0">
         <svg className="w-4 h-4 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
         </svg>
@@ -19,7 +19,7 @@ function CurrentEmailStatus({ email, pendingEmail, hasRealEmail }: Readonly<{ em
   )
   if (pendingEmail) return (
     <div className="flex items-center gap-3">
-      <div className="w-8 h-8 rounded bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center shrink-0">
+      <div className="w-8 h-8 rounded-lg bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center shrink-0">
         <svg className="w-4 h-4 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
@@ -63,7 +63,7 @@ export default async function ProfileEmailPage() {
         <aside className="lg:w-64 shrink-0">
           <div className="lg:sticky lg:top-0 space-y-4">
 
-            <div className="flex items-center gap-3 p-4 rounded border border-border bg-surface">
+            <div className="flex items-center gap-3 p-4 rounded-2xl border border-border bg-surface">
               {displayAvatar ? (
                 <img src={displayAvatar} alt="" className="w-11 h-11 rounded-full object-cover shrink-0" />
               ) : (
@@ -76,7 +76,7 @@ export default async function ProfileEmailPage() {
               </div>
             </div>
 
-            <nav className="rounded border border-border bg-surface overflow-hidden">
+            <nav className="rounded-2xl border border-border bg-surface overflow-hidden">
               <Link href="/profile" className="flex items-center gap-3 px-4 py-3 text-sm text-gray-400 hover:text-white hover:bg-white/[0.02] transition-colors border-l-2 border-transparent">
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -126,13 +126,13 @@ export default async function ProfileEmailPage() {
           </div>
 
           {isOAuthUser ? (
-            <div className="rounded border border-border bg-surface overflow-hidden">
+            <div className="rounded-2xl border border-border bg-surface overflow-hidden">
               <div className="px-4 py-3 border-b border-border flex items-center justify-between">
                 <p className="text-gray-500 text-xs font-medium uppercase tracking-wide">Connected account</p>
                 <span className="px-2 py-0.5 rounded-full bg-blue-900/30 border border-blue-700/40 text-blue-400 text-xs font-medium capitalize">{provider}</span>
               </div>
               <div className="px-4 py-4 flex items-center gap-3">
-                <div className="w-8 h-8 rounded bg-green-500/10 border border-green-500/20 flex items-center justify-center shrink-0">
+                <div className="w-8 h-8 rounded-lg bg-green-500/10 border border-green-500/20 flex items-center justify-center shrink-0">
                   <svg className="w-4 h-4 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
@@ -145,7 +145,7 @@ export default async function ProfileEmailPage() {
             </div>
           ) : (
             <>
-              <div className="rounded border border-border bg-surface overflow-hidden">
+              <div className="rounded-2xl border border-border bg-surface overflow-hidden">
                 <div className="px-4 py-3 border-b border-border">
                   <p className="text-gray-500 text-xs font-medium uppercase tracking-wide">Current</p>
                 </div>
@@ -154,7 +154,7 @@ export default async function ProfileEmailPage() {
                 </div>
               </div>
 
-              <div className="rounded border border-border bg-surface overflow-hidden">
+              <div className="rounded-2xl border border-border bg-surface overflow-hidden">
                 <div className="px-4 py-3 border-b border-border">
                   <p className="text-white text-sm font-semibold">{hasRealEmail ? 'Change email' : 'Add email'}</p>
                 </div>

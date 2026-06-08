@@ -39,7 +39,7 @@ export default function ResetPasswordPage() {
           onChange={e => setPassword(e.target.value)}
           required
           minLength={8}
-          className="w-full px-4 py-2 rounded bg-background border border-border text-white focus:outline-none focus:border-accent placeholder-gray-600"
+          className="w-full px-4 py-2 rounded-lg bg-background border border-border text-white focus:outline-none focus:border-accent placeholder-gray-600"
         />
         <input
           type="password"
@@ -48,12 +48,12 @@ export default function ResetPasswordPage() {
           onChange={e => setConfirm(e.target.value)}
           required
           minLength={8}
-          className="w-full px-4 py-2 rounded bg-background border border-border text-white focus:outline-none focus:border-accent placeholder-gray-600"
+          className="w-full px-4 py-2 rounded-lg bg-background border border-border text-white focus:outline-none focus:border-accent placeholder-gray-600"
         />
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-2.5 rounded bg-accent text-black font-semibold hover:opacity-90 disabled:opacity-50 transition-opacity"
+          className="w-full py-2.5 rounded-lg bg-accent text-black font-semibold hover:opacity-90 disabled:opacity-50 transition-opacity"
         >
           {loading ? 'Updating…' : 'Update password'}
         </button>

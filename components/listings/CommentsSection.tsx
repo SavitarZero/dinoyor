@@ -48,11 +48,46 @@ export function CommentsSection({ listingId, initialComments, isAuthenticated, h
         Reviews {comments.length > 0 && <span className="text-gray-500 font-normal text-sm">({comments.length})</span>}
       </h3>
 
-      {/* Reviews list — always visible */}
-      {comments.length === 0 ? (
-        <p className="text-gray-600 text-sm mb-6">No reviews yet.</p>
+      {/* Form or gate */}
+      {canComment ? (
+        <form onSubmit={handleSubmit} className="mb-6 space-y-2">
+          <textarea
+            value={body}
+            onChange={e => setBody(e.target.value)}
+            placeholder="Share your experience with this item..."
+            maxLength={500}
+            rows={3}
+            className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 resize-none focus:outline-none focus:border-accent/50 transition-colors"
+          />
+          <div className="flex items-center justify-between">
+            <span className="text-gray-700 text-xs">{body.length}/500</span>
+            <button
+              type="submit"
+              disabled={pending || !body.trim()}
+              className="px-4 py-2 rounded-xl bg-accent text-black text-sm font-bold disabled:opacity-40 hover:opacity-90 transition-opacity"
+            >
+              Post Review
+            </button>
+          </div>
+        </form>
       ) : (
-        <div className="space-y-4 mb-6">
+        <div className="mb-6 p-4 rounded-xl border border-border bg-surface/50 text-center">
+          {!isAuthenticated ? (
+            <p className="text-gray-500 text-sm">
+              <button onClick={() => router.push('/login')} className="text-accent hover:underline font-medium">Sign in</button>
+              {' '}to leave a review
+            </p>
+          ) : (
+            <p className="text-gray-500 text-sm">Only buyers who completed a purchase can leave a review</p>
+          )}
+        </div>
+      )}
+
+      {/* Comments list */}
+      {comments.length === 0 ? (
+        <p className="text-gray-600 text-sm">No reviews yet.</p>
+      ) : (
+        <div className="space-y-4">
           {comments.map(c => (
             <div key={c.id} className="flex gap-3">
               <div className="w-8 h-8 rounded-full bg-surface border border-border flex items-center justify-center text-xs font-bold text-gray-500 shrink-0">
@@ -70,41 +105,6 @@ export function CommentsSection({ listingId, initialComments, isAuthenticated, h
             </div>
           ))}
         </div>
-      )}
-
-      {/* Write area — gated by purchase */}
-      {canComment ? (
-        <form onSubmit={handleSubmit} className="space-y-2">
-          <textarea
-            value={body}
-            onChange={e => setBody(e.target.value)}
-            placeholder="Share your experience with this item..."
-            maxLength={500}
-            rows={3}
-            className="w-full bg-surface border border-border rounded px-4 py-3 text-sm text-white placeholder-gray-600 resize-none focus:outline-none focus:border-accent/50 transition-colors"
-          />
-          <div className="flex items-center justify-between">
-            <span className="text-gray-700 text-xs">{body.length}/500</span>
-            <button
-              type="submit"
-              disabled={pending || !body.trim()}
-              className="px-4 py-2 rounded bg-accent text-black text-sm font-bold disabled:opacity-40 hover:opacity-90 transition-opacity"
-            >
-              Post Review
-            </button>
-          </div>
-        </form>
-      ) : null}
-
-      {!canComment && isAuthenticated && (
-        <p className="text-gray-600 text-xs">Only buyers who completed a purchase can leave a review.</p>
-      )}
-
-      {!canComment && !isAuthenticated && (
-        <p className="text-gray-600 text-xs">
-          <button onClick={() => router.push('/login')} className="text-accent hover:underline">Sign in</button>
-          {' '}and purchase this item to leave a review.
-        </p>
       )}
     </div>
   )

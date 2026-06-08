@@ -55,14 +55,14 @@ export function EmailForm({ currentEmail }: { currentEmail: string | null }) {
         onChange={e => setEmail(e.target.value)}
         required
         placeholder={currentEmail ? 'New email address' : 'your@email.com'}
-        className="w-full px-3 py-2 rounded bg-background border border-border text-white text-sm placeholder-gray-600 focus:outline-none focus:border-accent transition-colors"
+        className="w-full px-3 py-2 rounded-lg bg-background border border-border text-white text-sm placeholder-gray-600 focus:outline-none focus:border-accent transition-colors"
       />
       <div className="flex items-center justify-between gap-3">
         <p className="text-gray-600 text-xs">We'll send a verification link.</p>
         <button
           type="submit"
           disabled={loading}
-          className="px-4 py-1.5 rounded bg-accent text-black text-xs font-bold hover:opacity-90 disabled:opacity-50 transition-opacity"
+          className="px-4 py-1.5 rounded-lg bg-accent text-black text-xs font-bold hover:opacity-90 disabled:opacity-50 transition-opacity"
         >
           {loading ? 'Sending…' : 'Send link'}
         </button>

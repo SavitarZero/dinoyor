@@ -17,7 +17,7 @@ export default async function AdminPayoutsPage() {
       {!requests?.length && <p className="text-gray-500">No pending payout requests.</p>}
       <div className="space-y-4">
         {requests?.map(r => (
-          <div key={r.id} className="rounded border border-border bg-surface p-5 space-y-3">
+          <div key={r.id} className="rounded-xl border border-border bg-surface p-5 space-y-3">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <div>
                 <p className="text-white font-medium">{(r as any).profiles?.username ?? r.seller_id}</p>
@@ -29,7 +29,7 @@ export default async function AdminPayoutsPage() {
                 </p>
               </div>
             </div>
-            <div className="rounded bg-background border border-border px-4 py-2.5">
+            <div className="rounded-lg bg-background border border-border px-4 py-2.5">
               <p className="text-gray-500 text-xs">{(r as any).profiles?.wallet_network}</p>
               <p className="text-white text-sm font-mono break-all">{r.wallet_address}</p>
             </div>
@@ -48,18 +48,18 @@ export default async function AdminPayoutsPage() {
               <input
                 name="tx_hash"
                 placeholder="Transaction hash (after sending)"
-                className="w-full px-3 py-2.5 rounded bg-background border border-border text-white text-sm"
+                className="w-full px-3 py-2.5 rounded-lg bg-background border border-border text-white text-sm"
               />
               <input
                 name="reason"
                 placeholder="Rejection reason (optional)"
-                className="w-full px-3 py-2.5 rounded bg-background border border-border text-white text-sm"
+                className="w-full px-3 py-2.5 rounded-lg bg-background border border-border text-white text-sm"
               />
               <div className="flex gap-2">
-                <button name="action" value="approve" className="px-4 py-2.5 rounded bg-accent text-black text-sm font-semibold hover:opacity-90">
+                <button name="action" value="approve" className="px-4 py-2.5 rounded-lg bg-accent text-black text-sm font-semibold hover:opacity-90">
                   Approve
                 </button>
-                <button name="action" value="reject" className="px-4 py-2.5 rounded bg-red-600 text-white text-sm font-semibold hover:opacity-90">
+                <button name="action" value="reject" className="px-4 py-2.5 rounded-lg bg-red-600 text-white text-sm font-semibold hover:opacity-90">
                   Reject
                 </button>
               </div>

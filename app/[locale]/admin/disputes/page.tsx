@@ -17,7 +17,7 @@ export default async function AdminDisputesPage() {
       {!disputes?.length && <p className="text-gray-500">No open disputes.</p>}
       <div className="space-y-4">
         {disputes?.map(d => (
-          <div key={d.id} className="rounded border border-border bg-surface p-5 space-y-3">
+          <div key={d.id} className="rounded-xl border border-border bg-surface p-5 space-y-3">
             <div>
               <p className="text-white font-medium">{(d as any).orders?.listings?.title}</p>
               <p className="text-accent text-sm">
@@ -34,7 +34,7 @@ export default async function AdminDisputesPage() {
                 'use server'
                 await resolveDispute(d.id, 'release_to_seller')
               }}>
-                <button className="px-4 py-2 rounded bg-green-700 text-white text-sm font-medium hover:bg-green-600">
+                <button className="px-4 py-2 rounded-lg bg-green-700 text-white text-sm font-medium hover:bg-green-600">
                   Release to Seller
                 </button>
               </form>
@@ -42,7 +42,7 @@ export default async function AdminDisputesPage() {
                 'use server'
                 await resolveDispute(d.id, 'refund_to_buyer')
               }}>
-                <button className="px-4 py-2 rounded bg-red-700 text-white text-sm font-medium hover:bg-red-600">
+                <button className="px-4 py-2 rounded-lg bg-red-700 text-white text-sm font-medium hover:bg-red-600">
                   Refund to Buyer
                 </button>
               </form>

@@ -29,7 +29,7 @@ interface LogoProps {
 }
 
 // Colored fallback is the base layer. Real image overlays on top and hides itself on 404.
-export function GameLogo({ src, slug, name, className = 'w-8 h-8 rounded' }: LogoProps) {
+export function GameLogo({ src, slug, name, className = 'w-8 h-8 rounded-lg' }: LogoProps) {
   const { bg, accent } = slugColor(slug)
   const initial = name[0]?.toUpperCase() ?? '?'
 

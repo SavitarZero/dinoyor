@@ -30,13 +30,13 @@ export default async function AdminDepositsPage() {
           )}
         </div>
         {!pending.length ? (
-          <div className="rounded border border-border bg-surface p-6 text-center">
+          <div className="rounded-xl border border-border bg-surface p-6 text-center">
             <p className="text-gray-500 text-sm">No pending deposits</p>
           </div>
         ) : (
           <div className="space-y-3">
             {pending.map((d: any) => (
-              <div key={d.id} className="rounded border border-yellow-700/30 bg-surface p-5 space-y-4">
+              <div key={d.id} className="rounded-xl border border-yellow-700/30 bg-surface p-5 space-y-4">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
@@ -54,7 +54,7 @@ export default async function AdminDepositsPage() {
                   </a>
                 </div>
 
-                <div className="rounded bg-background border border-border px-3 py-2">
+                <div className="rounded-lg bg-background border border-border px-3 py-2">
                   <p className="text-gray-500 text-xs mb-0.5">TX Hash</p>
                   <p className="text-white text-xs font-mono break-all">{d.tx_hash}</p>
                 </div>
@@ -67,10 +67,10 @@ export default async function AdminDepositsPage() {
                     await approveDeposit(d.id, amt)
                   }} className="flex-1 flex gap-2">
                     <input name="approved_amount" type="number" step="any" min="0" defaultValue={d.claimed_amount}
-                      className="flex-1 px-3 py-2 rounded bg-background border border-border text-white text-sm focus:outline-none focus:border-accent"
+                      className="flex-1 px-3 py-2 rounded-xl bg-background border border-border text-white text-sm focus:outline-none focus:border-accent"
                       placeholder="Approve amount coin" />
                     <button type="submit"
-                      className="px-4 py-2 rounded bg-green-600 text-white text-sm font-semibold hover:bg-green-500 transition-colors">
+                      className="px-4 py-2 rounded-xl bg-green-600 text-white text-sm font-semibold hover:bg-green-500 transition-colors">
                       Approve
                     </button>
                   </form>
@@ -79,7 +79,7 @@ export default async function AdminDepositsPage() {
                     await rejectDeposit(d.id)
                   }}>
                     <button type="submit"
-                      className="px-4 py-2 rounded border border-red-700/50 text-red-400 text-sm font-medium hover:bg-red-900/20 transition-colors">
+                      className="px-4 py-2 rounded-xl border border-red-700/50 text-red-400 text-sm font-medium hover:bg-red-900/20 transition-colors">
                       Reject
                     </button>
                   </form>
@@ -93,7 +93,7 @@ export default async function AdminDepositsPage() {
       {reviewed.length > 0 && (
         <section>
           <h2 className="text-white font-semibold mb-4">History</h2>
-          <div className="rounded border border-border bg-surface divide-y divide-border overflow-hidden">
+          <div className="rounded-xl border border-border bg-surface divide-y divide-border overflow-hidden">
             {reviewed.map((d: any) => (
               <div key={d.id} className="flex items-center justify-between px-4 py-3">
                 <div className="min-w-0">

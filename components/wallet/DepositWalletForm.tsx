@@ -66,7 +66,7 @@ export function DepositWalletForm({ currentAddress, currentNetwork }: Props) {
             onChange={e => setAddress(e.target.value)}
             placeholder={placeholder}
             required
-            className="w-full px-3 py-2 rounded bg-background border border-border text-white text-sm font-mono placeholder-gray-600 focus:outline-none focus:border-accent transition-colors"
+            className="w-full px-3 py-2 rounded-lg bg-background border border-border text-white text-sm font-mono placeholder-gray-600 focus:outline-none focus:border-accent transition-colors"
           />
           <p className="text-gray-600 text-xs mt-1">Only deposits sent from this address will be accepted.</p>
         </div>
@@ -74,7 +74,7 @@ export function DepositWalletForm({ currentAddress, currentNetwork }: Props) {
         <button
           type="submit"
           disabled={loading}
-          className="px-4 py-1.5 rounded bg-accent text-black text-xs font-bold hover:opacity-90 disabled:opacity-50"
+          className="px-4 py-1.5 rounded-lg bg-accent text-black text-xs font-bold hover:opacity-90 disabled:opacity-50"
         >
           {loading ? 'Saving…' : 'Save deposit wallet'}
         </button>

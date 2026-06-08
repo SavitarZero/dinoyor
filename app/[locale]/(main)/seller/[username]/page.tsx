@@ -32,7 +32,7 @@ export default async function SellerStorePage({
   const [listingsRes, { data: soldAgg }] = await Promise.all([
     supabase
       .from('listings')
-      .select('id, title, price_amount, price_currency, images, status, seller_id, sold_count, games(name, slug, logo_url, banner_url), profiles:seller_id(username, avatar_url)', { count: 'exact' })
+      .select('id, title, price_amount, price_currency, images, status, seller_id, sold_count, games(name, slug, category, logo_url, banner_url), profiles:seller_id(username, avatar_url)', { count: 'exact' })
       .eq('seller_id', seller.id)
       .eq('status', 'active')
       .order('created_at', { ascending: false })
@@ -61,7 +61,7 @@ export default async function SellerStorePage({
     <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
 
       {/* Store header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 p-5 rounded border border-border bg-surface">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 p-5 rounded-2xl border border-border bg-surface">
         {/* Avatar */}
         <div className="w-16 h-16 rounded-full bg-background overflow-hidden shrink-0 ring-2 ring-border">
           {seller.avatar_url ? (
@@ -129,9 +129,9 @@ export default async function SellerStorePage({
             {totalPages > 1 && (
               <div className="flex items-center justify-center gap-1 mt-8">
                 {page > 1 ? (
-                  <Link href={pageHref(page - 1)} className="px-3 py-2 rounded text-sm text-gray-400 hover:text-white hover:bg-white/8 transition-colors">←</Link>
+                  <Link href={pageHref(page - 1)} className="px-3 py-2 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-white/8 transition-colors">←</Link>
                 ) : (
-                  <span className="px-3 py-2 rounded text-sm text-gray-700 cursor-not-allowed">←</span>
+                  <span className="px-3 py-2 rounded-lg text-sm text-gray-700 cursor-not-allowed">←</span>
                 )}
 
                 {Array.from({ length: totalPages }, (_, i) => i + 1)
@@ -148,7 +148,7 @@ export default async function SellerStorePage({
                       <Link
                         key={p}
                         href={pageHref(p as number)}
-                        className={`w-9 h-9 flex items-center justify-center rounded text-sm font-medium transition-colors ${
+                        className={`w-9 h-9 flex items-center justify-center rounded-lg text-sm font-medium transition-colors ${
                           p === page ? 'bg-accent text-black' : 'text-gray-400 hover:text-white hover:bg-white/8'
                         }`}
                       >
@@ -159,9 +159,9 @@ export default async function SellerStorePage({
                 }
 
                 {page < totalPages ? (
-                  <Link href={pageHref(page + 1)} className="px-3 py-2 rounded text-sm text-gray-400 hover:text-white hover:bg-white/8 transition-colors">→</Link>
+                  <Link href={pageHref(page + 1)} className="px-3 py-2 rounded-lg text-sm text-gray-400 hover:text-white hover:bg-white/8 transition-colors">→</Link>
                 ) : (
-                  <span className="px-3 py-2 rounded text-sm text-gray-700 cursor-not-allowed">→</span>
+                  <span className="px-3 py-2 rounded-lg text-sm text-gray-700 cursor-not-allowed">→</span>
                 )}
               </div>
             )}

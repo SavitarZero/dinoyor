@@ -102,14 +102,14 @@ export function PaymentSection({
     const hash    = submittedTxHash ?? txHash
     const network = submittedNetwork ?? wallet?.network ?? 'ERC20'
     return (
-      <div className="rounded border border-green-700/40 bg-green-900/10 p-5 space-y-3">
+      <div className="rounded-xl border border-green-700/40 bg-green-900/10 p-5 space-y-3">
         <div className="flex items-center gap-2">
           <svg className="w-5 h-5 text-green-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
           </svg>
           <p className="text-green-400 font-semibold text-sm">Payment submitted — waiting for admin confirmation</p>
         </div>
-        <div className="rounded bg-background border border-border p-3 space-y-1">
+        <div className="rounded-xl bg-background border border-border p-3 space-y-1">
           <p className="text-gray-500 text-xs">{network} transaction</p>
           <p className="text-white text-xs font-mono break-all">{hash}</p>
         </div>
@@ -129,7 +129,7 @@ export function PaymentSection({
   }
 
   return (
-    <div className="rounded border border-yellow-700/50 bg-yellow-900/10 p-5 space-y-4">
+    <div className="rounded-xl border border-yellow-700/50 bg-yellow-900/10 p-5 space-y-4">
 
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -147,7 +147,7 @@ export function PaymentSection({
       </div>
 
       {/* What you need in your wallet */}
-      <div className="rounded bg-background border border-border p-3 space-y-3">
+      <div className="rounded-lg bg-background border border-border p-3 space-y-3">
         <p className="text-gray-400 text-xs font-semibold uppercase tracking-wide">What you need in your wallet</p>
 
         <div className="space-y-2">
@@ -256,7 +256,7 @@ export function PaymentSection({
       </ol>
 
       {/* Network tabs + address */}
-      <div className="rounded bg-background border border-border overflow-hidden">
+      <div className="rounded-xl bg-background border border-border overflow-hidden">
         <div className="flex border-b border-border">
           {wallets.map((w, i) => (
             <button
@@ -284,7 +284,7 @@ export function PaymentSection({
                 <p className="text-white text-sm font-mono break-all flex-1 leading-relaxed">{wallet.address}</p>
                 <button
                   onClick={handleCopy}
-                  className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium transition-all ${
+                  className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                     copied
                       ? 'bg-green-900/30 border border-green-700/50 text-green-400'
                       : 'bg-surface border border-border text-gray-400 hover:text-white hover:border-accent'
@@ -316,7 +316,7 @@ export function PaymentSection({
             value={txHash}
             onChange={e => setTxHash(e.target.value)}
             placeholder={wallet?.network === 'TRC20' ? 'e.g. a1b2c3d4...' : 'e.g. 0xa1b2c3...'}
-            className="w-full px-4 py-3 rounded bg-background border border-border text-white text-sm font-mono placeholder-gray-600 focus:outline-none focus:border-accent transition-colors"
+            className="w-full px-4 py-3 rounded-xl bg-background border border-border text-white text-sm font-mono placeholder-gray-600 focus:outline-none focus:border-accent transition-colors"
           />
           <p className="text-gray-600 text-xs mt-1.5">
             Find the TX ID in your wallet app or exchange after sending
@@ -328,7 +328,7 @@ export function PaymentSection({
         <button
           type="submit"
           disabled={loading || !wallet?.address}
-          className="w-full py-3 rounded bg-yellow-500 text-black font-bold text-sm hover:bg-yellow-400 disabled:opacity-40 transition-colors"
+          className="w-full py-3 rounded-xl bg-yellow-500 text-black font-bold text-sm hover:bg-yellow-400 disabled:opacity-40 transition-colors"
         >
           {loading ? 'Submitting…' : "I've sent payment — Submit TX"}
         </button>

@@ -68,7 +68,7 @@ export default async function AdminOrdersPage() {
 
 function OrderRow({ order, highlight }: { order: any; highlight: boolean }) {
   return (
-    <div className={`rounded border p-4 flex items-center gap-4 ${
+    <div className={`rounded-xl border p-4 flex items-center gap-4 ${
       highlight ? 'border-yellow-700/50 bg-yellow-900/10' : 'border-border bg-surface'
     }`}>
       <div className="flex-1 min-w-0 space-y-0.5">
@@ -110,7 +110,7 @@ function OrderRow({ order, highlight }: { order: any; highlight: boolean }) {
         <div className="flex gap-2">
           <Link
             href={`/orders/${order.id}`}
-            className="px-3 py-1.5 rounded border border-border text-gray-400 text-xs hover:text-white hover:border-accent transition-colors"
+            className="px-3 py-1.5 rounded-lg border border-border text-gray-400 text-xs hover:text-white hover:border-accent transition-colors"
           >
             View
           </Link>
@@ -120,7 +120,7 @@ function OrderRow({ order, highlight }: { order: any; highlight: boolean }) {
           }}>
             <button
               type="submit"
-              className="px-3 py-1.5 rounded bg-accent text-black text-xs font-bold hover:opacity-90 transition-opacity"
+              className="px-3 py-1.5 rounded-lg bg-accent text-black text-xs font-bold hover:opacity-90 transition-opacity"
             >
               Confirm Payment
             </button>

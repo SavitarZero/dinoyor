@@ -97,9 +97,9 @@ export default async function OrdersPage({ searchParams }: Props) {
               <Link
                 key={o.id}
                 href={`/orders/${o.id}`}
-                className="flex items-center gap-4 p-4 rounded border border-border bg-surface hover:border-accent transition-all group"
+                className="flex items-center gap-4 p-4 rounded-xl border border-border bg-surface hover:border-accent transition-all group"
               >
-                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded overflow-hidden bg-background shrink-0">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden bg-background shrink-0">
                   {image ? (
                     <img src={image} alt="" className="w-full h-full object-cover" />
                   ) : (
@@ -155,7 +155,7 @@ export default async function OrdersPage({ searchParams }: Props) {
           <div className="flex items-center gap-1.5">
             <Link
               href={buildUrl(currentPage - 1)}
-              className={`px-3 py-2 rounded border border-border text-sm transition-colors ${
+              className={`px-3 py-2 rounded-xl border border-border text-sm transition-colors ${
                 currentPage <= 1 ? 'text-gray-700 pointer-events-none' : 'text-gray-400 hover:text-white hover:border-accent'
               }`}
               aria-disabled={currentPage <= 1}
@@ -166,7 +166,7 @@ export default async function OrdersPage({ searchParams }: Props) {
               <Link
                 key={p}
                 href={buildUrl(p)}
-                className={`w-9 h-9 rounded flex items-center justify-center text-sm font-medium transition-colors ${
+                className={`w-9 h-9 rounded-xl flex items-center justify-center text-sm font-medium transition-colors ${
                   p === currentPage
                     ? 'bg-accent text-black'
                     : 'border border-border text-gray-400 hover:text-white hover:border-accent'
@@ -177,7 +177,7 @@ export default async function OrdersPage({ searchParams }: Props) {
             ))}
             <Link
               href={buildUrl(currentPage + 1)}
-              className={`px-3 py-2 rounded border border-border text-sm transition-colors ${
+              className={`px-3 py-2 rounded-xl border border-border text-sm transition-colors ${
                 currentPage >= totalPages ? 'text-gray-700 pointer-events-none' : 'text-gray-400 hover:text-white hover:border-accent'
               }`}
               aria-disabled={currentPage >= totalPages}

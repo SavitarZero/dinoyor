@@ -29,7 +29,7 @@ export default function InfoPage() {
             { n: '02', title: 'Pay with Crypto',    desc: 'Your funds are locked in escrow the moment you pay — neither buyer nor seller can touch them until delivery.' },
             { n: '03', title: 'Confirm & Release',  desc: 'Received the item? Confirm in one click and payment is released to the seller instantly.' },
           ].map(({ n, title, desc }) => (
-            <div key={n} className="rounded border border-border bg-surface p-6 relative overflow-hidden">
+            <div key={n} className="rounded-xl border border-border bg-surface p-6 relative overflow-hidden">
               <div className="absolute top-4 right-4 text-5xl font-black text-border/60 select-none">{n}</div>
               <p className="text-accent text-xs font-bold uppercase tracking-wider mb-2">Step {n}</p>
               <p className="text-white font-semibold">{title}</p>
@@ -51,8 +51,8 @@ export default function InfoPage() {
             { Icon: Headphones,  title: 'Dispute Support',   desc: 'Raise a dispute any time before auto-release. Our team reviews evidence and resolves fairly.' },
             { Icon: Globe,       title: 'SEA Focused',       desc: 'Built for Thailand, Malaysia, Philippines, Indonesia, and Singapore gamers.' },
           ].map(({ Icon, title, desc }) => (
-            <div key={title} className="flex gap-4 rounded border border-border bg-surface p-5">
-              <div className="w-9 h-9 rounded bg-accent/10 flex items-center justify-center shrink-0">
+            <div key={title} className="flex gap-4 rounded-xl border border-border bg-surface p-5">
+              <div className="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center shrink-0">
                 <Icon size={18} className="text-accent" />
               </div>
               <div>
@@ -67,7 +67,7 @@ export default function InfoPage() {
       {/* Fees */}
       <section>
         <h2 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-6 text-center">Fees</h2>
-        <div className="rounded border border-border bg-surface overflow-hidden">
+        <div className="rounded-xl border border-border bg-surface overflow-hidden">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border">

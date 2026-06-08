@@ -27,7 +27,7 @@ export function BuyButton({ listingId, price, kycStatus, isLoggedIn, buyerBalanc
 
   if (!isLoggedIn) {
     return (
-      <Link href="/login" className="w-full py-3 rounded bg-accent text-black font-bold text-sm text-center hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+      <Link href="/login" className="w-full py-3 rounded-xl bg-accent text-black font-bold text-sm text-center hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
         Sign in to buy
       </Link>
     )
@@ -35,9 +35,9 @@ export function BuyButton({ listingId, price, kycStatus, isLoggedIn, buyerBalanc
 
   if (kycStatus !== 'approved') {
     return (
-      <div className="rounded border border-border bg-surface p-4 space-y-3">
+      <div className="rounded-xl border border-border bg-surface p-4 space-y-3">
         <div className="flex items-start gap-3">
-          <div className="w-8 h-8 rounded bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center shrink-0">
+          <div className="w-8 h-8 rounded-lg bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center shrink-0">
             <svg className="w-4 h-4 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
             </svg>
@@ -52,7 +52,7 @@ export function BuyButton({ listingId, price, kycStatus, isLoggedIn, buyerBalanc
           </div>
         </div>
         {kycStatus !== 'pending' && (
-          <Link href="/profile/kyc" className="w-full py-2.5 rounded bg-accent text-black text-sm font-bold text-center hover:opacity-90 transition-opacity flex items-center justify-center">
+          <Link href="/profile/kyc" className="w-full py-2.5 rounded-xl bg-accent text-black text-sm font-bold text-center hover:opacity-90 transition-opacity flex items-center justify-center">
             Verify identity
           </Link>
         )}
@@ -64,7 +64,7 @@ export function BuyButton({ listingId, price, kycStatus, isLoggedIn, buyerBalanc
 
   if (step === 'confirm') {
     return (
-      <div className="rounded border border-accent/30 bg-accent/5 p-4 space-y-3">
+      <div className="rounded-xl border border-accent/30 bg-accent/5 p-4 space-y-3">
         <div className="flex items-start gap-3">
           <svg className="w-5 h-5 text-accent shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
@@ -77,10 +77,10 @@ export function BuyButton({ listingId, price, kycStatus, isLoggedIn, buyerBalanc
           </div>
         </div>
         <div className="flex gap-2">
-          <button onClick={() => setStep('idle')} className="flex-1 py-2.5 rounded border border-border text-gray-400 text-sm font-medium hover:text-white hover:border-accent transition-colors">
+          <button onClick={() => setStep('idle')} className="flex-1 py-2.5 rounded-xl border border-border text-gray-400 text-sm font-medium hover:text-white hover:border-accent transition-colors">
             Cancel
           </button>
-          <button onClick={handleConfirm} className="flex-1 py-2.5 rounded bg-accent text-black text-sm font-bold hover:opacity-90 transition-opacity">
+          <button onClick={handleConfirm} className="flex-1 py-2.5 rounded-xl bg-accent text-black text-sm font-bold hover:opacity-90 transition-opacity">
             Yes, Buy Now
           </button>
         </div>
@@ -90,7 +90,7 @@ export function BuyButton({ listingId, price, kycStatus, isLoggedIn, buyerBalanc
 
   if (step === 'loading') {
     return (
-      <button disabled className="w-full py-3 rounded bg-accent text-black font-bold flex items-center justify-center gap-2 opacity-80">
+      <button disabled className="w-full py-3 rounded-xl bg-accent text-black font-bold flex items-center justify-center gap-2 opacity-80">
         <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
@@ -102,7 +102,7 @@ export function BuyButton({ listingId, price, kycStatus, isLoggedIn, buyerBalanc
 
   return (
     <div className="space-y-2">
-      <div className={`flex items-center justify-between rounded px-4 py-2.5 border ${
+      <div className={`flex items-center justify-between rounded-xl px-4 py-2.5 border ${
         hasBalance ? 'border-green-700/30 bg-green-950/10' : 'border-yellow-700/30 bg-yellow-950/10'
       }`}>
         <div className="flex items-center gap-2">
@@ -117,7 +117,7 @@ export function BuyButton({ listingId, price, kycStatus, isLoggedIn, buyerBalanc
       </div>
 
       {error && (
-        <div className="rounded bg-red-900/20 border border-red-700/50 px-4 py-3 flex gap-2 items-start">
+        <div className="rounded-xl bg-red-900/20 border border-red-700/50 px-4 py-3 flex gap-2 items-start">
           <svg className="w-4 h-4 text-red-400 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
           </svg>
@@ -128,14 +128,14 @@ export function BuyButton({ listingId, price, kycStatus, isLoggedIn, buyerBalanc
       {hasBalance ? (
         <button
           onClick={() => { setStep('confirm'); setError('') }}
-          className="w-full py-3 rounded bg-accent text-black font-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+          className="w-full py-3 rounded-xl bg-accent text-black font-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
         >
           Buy Now · {price} coin
         </button>
       ) : (
         <Link
           href="/wallet"
-          className="w-full py-3 rounded bg-yellow-500 text-black font-bold text-sm text-center hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+          className="w-full py-3 rounded-xl bg-yellow-500 text-black font-bold text-sm text-center hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
         >
           Top up wallet to buy
         </Link>
