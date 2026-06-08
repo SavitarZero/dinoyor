@@ -5,45 +5,14 @@ import { ListingForm } from '@/components/listings/ListingForm'
 
 export default async function NewListingPage() {
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const { data: { session } } = await supabase.auth.getSession()
+  const user = session?.user
   if (!user) redirect('/login')
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('kyc_status')
-    .eq('id', user.id)
-    .single()
-
-  if (profile?.kyc_status !== 'approved') {
-    return (
-      <div className="max-w-lg mx-auto py-16 px-4">
-        <div className={`rounded-xl border p-5 ${
-          profile?.kyc_status === 'pending'
-            ? 'border-yellow-800/50 bg-yellow-950/20'
-            : 'border-border bg-surface'
-        }`}>
-          <p className={`text-sm font-medium ${profile?.kyc_status === 'pending' ? 'text-yellow-400' : 'text-white'}`}>
-            {profile?.kyc_status === 'pending' ? 'Verification in progress' : 'Identity verification required'}
-          </p>
-          <p className="text-gray-500 text-xs mt-1">
-            {profile?.kyc_status === 'pending'
-              ? 'Your documents are being reviewed. Usually takes 1–2 business days.'
-              : 'You need to verify your identity before listing items for sale.'}
-          </p>
-          {profile?.kyc_status !== 'pending' && (
-            <Link
-              href="/profile/kyc"
-              className="inline-block mt-3 px-4 py-2 rounded-xl bg-accent text-black text-sm font-semibold hover:opacity-90 transition-opacity"
-            >
-              Verify identity
-            </Link>
-          )}
-        </div>
-      </div>
-    )
-  }
-
-  const { data: games } = await supabase.from('games').select('id, name').order('name')
+  const [{ data: profile }, { data: games }] = await Promise.all([
+    supabase.from('profiles').select('kyc_status').eq('id', user.id).single(),
+    supabase.from('games').select('id, name').order('name'),
+  ])
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 space-y-5">
@@ -58,7 +27,7 @@ export default async function NewListingPage() {
           <p className="text-gray-600 text-xs mt-0.5">Visible on the marketplace immediately after publishing</p>
         </div>
       </div>
-      <ListingForm games={games ?? []} />
+      <ListingForm games={games ?? []} kycStatus={profile?.kyc_status ?? null} />
     </div>
   )
 }
