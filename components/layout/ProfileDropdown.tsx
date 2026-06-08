@@ -23,7 +23,7 @@ interface Props {
 const BASE_ITEMS = [
   { href: '/profile',     label: 'Profile',         Icon: LayoutDashboard },
   { href: '/orders',      label: 'Orders',          Icon: Package },
-  { href: '/profile/kyc', label: 'Verify Identity', Icon: ShieldCheck },
+  { href: '/profile/kyc', label: 'Become a Seller', Icon: ShieldCheck },
 ]
 
 const SELLER_ITEMS = [

@@ -61,7 +61,7 @@ export default async function ProfileEmailPage() {
 
         {/* Sidebar */}
         <aside className="lg:w-64 shrink-0">
-          <div className="lg:sticky lg:top-24 space-y-4">
+          <div className="lg:sticky lg:top-0 space-y-4">
 
             <div className="flex items-center gap-3 p-4 rounded-2xl border border-border bg-surface">
               {displayAvatar ? (

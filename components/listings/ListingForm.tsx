@@ -508,7 +508,7 @@ export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ ga
         </div>
 
         <div className="lg:col-span-1">
-          <div className="lg:sticky lg:top-24 space-y-4">
+          <div className="lg:sticky lg:top-0 space-y-4">
 
             <div className="rounded-xl border border-border bg-surface overflow-hidden">
               <div className="aspect-[4/3] bg-background">

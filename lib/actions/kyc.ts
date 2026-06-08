@@ -8,23 +8,28 @@ export async function submitKYC(formData: FormData) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Not authenticated' }
 
-  const phone = formData.get('phone') as string
-  const idCardFile = formData.get('id_card') as File
-  if (!phone || !idCardFile || idCardFile.size === 0) return { error: 'Missing required fields' }
+  const photoFile = formData.get('id_card') as File
+  if (!photoFile || photoFile.size === 0) return { error: 'Please upload a photo of yourself holding your ID card.' }
 
-  const ext = idCardFile.name.split('.').pop()
+  const email = (formData.get('email') as string | null)?.trim() || null
+  if (email) {
+    const { error: emailError } = await supabase.auth.updateUser({ email })
+    if (emailError) return { error: emailError.message }
+  }
+
+  const ext = photoFile.name.split('.').pop()
   const path = `${user.id}/id-card.${ext}`
   const admin = createAdminClient()
   const { error: uploadError } = await admin.storage
     .from('kyc-documents')
-    .upload(path, idCardFile, { upsert: true })
+    .upload(path, photoFile, { upsert: true })
   if (uploadError) return { error: uploadError.message }
 
   const { data: { publicUrl } } = supabase.storage.from('kyc-documents').getPublicUrl(path)
 
   const { error: insertError } = await supabase.from('kyc_submissions').upsert({
     user_id: user.id,
-    phone,
+    phone: '',
     id_card_url: publicUrl,
     status: 'pending',
   }, { onConflict: 'user_id' })
@@ -34,5 +39,5 @@ export async function submitKYC(formData: FormData) {
 
   revalidatePath('/profile/kyc')
   revalidatePath('/profile')
-  return { success: 'KYC submitted. We will review within 1-2 business days.' }
+  return { success: 'Submitted! We will review your application within 1–2 business days.' }
 }
