@@ -7,17 +7,17 @@ import { ListingImages } from '@/components/listings/ListingImages'
 import { LikeButton } from '@/components/listings/LikeButton'
 import { CommentsSection } from '@/components/listings/CommentsSection'
 
-function currencySymbol(currency: string) {
+function currencyPrefix(currency: string) {
   if (currency === 'ETH') return 'Ξ'
   if (currency === 'BTC') return '₿'
-  return '$'
+  return ''
 }
 
 export default async function ListingDetailPage({
   params,
-}: {
+}: Readonly<{
   params: Promise<{ id: string }>
-}) {
+}>) {
   const { id } = await params
   const supabase = await createClient()
 
@@ -91,7 +91,7 @@ export default async function ListingDetailPage({
           {/* Price + Like */}
           <div className="flex items-center gap-4">
             <p className="text-3xl font-bold text-accent">
-              {currencySymbol(listing.price_currency)}{listing.price_amount}
+              {currencyPrefix(listing.price_currency)}{listing.price_amount}
               <span className="text-lg text-accent/60 ml-1">{listing.price_currency === 'USD' ? 'USDT' : listing.price_currency}</span>
             </p>
             <div className="flex items-center gap-3">
