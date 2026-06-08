@@ -11,6 +11,56 @@ async function requireAdmin() {
   return { supabase, userId: user.id }
 }
 
+export async function approveDeposit(depositId: string, approvedAmount: number) {
+  const { supabase, userId } = await requireAdmin()
+
+  const { data: dep } = await supabase
+    .from('deposit_requests')
+    .select('user_id, currency, status')
+    .eq('id', depositId)
+    .single()
+  if (!dep) return { error: 'Deposit not found' }
+  if (dep.status !== 'pending') return { error: 'Already reviewed' }
+
+  await supabase.rpc('increment_user_balance', {
+    p_user_id: dep.user_id,
+    p_currency: dep.currency,
+    p_amount: approvedAmount,
+  })
+
+  await supabase.from('deposit_requests').update({
+    status: 'approved',
+    approved_amount: approvedAmount,
+    reviewed_by: userId,
+    reviewed_at: new Date().toISOString(),
+  }).eq('id', depositId)
+
+  revalidatePath('/admin/deposits')
+  return { success: true }
+}
+
+export async function rejectDeposit(depositId: string, note?: string) {
+  const { supabase, userId } = await requireAdmin()
+
+  const { data: dep } = await supabase
+    .from('deposit_requests')
+    .select('status')
+    .eq('id', depositId)
+    .single()
+  if (!dep) return { error: 'Deposit not found' }
+  if (dep.status !== 'pending') return { error: 'Already reviewed' }
+
+  await supabase.from('deposit_requests').update({
+    status: 'rejected',
+    note: note ?? null,
+    reviewed_by: userId,
+    reviewed_at: new Date().toISOString(),
+  }).eq('id', depositId)
+
+  revalidatePath('/admin/deposits')
+  return { success: true }
+}
+
 export async function reviewKYC(
   submissionId: string,
   decision: 'approved' | 'rejected',
@@ -62,8 +112,14 @@ export async function resolveDispute(
   if (!order) return { error: 'Order not found' }
 
   if (resolution === 'release_to_seller') {
+    const { data: feeSettings } = await supabase
+      .from('platform_settings')
+      .select('key, value')
+      .in('key', ['platform_flat_fee'])
+    const flatFee = Number(feeSettings?.find(s => s.key === 'platform_flat_fee')?.value ?? 1)
+
     const fee = (order.amount * order.platform_fee_pct) / 100
-    const sellerAmount = order.amount - fee
+    const sellerAmount = order.amount - fee - flatFee
     await supabase.rpc('increment_seller_balance', {
       p_seller_id: order.seller_id,
       p_currency: order.currency,
@@ -79,6 +135,12 @@ export async function resolveDispute(
     })
     await supabase.from('orders').update({ status: 'completed' }).eq('id', dispute.order_id)
   } else {
+    // Refund buyer's balance
+    await supabase.rpc('increment_user_balance', {
+      p_user_id: order.buyer_id,
+      p_currency: order.currency ?? 'USDT',
+      p_amount: order.amount,
+    })
     await supabase.from('orders').update({ status: 'cancelled' }).eq('id', dispute.order_id)
   }
 

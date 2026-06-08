@@ -17,6 +17,27 @@ export async function createOrder(listingId: string) {
   if (!listing || listing.status !== 'active') return { error: 'Listing not available' }
   if (listing.seller_id === user.id) return { error: 'Cannot buy your own listing' }
 
+  // Check buyer balance
+  const currency = 'USDT'
+  const { data: balanceRow } = await supabase
+    .from('user_balances')
+    .select('balance')
+    .eq('user_id', user.id)
+    .eq('currency', currency)
+    .maybeSingle()
+  const currentBalance = Number(balanceRow?.balance ?? 0)
+  if (currentBalance < listing.price_amount) {
+    return { error: `Insufficient balance. You have ${currentBalance} USDT, need ${listing.price_amount} USDT. Please top up your wallet.` }
+  }
+
+  // Deduct from buyer balance atomically
+  const { data: ok } = await supabase.rpc('decrement_user_balance', {
+    p_user_id: user.id,
+    p_currency: currency,
+    p_amount: listing.price_amount,
+  })
+  if (!ok) return { error: 'Balance deduction failed — please try again' }
+
   const { data: settings } = await supabase
     .from('platform_settings')
     .select('value')
@@ -30,13 +51,19 @@ export async function createOrder(listingId: string) {
     seller_id: listing.seller_id,
     amount: listing.price_amount,
     platform_fee_pct: feePct,
-    status: 'awaiting_payment',
+    status: 'paid_escrow',
   }).select('id').single()
 
-  if (error) return { error: error.message }
+  if (error) {
+    // Rollback: refund buyer balance
+    await supabase.rpc('increment_user_balance', {
+      p_user_id: user.id, p_currency: currency, p_amount: listing.price_amount,
+    })
+    return { error: error.message }
+  }
+
   await supabase.from('listings').update({ status: 'sold' }).eq('id', listingId)
 
-  // Create conversation + system message
   const admin = createAdminClient()
   const { data: conv } = await admin.from('conversations').insert({
     order_id: order.id,
@@ -45,13 +72,11 @@ export async function createOrder(listingId: string) {
   }).select('id').single()
 
   if (conv) {
-    const deliveryNote = listing.delivery_time
-      ? `\nEstimated delivery: ${listing.delivery_time}`
-      : ''
+    const deliveryNote = listing.delivery_time ? `\nEstimated delivery: ${listing.delivery_time}` : ''
     await admin.from('messages').insert({
       conversation_id: conv.id,
       sender_id: null,
-      body: `Order created\n\nItem: ${listing.title}\nPrice: $${listing.price_amount} USD\nOrder ID: #${order.id.slice(0, 8).toUpperCase()}${deliveryNote}\n\nUse this chat to coordinate delivery. Payment must be sent to escrow before the seller delivers.`,
+      body: `Order created\n\nItem: ${listing.title}\nPrice: ${listing.price_amount} USDT\nOrder ID: #${order.id.slice(0, 8).toUpperCase()}${deliveryNote}\n\nPayment deducted from buyer's wallet. Seller, please deliver the item.`,
     })
   }
 
@@ -108,8 +133,14 @@ export async function buyerConfirmReceived(orderId: string) {
   if (!order || order.buyer_id !== user.id) return { error: 'Unauthorized' }
   if (order.status !== 'delivered') return { error: 'Order not in correct state' }
 
+  const { data: feeSettings } = await supabase
+    .from('platform_settings')
+    .select('key, value')
+    .in('key', ['platform_flat_fee'])
+  const flatFee = Number(feeSettings?.find(s => s.key === 'platform_flat_fee')?.value ?? 1)
+
   const fee = (order.amount * order.platform_fee_pct) / 100
-  const sellerAmount = order.amount - fee
+  const sellerAmount = order.amount - fee - flatFee
 
   await supabase.from('orders').update({ status: 'completed' }).eq('id', orderId)
 
