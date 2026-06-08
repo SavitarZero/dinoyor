@@ -67,9 +67,18 @@ export interface Conversation {
   created_at: string
 }
 
+export interface Category {
+  id: string
+  name: string
+  sort_order: number
+  active: boolean
+}
+
 export interface ListingWithGame extends Listing {
   games: Game | null
   profiles?: { username: string | null; avatar_url: string | null } | null
+  category_id?: string | null
+  categories?: { name: string } | null
 }
 
 export interface Order {

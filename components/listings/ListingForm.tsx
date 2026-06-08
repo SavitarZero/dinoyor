@@ -5,6 +5,7 @@ import { createListing } from '@/lib/actions/listings'
 
 interface Game { id: string; name: string }
 interface ItemType { id: string; name: string; slug: string }
+interface Category { id: string; name: string }
 
 function KycSellBanner({ kycStatus }: Readonly<{ kycStatus: string | null }>) {
   return (
@@ -88,7 +89,7 @@ async function processAdditional(
   return { files: compressed }
 }
 
-export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ games: Game[]; kycStatus: string | null; feePct?: number; flatFee?: number }>) {
+export function ListingForm({ games, categories, kycStatus, feePct, flatFee }: Readonly<{ games: Game[]; categories: Category[]; kycStatus: string | null; feePct?: number; flatFee?: number }>) {
   const [error, setError]   = useState('')
   const [loading, setLoading] = useState(false)
   const [price, setPrice] = useState('')
@@ -308,6 +309,30 @@ export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ ga
                 )}
               </div>
             </div>
+            {categories.length > 0 && (
+              <div>
+                <label htmlFor="category_id" className={labelCls}>Category</label>
+                <div className="relative">
+                  <select
+                    id="category_id"
+                    name="category_id"
+                    className={`${inputCls} appearance-none pr-8`}
+                    defaultValue=""
+                  >
+                    <option value="">— No category —</option>
+                    {categories.map(c => (
+                      <option key={c.id} value={c.id}>{c.name}</option>
+                    ))}
+                  </select>
+                  <svg
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none"
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
+            )}
             <div>
               <label className={labelCls}>Item name</label>
               <input

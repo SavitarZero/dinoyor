@@ -22,7 +22,8 @@ export async function createListing(formData: FormData) {
   const priceCurrency = formData.get('price_currency') as string
   const description = formData.get('description') as string
   const deliveryTime = (formData.get('delivery_time') as string) || null
-  const itemTypeId = (formData.get('item_type_id') as string) || null
+  const itemTypeId  = (formData.get('item_type_id')  as string) || null
+  const categoryId  = (formData.get('category_id')   as string) || null
   const coverFile = formData.get('cover') as File | null
   const additionalFiles = formData.getAll('additional') as File[]
 
@@ -68,6 +69,7 @@ export async function createListing(formData: FormData) {
     seller_id: user.id,
     game_id: gameId,
     item_type_id: itemTypeId,
+    category_id: categoryId,
     title,
     description: description || null,
     delivery_time: deliveryTime,

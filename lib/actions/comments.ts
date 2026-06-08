@@ -7,10 +7,6 @@ export async function addComment(listingId: string, body: string): Promise<{ err
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'unauthenticated' }
 
-  const { data: profile } = await supabase
-    .from('profiles').select('kyc_status').eq('id', user.id).single()
-  if (profile?.kyc_status !== 'approved') return { error: 'kyc_required' }
-
   const { data: order } = await supabase
     .from('orders')
     .select('id')

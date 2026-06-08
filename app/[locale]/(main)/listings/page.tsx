@@ -41,7 +41,7 @@ export default async function MyListingsPage({
   ] = await Promise.all([
     supabase
       .from('listings')
-      .select('id, title, price_amount, price_currency, images, status, sold_count, created_at, games(name, logo_url)')
+      .select('id, title, price_amount, price_currency, images, status, sold_count, created_at, games(name, logo_url), categories(name)')
       .eq('seller_id', user.id)
       .order('created_at', { ascending: false }),
     supabase.from('listings').select('*', { count: 'exact', head: true }).eq('seller_id', user.id).eq('status', 'active'),
@@ -164,14 +164,21 @@ export default async function MyListingsPage({
                 <p className="text-white text-xs font-medium leading-snug line-clamp-2">
                   {listing.title}
                 </p>
-                {listing.games && (
-                  <div className="flex items-center gap-1.5">
-                    {listing.games.logo_url && (
-                      <img src={listing.games.logo_url} alt="" className="w-3.5 h-3.5 rounded-sm object-cover shrink-0" />
-                    )}
-                    <p className="text-gray-600 text-xs truncate">{listing.games.name}</p>
-                  </div>
-                )}
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  {listing.games && (
+                    <div className="flex items-center gap-1">
+                      {listing.games.logo_url && (
+                        <img src={listing.games.logo_url} alt="" className="w-3.5 h-3.5 rounded-sm object-cover shrink-0" />
+                      )}
+                      <p className="text-gray-600 text-xs truncate">{listing.games.name}</p>
+                    </div>
+                  )}
+                  {listing.categories?.name && (
+                    <span className="px-1.5 py-0.5 rounded bg-background border border-border text-gray-500 text-[10px]">
+                      {(listing as any).categories.name}
+                    </span>
+                  )}
+                </div>
                 <div className="flex items-center justify-between mt-auto pt-1.5">
                   <span className="text-accent font-bold text-sm tabular-nums">
                     {listing.price_amount} coin

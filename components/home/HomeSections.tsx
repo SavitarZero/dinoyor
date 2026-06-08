@@ -3,7 +3,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { ListingCard } from '@/components/listings/ListingCard'
 import type { ListingWithGame, GameWithStats } from '@/lib/types/index'
-import { ChevronRight, ChevronLeft, Gamepad2, Sword, TreePine, Crosshair, Coins } from 'lucide-react'
+import { ChevronRight, ChevronLeft, Gamepad2 } from 'lucide-react'
 import { GameLogo, GameBanner } from '@/components/games/GameImage'
 
 interface Props {
@@ -11,37 +11,30 @@ interface Props {
   byCategory: Record<string, GameWithStats[]>
   listings: ListingWithGame[]
   hotIds: Set<string>
+  categories: { id: string; name: string }[]
 }
 
-const CATEGORY_ICON: Record<string, React.ReactNode> = {
-  'MMORPG':                <Sword size={14} />,
-  'Survival / Sandbox':    <TreePine size={14} />,
-  'Shooter / Skin Market': <Crosshair size={14} />,
-  'Blockchain':            <Coins size={14} />,
-}
-
-const CATEGORY_ORDER = ['MMORPG', 'Shooter / Skin Market', 'Survival / Sandbox', 'Blockchain']
-
-export function HomeSections({ games, byCategory, listings, hotIds }: Props) {
+export function HomeSections({ games, listings, hotIds, categories }: Props) {
   const [activeGame, setActiveGame] = useState<string | null>(null)
-  const [activeCategory, setActiveCategory] = useState<string | null>(null)
+  const [activeCatId, setActiveCatId] = useState<string | null>(null)
   const [heroIndex, setHeroIndex] = useState(0)
 
-  const categories = CATEGORY_ORDER.filter(c => byCategory[c])
   const featuredGames = games.filter(g => g.banner_url)
   const heroGame = featuredGames[heroIndex] ?? null
   const selectedGame = games.find(g => g.slug === activeGame) ?? null
 
-  const isFiltered = !!(activeGame || activeCategory)
+  const isFiltered = !!(activeGame || activeCatId)
+
+  const filteredListings = activeCatId
+    ? listings.filter(l => l.category_id === activeCatId)
+    : listings
 
   const visibleGames = activeGame
     ? games.filter(g => g.slug === activeGame)
-    : activeCategory
-    ? (byCategory[activeCategory] ?? [])
     : games
 
   const allGameSections = visibleGames
-    .map(g => ({ game: g, items: listings.filter(l => l.games?.slug === g.slug).slice(0, 4) }))
+    .map(g => ({ game: g, items: filteredListings.filter(l => l.games?.slug === g.slug).slice(0, 4) }))
     .filter(s => s.items.length > 0)
     .sort((a, b) => b.game.listing_count - a.game.listing_count)
 
@@ -59,9 +52,9 @@ export function HomeSections({ games, byCategory, listings, hotIds }: Props) {
 
             {/* All */}
             <button
-              onClick={() => { setActiveGame(null); setActiveCategory(null) }}
+              onClick={() => { setActiveGame(null); setActiveCatId(null) }}
               className={`flex items-center gap-1.5 shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                !activeGame && !activeCategory
+                !activeGame && !activeCatId
                   ? 'bg-accent text-black'
                   : 'bg-surface border border-border text-gray-400 hover:text-white'
               }`}
@@ -69,30 +62,29 @@ export function HomeSections({ games, byCategory, listings, hotIds }: Props) {
               <Gamepad2 size={12} /> All
             </button>
 
-            {/* Category chips */}
+            {/* DB Category chips */}
             {categories.map(cat => (
               <button
-                key={cat}
-                onClick={() => { setActiveCategory(cat === activeCategory ? null : cat); setActiveGame(null) }}
+                key={cat.id}
+                onClick={() => { setActiveCatId(cat.id === activeCatId ? null : cat.id); setActiveGame(null) }}
                 className={`flex items-center gap-1.5 shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition-all whitespace-nowrap ${
-                  activeCategory === cat && !activeGame
+                  activeCatId === cat.id && !activeGame
                     ? 'bg-accent text-black'
                     : 'bg-surface border border-border text-gray-400 hover:text-white'
                 }`}
               >
-                {CATEGORY_ICON[cat]}
-                {cat}
+                {cat.name}
               </button>
             ))}
 
             {/* Divider */}
-            <span className="h-5 w-px bg-border self-center mx-1 shrink-0" />
+            {categories.length > 0 && <span className="h-5 w-px bg-border self-center mx-1 shrink-0" />}
 
             {/* Individual game chips */}
             {games.map(g => (
               <button
                 key={g.id}
-                onClick={() => { setActiveGame(g.slug === activeGame ? null : g.slug); setActiveCategory(null) }}
+                onClick={() => { setActiveGame(g.slug === activeGame ? null : g.slug); setActiveCatId(null) }}
                 className={`flex items-center gap-1.5 shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold transition-all whitespace-nowrap ${
                   activeGame === g.slug
                     ? 'bg-accent text-black'
@@ -113,7 +105,7 @@ export function HomeSections({ games, byCategory, listings, hotIds }: Props) {
       <div className="max-w-7xl mx-auto px-4 pb-12">
 
         {/* ── Hero carousel ── */}
-        {!activeGame && !activeCategory && featuredGames.length > 0 && heroGame && (
+        {!activeGame && !activeCatId && featuredGames.length > 0 && heroGame && (
           <div className="pt-5 pb-5">
             <div className="relative rounded overflow-hidden group" style={{ height: 'clamp(180px, 30vw, 400px)' }}>
               <div className="absolute inset-0">
@@ -162,7 +154,7 @@ export function HomeSections({ games, byCategory, listings, hotIds }: Props) {
         )}
 
         {/* ── Category banner grid ── */}
-        {!activeGame && !activeCategory && featuredGames.length > 1 && (
+        {!activeGame && !activeCatId && featuredGames.length > 1 && (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pb-8">
             {featuredGames.filter((_, i) => i !== heroIndex).slice(0, 4).map(g => (
               <button key={g.id} onClick={() => setActiveGame(g.slug)}
@@ -182,17 +174,6 @@ export function HomeSections({ games, byCategory, listings, hotIds }: Props) {
                 </div>
               </button>
             ))}
-          </div>
-        )}
-
-        {/* ── Category header (when category filter active) ── */}
-        {activeCategory && !activeGame && (
-          <div className="pt-5 pb-4 flex items-center gap-3">
-            <div className="flex items-center gap-2 text-accent">
-              {CATEGORY_ICON[activeCategory]}
-              <h2 className="text-white font-black text-xl">{activeCategory}</h2>
-            </div>
-            <span className="text-gray-600 text-sm">{(byCategory[activeCategory] ?? []).length} games</span>
           </div>
         )}
 

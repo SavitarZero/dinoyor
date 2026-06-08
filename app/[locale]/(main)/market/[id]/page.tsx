@@ -26,7 +26,7 @@ export default async function ListingDetailPage({
   const [{ data: listing }, { data: likes }, { data: comments }, { data: purchase }, { data: profile }, { data: balanceRow }] = await Promise.all([
     supabase
       .from('listings')
-      .select('*, games(name, slug, logo_url, banner_url), seller:profiles!seller_id(username, avatar_url)')
+      .select('*, games(name, slug, logo_url, banner_url), seller:profiles!seller_id(username, avatar_url), categories(name)')
       .eq('id', id)
       .single(),
 
@@ -79,14 +79,23 @@ export default async function ListingDetailPage({
 
         {/* Details */}
         <div className="flex flex-col gap-4">
-          {/* Game tag */}
-          {(listing as any).games?.name && (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface border border-border text-accent text-xs font-medium w-fit">
-              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/>
-              </svg>
-              {(listing as any).games.name}
-            </span>
+          {/* Tags row */}
+          {((listing as any).games?.name || (listing as any).categories?.name) && (
+            <div className="flex flex-wrap gap-1.5">
+              {(listing as any).games?.name && (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface border border-border text-accent text-xs font-medium">
+                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z"/>
+                  </svg>
+                  {(listing as any).games.name}
+                </span>
+              )}
+              {(listing as any).categories?.name && (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface border border-border text-gray-400 text-xs font-medium">
+                  {(listing as any).categories.name}
+                </span>
+              )}
+            </div>
           )}
 
           <div>

@@ -7,7 +7,6 @@ import {
   Package,
   Wallet,
   ShieldCheck,
-  Settings2,
   LogOut,
   Store,
 } from 'lucide-react'
@@ -36,7 +35,6 @@ export function ProfileDropdown({ avatarUrl, username, email, role, amoBalance }
   const ref = useRef<HTMLDivElement>(null)
   const initials = (username || email || '?')[0].toUpperCase()
   const isSeller = role === 'seller' || role === 'admin'
-  const isAdmin = role === 'admin'
   const menuItems = [...BASE_ITEMS, ...(isSeller ? SELLER_ITEMS : [])]
 
   useEffect(() => {
@@ -104,16 +102,7 @@ export function ProfileDropdown({ avatarUrl, username, email, role, amoBalance }
             </Link>
           ))}
 
-          {isAdmin && (
-            <Link
-              href="/admin"
-              onClick={() => setOpen(false)}
-              className="flex items-center gap-3 px-4 py-2.5 text-sm text-yellow-400 hover:text-yellow-300 hover:bg-white/5 transition-colors"
-            >
-              <Settings2 size={16} className="shrink-0 text-yellow-600" />
-              Admin Panel
-            </Link>
-          )}
+
         </div>
 
         {/* Sign out */}

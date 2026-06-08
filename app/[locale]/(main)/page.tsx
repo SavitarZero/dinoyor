@@ -7,20 +7,22 @@ import type { ListingWithGame, GameWithStats } from '@/lib/types/index'
 export default async function HomePage() {
   const supabase = await createClient()
 
-  const [gamesRaw, { data: listingCounts, error: e2 }, { data: listings, error: e3 }, hotIds] = await Promise.all([
+  const [gamesRaw, { data: listingCounts, error: e2 }, { data: listings, error: e3 }, hotIds, { data: dbCategories }] = await Promise.all([
     getCachedGames(),
 
     supabase.from('listings').select('game_id').eq('status', 'active'),
 
     supabase
       .from('listings')
-      .select('id, title, price_amount, price_currency, images, status, seller_id, sold_count, games(name, slug, category, logo_url, banner_url), profiles:seller_id(username, avatar_url)')
+      .select('id, title, price_amount, price_currency, images, status, seller_id, sold_count, category_id, games(name, slug, category, logo_url, banner_url), profiles:seller_id(username, avatar_url)')
       .eq('status', 'active')
       .order('sold_count', { ascending: false })
       .order('created_at', { ascending: false })
       .limit(64),
 
     getHotListingIds(supabase),
+
+    supabase.from('categories').select('id, name').eq('active', true).order('sort_order'),
   ])
 
   if (e2) console.error('[home] counts:', e2.message)
@@ -51,6 +53,7 @@ export default async function HomePage() {
       byCategory={byCategory}
       listings={(listings ?? []) as unknown as ListingWithGame[]}
       hotIds={hotIds}
+      categories={dbCategories ?? []}
     />
   )
 }

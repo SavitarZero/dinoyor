@@ -34,6 +34,9 @@ export default async function AdminLayout({ children }: Readonly<{ children: Rea
         <Link href="/admin/payouts" className="block text-gray-400 hover:text-white py-2 px-3 rounded hover:bg-background text-sm">
           Payouts
         </Link>
+        <Link href="/admin/categories" className="block text-gray-400 hover:text-white py-2 px-3 rounded hover:bg-background text-sm">
+          Categories
+        </Link>
         <div className="pt-4 border-t border-border mt-4">
           <Link href="/" className="block text-gray-600 hover:text-gray-400 py-2 px-3 text-xs">
             ← Back to site
