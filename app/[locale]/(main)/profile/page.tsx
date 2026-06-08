@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { ProfileContent } from '@/components/profile/ProfileContent'
+import type { ProfileOrder } from '@/lib/types'
 
 export default async function ProfilePage() {
   const supabase = await createClient()
@@ -30,7 +31,7 @@ export default async function ProfilePage() {
     .order('created_at', { ascending: false })
     .limit(50)
 
-  let sellerOrders: any[] = []
+  let sellerOrders: ProfileOrder[] = []
   if (isSeller) {
     const { data } = await supabase
       .from('orders')
@@ -38,7 +39,13 @@ export default async function ProfilePage() {
       .eq('seller_id', user.id)
       .order('created_at', { ascending: false })
       .limit(50)
-    sellerOrders = data ?? []
+    sellerOrders = (data ?? []).map(o => ({
+      id: String(o.id),
+      status: String(o.status),
+      amount: Number(o.amount),
+      created_at: String(o.created_at),
+      listings: Array.isArray(o.listings) ? (o.listings[0] ?? null) : o.listings,
+    }))
   }
 
   let kycData = null
@@ -75,8 +82,14 @@ export default async function ProfilePage() {
     totalEarnings: completedSales.reduce((sum, o) => sum + Number(o.amount), 0),
     activeListings: activeListings ?? 0,
     totalBalance: balances?.reduce((sum, b) => sum + Number(b.pending_amount), 0) ?? 0,
-    buyerOrders: (buyerOrders ?? []) as any[],
-    sellerOrders: sellerOrders as any[],
+    buyerOrders: (buyerOrders ?? []).map(o => ({
+      id: String(o.id),
+      status: String(o.status),
+      amount: Number(o.amount),
+      created_at: String(o.created_at),
+      listings: Array.isArray(o.listings) ? (o.listings[0] ?? null) : o.listings,
+    })) as ProfileOrder[],
+    sellerOrders,
     kycSubmittedAt: kycData?.created_at ?? null,
     kycReviewedAt: kycData?.reviewed_at ?? null,
     hasRealEmail,

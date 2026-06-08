@@ -32,7 +32,7 @@ export default async function SellerStorePage({
   const [listingsRes, { data: soldAgg }] = await Promise.all([
     supabase
       .from('listings')
-      .select('id, title, price_amount, price_currency, images, status, seller_id, sold_count, games(name, slug, category, logo_url, banner_url), profiles:seller_id(username, avatar_url)', { count: 'exact' })
+      .select('id, title, price_amount, price_currency, images, status, seller_id, sold_count, games(name, slug, logo_url, banner_url), profiles:seller_id(username, avatar_url)', { count: 'exact' })
       .eq('seller_id', seller.id)
       .eq('status', 'active')
       .order('created_at', { ascending: false })

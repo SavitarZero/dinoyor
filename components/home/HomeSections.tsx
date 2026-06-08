@@ -14,7 +14,7 @@ interface Props {
   categories: { id: string; name: string }[]
 }
 
-export function HomeSections({ games, listings, hotIds, categories }: Props) {
+export function HomeSections({ games, byCategory, listings, hotIds, categories }: Props) {
   const [activeGame, setActiveGame] = useState<string | null>(null)
   const [activeCatId, setActiveCatId] = useState<string | null>(null)
   const [heroIndex, setHeroIndex] = useState(0)
@@ -25,16 +25,16 @@ export function HomeSections({ games, listings, hotIds, categories }: Props) {
 
   const isFiltered = !!(activeGame || activeCatId)
 
-  const filteredListings = activeCatId
-    ? listings.filter(l => l.category_id === activeCatId)
-    : listings
+  const activeCatName = categories.find(c => c.id === activeCatId)?.name ?? null
 
   const visibleGames = activeGame
     ? games.filter(g => g.slug === activeGame)
+    : activeCatName
+    ? (byCategory[activeCatName] ?? [])
     : games
 
   const allGameSections = visibleGames
-    .map(g => ({ game: g, items: filteredListings.filter(l => l.games?.slug === g.slug).slice(0, 4) }))
+    .map(g => ({ game: g, items: listings.filter((l: ListingWithGame) => l.games?.slug === g.slug).slice(0, 4) }))
     .filter(s => s.items.length > 0)
     .sort((a, b) => b.game.listing_count - a.game.listing_count)
 
@@ -234,7 +234,7 @@ export function HomeSections({ games, listings, hotIds, categories }: Props) {
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                  {items.map((l) => <ListingCard key={l.id} listing={l} isHot={hotIds.has(l.id)} />)}
+                  {items.map((l: ListingWithGame) => <ListingCard key={l.id} listing={l} isHot={hotIds.has(l.id)} />)}
                 </div>
               </section>
               )

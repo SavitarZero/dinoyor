@@ -12,6 +12,6 @@ create policy "categories_admin" on public.categories for all using (
   exists (select 1 from public.profiles where id = auth.uid() and role = 'admin')
 );
 
--- Optional: link to listings
+-- Link to listings (no FK constraint)
 alter table public.listings
-  add column if not exists category_id uuid references public.categories(id) on delete set null;
+  add column if not exists category_id uuid;

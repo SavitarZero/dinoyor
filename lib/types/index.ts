@@ -25,6 +25,7 @@ export interface Game {
   name: string
   slug: string
   category: string | null
+  category_id?: string | null
   logo_url: string | null
   banner_url: string | null
 }
@@ -98,6 +99,14 @@ export interface OrderWithDetails extends Order {
   listings: { title: string; images: string[] } | null
   buyer: { username: string | null } | null
   seller: { username: string | null } | null
+}
+
+export interface ProfileOrder {
+  id: string
+  status: string
+  amount: number
+  created_at: string
+  listings: { title: string; images: string[] } | null
 }
 
 export interface KYCSubmission {

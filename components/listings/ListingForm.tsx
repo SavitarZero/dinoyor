@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect } from 'react'
 import imageCompression from 'browser-image-compression'
 import { createListing } from '@/lib/actions/listings'
+import Link from 'next/link'
 
 interface Game { id: string; name: string }
 interface ItemType { id: string; name: string; slug: string }
@@ -26,12 +27,12 @@ function KycSellBanner({ kycStatus }: Readonly<{ kycStatus: string | null }>) {
         </div>
       </div>
       {kycStatus !== 'pending' && (
-        <a
+        <Link
           href="/profile/kyc"
           className="w-full py-2.5 rounded bg-accent text-black text-sm font-bold text-center hover:opacity-90 transition-opacity flex items-center justify-center"
         >
           Verify identity
-        </a>
+        </Link>
       )}
     </div>
   )

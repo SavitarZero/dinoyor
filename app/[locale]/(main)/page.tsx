@@ -14,7 +14,7 @@ export default async function HomePage() {
 
     supabase
       .from('listings')
-      .select('id, title, price_amount, price_currency, images, status, seller_id, sold_count, category_id, games(name, slug, category, logo_url, banner_url), profiles:seller_id(username, avatar_url)')
+      .select('id, title, price_amount, price_currency, images, status, seller_id, sold_count, games(name, slug, logo_url, banner_url), profiles:seller_id(username, avatar_url)')
       .eq('status', 'active')
       .order('sold_count', { ascending: false })
       .order('created_at', { ascending: false })

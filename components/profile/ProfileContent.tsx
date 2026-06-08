@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { WalletAddressForm } from '@/components/wallet/WalletAddressForm'
 import { DepositWalletForm } from '@/components/wallet/DepositWalletForm'
 import { KYCForm } from '@/components/kyc/KYCForm'
-import type { KYCStatus } from '@/lib/types'
+import type { KYCStatus, ProfileOrder } from '@/lib/types'
 
 type Tab = 'personal' | 'security' | 'wallet' | 'purchases' | 'sales' | 'kyc'
 
@@ -24,8 +24,8 @@ interface ProfileData {
   totalEarnings: number
   activeListings: number
   totalBalance: number
-  buyerOrders: any[]
-  sellerOrders: any[]
+  buyerOrders: ProfileOrder[]
+  sellerOrders: ProfileOrder[]
   kycSubmittedAt: string | null
   kycReviewedAt: string | null
   hasRealEmail: boolean
@@ -219,7 +219,7 @@ const STATUS_OPTIONS = [
   { value: 'cancelled', label: 'Cancelled' },
 ]
 
-function OrderList({ orders, emptyText, emptyLink, emptyLinkText }: Readonly<{ orders: any[]; emptyText: string; emptyLink: string; emptyLinkText: string }>) {
+function OrderList({ orders, emptyText, emptyLink, emptyLinkText }: Readonly<{ orders: ProfileOrder[]; emptyText: string; emptyLink: string; emptyLinkText: string }>) {
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [page, setPage] = useState(1)
@@ -275,7 +275,7 @@ function OrderList({ orders, emptyText, emptyLink, emptyLinkText }: Readonly<{ o
         </div>
       ) : (
         <div className="rounded border border-border bg-surface divide-y divide-border overflow-hidden">
-          {paginated.map((o: any) => (
+          {paginated.map((o) => (
             <Link key={o.id} href={`/orders/${o.id}`} className="flex items-center gap-3 px-4 py-3 hover:bg-white/[0.02] transition-colors">
               <div className="w-10 h-10 rounded overflow-hidden bg-background shrink-0">
                 {o.listings?.images?.[0]
@@ -338,11 +338,11 @@ function OrderList({ orders, emptyText, emptyLink, emptyLinkText }: Readonly<{ o
   )
 }
 
-function PurchasesSection({ orders }: Readonly<{ orders: any[] }>) {
+function PurchasesSection({ orders }: Readonly<{ orders: ProfileOrder[] }>) {
   return <OrderList orders={orders} emptyText="No purchases yet." emptyLink="/market" emptyLinkText="Browse market →" />
 }
 
-function SalesSection({ orders }: Readonly<{ orders: any[] }>) {
+function SalesSection({ orders }: Readonly<{ orders: ProfileOrder[] }>) {
   return <OrderList orders={orders} emptyText="No sales yet." emptyLink="/listings/new" emptyLinkText="Create a listing →" />
 }
 

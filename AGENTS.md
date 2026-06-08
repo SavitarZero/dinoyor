@@ -2,6 +2,17 @@
 # This is NOT the Next.js you know
 
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
+
+## Next.js Navigation Rules
+
+- **Never use `<a href="...">` for internal navigation.** Always use `<Link href="...">` from `next/link`.
+- `<a>` is only allowed for external URLs (e.g. `href="https://..."`) or download links.
+
+## TypeScript Rules
+
+- **Never use `any`.** Use proper types, `unknown`, or narrow with type guards. No `as any`, no `: any`, no generics with `any`.
+- If the shape is unknown, use `unknown` and narrow before use.
+- If a third-party return type is too broad, declare a local interface instead of casting to `any`.
 <!-- END:nextjs-agent-rules -->
 
 ## UI Rules — Responsive First
