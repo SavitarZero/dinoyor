@@ -55,7 +55,7 @@ export async function submitDeposit(
     .single()
   const minDeposit = Number(minRows?.value ?? 10)
   if (claimedAmount < minDeposit) {
-    return { error: `Minimum deposit is ${minDeposit} AMO` }
+    return { error: `Minimum deposit is ${minDeposit} coin` }
   }
 
   // Prevent reuse of an already-approved TX hash (globally, not just per user)

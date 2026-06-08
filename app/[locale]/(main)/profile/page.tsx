@@ -100,7 +100,7 @@ function BuyerOrderList({ orders }: Readonly<{ orders: any[] }>) {
             </p>
           </div>
           <div className="text-right shrink-0">
-            <p className="text-white text-sm font-medium">{Number(o.amount).toFixed(2)} AMO</p>
+            <p className="text-white text-sm font-medium">{Number(o.amount).toFixed(2)} coin</p>
             <p className={`text-xs capitalize ${orderStatusColor(o.status)}`}>
               {o.status.replaceAll('_', ' ')}
             </p>
@@ -121,11 +121,15 @@ export default async function ProfilePage() {
     { data: profile },
     { count: activeListings },
     { data: balances },
+    { data: amoBalanceRow },
   ] = await Promise.all([
     supabase.from('profiles').select('username, avatar_url, kyc_status, role, wallet_address, wallet_network, deposit_wallet, deposit_wallet_network, created_at').eq('id', user.id).single(),
     supabase.from('listings').select('*', { count: 'exact', head: true }).eq('seller_id', user.id).eq('status', 'active'),
     supabase.from('seller_balances').select('pending_amount, currency').eq('seller_id', user.id),
+    supabase.from('user_balances').select('balance').eq('user_id', user.id).eq('currency', 'USDT').maybeSingle(),
   ])
+
+  const amoBalance = Number(amoBalanceRow?.balance ?? 0)
 
   const role = profile?.role ?? 'user'
   const isSeller = role === 'seller' || role === 'admin'
@@ -243,7 +247,7 @@ export default async function ProfilePage() {
               {/* Deposit sender address */}
               <div className="space-y-2">
                 <p className="text-gray-400 text-xs font-medium uppercase tracking-wide">Deposit Sender Address</p>
-                <p className="text-gray-600 text-xs">The wallet address you send AMO from. Must be set before depositing.</p>
+                <p className="text-gray-600 text-xs">The wallet address you send coin from. Must be set before depositing.</p>
                 <div id="deposit-wallet">
                   <DepositWalletForm
                     currentAddress={profile?.deposit_wallet ?? null}
@@ -257,7 +261,7 @@ export default async function ProfilePage() {
               {/* Withdraw wallet — seller only */}
               <div className="space-y-2" id="withdraw-wallet">
                 <p className="text-gray-400 text-xs font-medium uppercase tracking-wide">Withdraw Wallet (Seller Payout)</p>
-                <p className="text-gray-600 text-xs">AMO from your sales will be sent to this address.</p>
+                <p className="text-gray-600 text-xs">coin from your sales will be sent to this address.</p>
                 <WalletAddressForm
                   currentAddress={profile?.wallet_address ?? null}
                   currentNetwork={profile?.wallet_network ?? null}
@@ -266,18 +270,32 @@ export default async function ProfilePage() {
             </div>
           </div>
 
+          {/* coin balance — buyers */}
+          {!isSeller && (
+            <div className="rounded-2xl border border-border bg-surface p-4 flex items-center justify-between gap-4">
+              <div>
+                <p className="text-gray-500 text-xs">coin Balance</p>
+                <p className="text-2xl font-bold text-accent mt-0.5">{amoBalance.toFixed(2)} <span className="text-base font-medium text-gray-500">coin</span></p>
+              </div>
+              <Link href="/wallet" className="px-4 py-2 rounded-xl border border-border text-gray-400 text-sm hover:text-white hover:border-accent/50 transition-colors shrink-0">
+                Deposit →
+              </Link>
+            </div>
+          )}
+
           {isSeller && (
             <div className="rounded-2xl border border-border bg-surface overflow-hidden">
-              <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-border">
+              <div className="grid grid-cols-2 sm:grid-cols-5 divide-x divide-border">
                 {[
-                  { label: 'Sales',    value: String(completedSales.length) },
-                  { label: 'Earnings', value: `${totalEarnings.toFixed(0)} AMO` },
-                  { label: 'Listings', value: String(activeListings ?? 0) },
-                  { label: 'Balance',  value: `${totalBalance.toFixed(2)} AMO` },
-                ].map(({ label, value }) => (
+                  { label: 'coin Balance', value: `${amoBalance.toFixed(2)} coin`, accent: true },
+                  { label: 'Sales',       value: String(completedSales.length) },
+                  { label: 'Earnings',    value: `${totalEarnings.toFixed(0)} coin` },
+                  { label: 'Listings',    value: String(activeListings ?? 0) },
+                  { label: 'Pending',     value: `${totalBalance.toFixed(2)} coin` },
+                ].map(({ label, value, accent }) => (
                   <div key={label} className="p-4">
                     <p className="text-gray-500 text-xs">{label}</p>
-                    <p className="text-xl font-bold text-white mt-0.5">{value}</p>
+                    <p className={`text-xl font-bold mt-0.5 ${accent ? 'text-accent' : 'text-white'}`}>{value}</p>
                   </div>
                 ))}
               </div>

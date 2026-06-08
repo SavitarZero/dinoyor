@@ -6,7 +6,7 @@ import { GameBanner } from '@/components/games/GameImage'
 function formatPrice(amount: number, currency: string) {
   if (currency === 'ETH') return `Ξ${amount}`
   if (currency === 'BTC') return `₿${amount}`
-  return `${amount} AMO`
+  return `${amount} coin`
 }
 
 export function ListingCard({ listing, isHot }: { listing: ListingWithGame; isHot?: boolean }) {
@@ -54,16 +54,28 @@ export function ListingCard({ listing, isHot }: { listing: ListingWithGame; isHo
           {listing.title}
         </p>
         <div className="flex items-center justify-between gap-2 mt-auto">
-          <div className="flex items-baseline gap-1">
-            <span className="text-sm font-bold text-white">
-              {formatPrice(listing.price_amount, listing.price_currency)}
-            </span>
-            <span className="text-[10px] text-gray-600">· {listing.sold_count ?? 0} sold</span>
-          </div>
+          <span className="text-sm font-bold text-white">
+            {formatPrice(listing.price_amount, listing.price_currency)}
+          </span>
           {listing.profiles?.username && (
-            <span className="text-[10px] text-gray-700 truncate max-w-16">@{listing.profiles.username}</span>
+            <div className="flex items-center gap-1.5 min-w-0">
+              {listing.profiles.avatar_url ? (
+                <img
+                  src={listing.profiles.avatar_url}
+                  alt=""
+                  referrerPolicy="no-referrer"
+                  className="w-4 h-4 rounded-full object-cover shrink-0"
+                />
+              ) : (
+                <span className="w-4 h-4 rounded-full bg-accent/20 flex items-center justify-center text-accent text-[8px] font-bold shrink-0">
+                  {listing.profiles.username[0].toUpperCase()}
+                </span>
+              )}
+              <span className="text-[10px] text-gray-600 truncate max-w-14">@{listing.profiles.username}</span>
+            </div>
           )}
         </div>
+        <p className="text-[10px] text-gray-700">{listing.sold_count ?? 0} sold</p>
       </div>
     </Link>
   )

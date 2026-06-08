@@ -46,7 +46,7 @@ export default async function MarketPage({
 
   let query = supabase
     .from('listings')
-    .select('id, title, price_amount, price_currency, images, status, seller_id, sold_count, game_id, games(name, slug, category, logo_url, banner_url), profiles:seller_id(username)', { count: 'exact' })
+    .select('id, title, price_amount, price_currency, images, status, seller_id, sold_count, game_id, games(name, slug, category, logo_url, banner_url), profiles:seller_id(username, avatar_url)', { count: 'exact' })
     .eq('status', 'active')
     .order('sold_count', { ascending: false })
     .order('created_at', { ascending: false })

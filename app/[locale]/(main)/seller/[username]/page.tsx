@@ -32,7 +32,7 @@ export default async function SellerStorePage({
   const [listingsRes, { data: soldAgg }] = await Promise.all([
     supabase
       .from('listings')
-      .select('id, title, price_amount, price_currency, images, status, seller_id, sold_count, games(name, slug, category, logo_url, banner_url), profiles:seller_id(username)', { count: 'exact' })
+      .select('id, title, price_amount, price_currency, images, status, seller_id, sold_count, games(name, slug, category, logo_url, banner_url), profiles:seller_id(username, avatar_url)', { count: 'exact' })
       .eq('seller_id', seller.id)
       .eq('status', 'active')
       .order('created_at', { ascending: false })
@@ -65,7 +65,7 @@ export default async function SellerStorePage({
         {/* Avatar */}
         <div className="w-16 h-16 rounded-full bg-background overflow-hidden shrink-0 ring-2 ring-border">
           {seller.avatar_url ? (
-            <img src={seller.avatar_url} alt={seller.username} className="w-full h-full object-cover" />
+            <img src={seller.avatar_url} alt={seller.username} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-2xl font-bold text-gray-500">
               {(seller.username || '?')[0].toUpperCase()}

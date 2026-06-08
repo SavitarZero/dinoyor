@@ -27,7 +27,7 @@ export async function createOrder(listingId: string) {
     .maybeSingle()
   const currentBalance = Number(balanceRow?.balance ?? 0)
   if (currentBalance < listing.price_amount) {
-    return { error: `Insufficient balance. You have ${currentBalance} USDT, need ${listing.price_amount} USDT. Please top up your wallet.` }
+    return { error: `Insufficient balance. You have ${currentBalance} coin, need ${listing.price_amount} coin. Please top up your wallet.` }
   }
 
   // Deduct from buyer balance atomically
@@ -76,7 +76,7 @@ export async function createOrder(listingId: string) {
     await admin.from('messages').insert({
       conversation_id: conv.id,
       sender_id: null,
-      body: `Order created\n\nItem: ${listing.title}\nPrice: ${listing.price_amount} USDT\nOrder ID: #${order.id.slice(0, 8).toUpperCase()}${deliveryNote}\n\nPayment deducted from buyer's wallet. Seller, please deliver the item.`,
+      body: `Order created\n\nItem: ${listing.title}\nPrice: ${listing.price_amount} coin\nOrder ID: #${order.id.slice(0, 8).toUpperCase()}${deliveryNote}\n\nPayment deducted from buyer's balance. Seller, please deliver the item.`,
     })
   }
 

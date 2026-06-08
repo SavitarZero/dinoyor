@@ -178,7 +178,7 @@ export default async function MyListingsPage({
                 )}
                 <div className="flex items-center justify-between mt-auto">
                   <span className="text-accent font-bold text-sm">
-                    {listing.price_amount} AMO
+                    {listing.price_amount} coin
                   </span>
                   <span className="text-gray-600 text-[10px]">
                     {new Date(listing.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}

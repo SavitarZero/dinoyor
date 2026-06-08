@@ -13,10 +13,11 @@ import {
 } from 'lucide-react'
 
 interface Props {
-  avatarUrl: string | null
-  username: string | null
-  email: string
-  role: string
+  readonly avatarUrl: string | null
+  readonly username: string | null
+  readonly email: string
+  readonly role: string
+  readonly amoBalance: number
 }
 
 const BASE_ITEMS = [
@@ -30,7 +31,7 @@ const SELLER_ITEMS = [
   { href: '/listings',    label: 'My Listings',     Icon: Store },
 ]
 
-export function ProfileDropdown({ avatarUrl, username, email, role }: Props) {
+export function ProfileDropdown({ avatarUrl, username, email, role, amoBalance }: Props) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
   const initials = (username || email || '?')[0].toUpperCase()
@@ -59,7 +60,7 @@ export function ProfileDropdown({ avatarUrl, username, email, role }: Props) {
       >
         <span className={`block rounded-full ring-2 transition-all duration-150 ${open ? 'ring-accent/60' : 'ring-transparent hover:ring-accent/60'}`}>
           {avatarUrl ? (
-            <img src={avatarUrl} alt="avatar" className="w-8 h-8 rounded-full object-cover" />
+            <img src={avatarUrl} alt="avatar" referrerPolicy="no-referrer" className="w-8 h-8 rounded-full object-cover" />
           ) : (
             <span className="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-black text-xs font-bold">
               {initials}
@@ -76,7 +77,7 @@ export function ProfileDropdown({ avatarUrl, username, email, role }: Props) {
         {/* Header */}
         <div className="flex items-center gap-3 px-4 py-3.5 border-b border-border">
           {avatarUrl ? (
-            <img src={avatarUrl} alt="avatar" className="w-9 h-9 rounded-full object-cover shrink-0" />
+            <img src={avatarUrl} alt="avatar" referrerPolicy="no-referrer" className="w-9 h-9 rounded-full object-cover shrink-0" />
           ) : (
             <span className="w-9 h-9 rounded-full bg-accent flex items-center justify-center text-black text-sm font-bold shrink-0">
               {initials}
@@ -85,6 +86,7 @@ export function ProfileDropdown({ avatarUrl, username, email, role }: Props) {
           <div className="min-w-0">
             <p className="text-white text-sm font-semibold truncate">{username || 'User'}</p>
             <p className="text-gray-500 text-xs truncate">{email}</p>
+            <p className="text-accent text-xs font-bold mt-0.5">{amoBalance.toFixed(2)} coin</p>
           </div>
         </div>
 

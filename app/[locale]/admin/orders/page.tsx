@@ -106,7 +106,7 @@ function OrderRow({ order, highlight }: { order: any; highlight: boolean }) {
       </div>
 
       <div className="shrink-0 text-right space-y-2">
-        <p className="text-accent font-bold">{order.amount} USDT</p>
+        <p className="text-accent font-bold">{order.amount} coin</p>
         <div className="flex gap-2">
           <Link
             href={`/orders/${order.id}`}

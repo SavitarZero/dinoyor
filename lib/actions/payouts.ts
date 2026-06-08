@@ -43,7 +43,7 @@ export async function requestPayout(currency: string) {
     .eq('key', 'min_withdraw_amo')
   const minWithdraw = Number(settingsRows?.[0]?.value ?? 200)
   if (Number(balance.pending_amount) < minWithdraw) {
-    return { error: `Minimum withdrawal is ${minWithdraw} AMO` }
+    return { error: `Minimum withdrawal is ${minWithdraw} coin` }
   }
 
   const { data: existing } = await supabase
@@ -70,7 +70,7 @@ export async function updatePayoutSettings(minAmount: number) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Not authenticated' }
-  if (minAmount < 1) return { error: 'Minimum payout must be at least 1 USDT' }
+  if (minAmount < 1) return { error: 'Minimum payout must be at least 1 coin' }
 
   await supabase.from('profiles')
     .update({ payout_min_amount: minAmount })

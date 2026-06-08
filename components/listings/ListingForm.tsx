@@ -416,7 +416,7 @@ export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ ga
           <div className="rounded-xl border border-border bg-surface p-5 space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className={labelCls}>Price (AMO)</label>
+                <label className={labelCls}>Price (coin)</label>
                 <div className="relative">
                   <input
                     name="price_amount"
@@ -447,19 +447,19 @@ export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ ga
                   <div className="mt-2 rounded-xl bg-background border border-border p-4 space-y-1.5 text-sm">
                     <div className="flex justify-between text-gray-400">
                       <span>Price</span>
-                      <span>{priceNum.toFixed(2)} AMO</span>
+                      <span>{priceNum.toFixed(2)} coin</span>
                     </div>
                     <div className="flex justify-between text-gray-500 text-xs">
                       <span>Platform fee ({resolvedFeePct}%)</span>
-                      <span>−{percentFeeAmt.toFixed(2)} AMO</span>
+                      <span>−{percentFeeAmt.toFixed(2)} coin</span>
                     </div>
                     <div className="flex justify-between text-gray-500 text-xs">
                       <span>Flat fee</span>
-                      <span>−{resolvedFlatFee.toFixed(2)} AMO</span>
+                      <span>−{resolvedFlatFee.toFixed(2)} coin</span>
                     </div>
                     <div className="border-t border-border pt-1.5 flex justify-between font-semibold">
                       <span className="text-white">You receive</span>
-                      <span className="text-accent">{youReceive.toFixed(2)} AMO</span>
+                      <span className="text-accent">{youReceive.toFixed(2)} coin</span>
                     </div>
                   </div>
                 )}
@@ -527,19 +527,19 @@ export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ ga
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-400">Listing price</span>
-                  <span className="text-white">{priceNum > 0 ? `${priceNum.toFixed(2)} AMO` : '—'}</span>
+                  <span className="text-white">{priceNum > 0 ? `${priceNum.toFixed(2)} coin` : '—'}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-400">Platform fee ({resolvedFeePct}%)</span>
-                  <span className="text-gray-400">{priceNum > 0 ? `−${fee.toFixed(2)} AMO` : '—'}</span>
+                  <span className="text-gray-400">{priceNum > 0 ? `−${fee.toFixed(2)} coin` : '—'}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-400">Flat fee</span>
-                  <span className="text-gray-400">{priceNum > 0 ? `−${resolvedFlatFee.toFixed(2)} AMO` : '—'}</span>
+                  <span className="text-gray-400">{priceNum > 0 ? `−${resolvedFlatFee.toFixed(2)} coin` : '—'}</span>
                 </div>
                 <div className="border-t border-border pt-2 flex justify-between text-sm">
                   <span className="text-white font-medium">You receive</span>
-                  <span className="text-accent font-bold">{priceNum > 0 ? `${youReceive.toFixed(2)} AMO` : '—'}</span>
+                  <span className="text-accent font-bold">{priceNum > 0 ? `${youReceive.toFixed(2)} coin` : '—'}</span>
                 </div>
               </div>
             </div>

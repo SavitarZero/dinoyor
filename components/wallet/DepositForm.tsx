@@ -81,7 +81,7 @@ export function DepositForm({ escrowAddresses, hasDepositWallet, minDeposit }: R
 
       {/* Step 1: Send crypto */}
       <div className="space-y-3">
-        <p className="text-white text-sm font-semibold">Step 1 — Send AMO to the platform wallet</p>
+        <p className="text-white text-sm font-semibold">Step 1 — Send coin to the platform wallet</p>
 
         {/* Network selector */}
         <div className="flex rounded-xl overflow-hidden border border-border">
@@ -119,7 +119,7 @@ export function DepositForm({ escrowAddresses, hasDepositWallet, minDeposit }: R
                   {copied ? '✓ Copied' : 'Copy'}
                 </button>
               </div>
-              <p className="text-red-400/70 text-xs">⚠ Send AMO on {network} only — wrong network = lost funds</p>
+              <p className="text-red-400/70 text-xs">⚠ Send coin on {network} only — wrong network = lost funds</p>
             </>
           ) : (
             <p className="text-gray-500 text-sm">Not configured — contact support.</p>
@@ -132,7 +132,7 @@ export function DepositForm({ escrowAddresses, hasDepositWallet, minDeposit }: R
         <p className="text-white text-sm font-semibold">Step 2 — Submit your transaction</p>
         <form onSubmit={handleSubmit} className="space-y-3">
           <div>
-            <label className="block text-xs text-gray-400 mb-1.5">Amount sent (AMO)</label>
+            <label className="block text-xs text-gray-400 mb-1.5">Amount sent (coin)</label>
             <input
               type="number"
               min="0"
@@ -142,7 +142,7 @@ export function DepositForm({ escrowAddresses, hasDepositWallet, minDeposit }: R
               placeholder="e.g. 50"
               className="w-full px-4 py-3 rounded-xl bg-background border border-border text-white text-sm placeholder-gray-600 focus:outline-none focus:border-accent transition-colors"
             />
-            <p className="text-gray-600 text-xs mt-1.5">Minimum deposit: {minDeposit} AMO</p>
+            <p className="text-gray-600 text-xs mt-1.5">Minimum deposit: {minDeposit} coin</p>
           </div>
           <div>
             <label className="block text-xs text-gray-400 mb-1.5">Transaction hash (TX ID)</label>

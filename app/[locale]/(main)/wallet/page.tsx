@@ -57,7 +57,7 @@ export default async function WalletPage() {
             <p className="text-gray-500 text-xs uppercase tracking-wide">Spendable Balance</p>
             <p className="text-3xl font-bold text-accent">
               {buyerBalance.toFixed(2)}
-              <span className="text-lg text-accent/60 ml-1.5">AMO</span>
+              <span className="text-lg text-accent/60 ml-1.5">coin</span>
             </p>
             <p className="text-gray-500 text-xs">Deducted automatically when you buy</p>
           </div>
@@ -77,13 +77,13 @@ export default async function WalletPage() {
                   <div key={d.id} className="flex items-center justify-between px-4 py-3">
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
-                        <p className="text-white text-sm font-medium">{Number(d.claimed_amount).toFixed(2)} AMO</p>
+                        <p className="text-white text-sm font-medium">{Number(d.claimed_amount).toFixed(2)} coin</p>
                         <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
                           d.status === 'approved' ? 'bg-green-400/10 text-green-400' :
                           d.status === 'rejected' ? 'bg-red-400/10 text-red-400' :
                           'bg-yellow-400/10 text-yellow-400'
                         }`}>
-                          {d.status === 'approved' ? `Approved · ${Number(d.approved_amount).toFixed(2)} AMO` :
+                          {d.status === 'approved' ? `Approved · ${Number(d.approved_amount).toFixed(2)} coin` :
                            d.status === 'rejected' ? 'Rejected' : 'Pending review'}
                         </span>
                       </div>
@@ -177,7 +177,7 @@ export default async function WalletPage() {
                                 Request Payout
                               </button>
                             </form>
-                            <span className="text-gray-600 text-xs">Min. {minWithdraw} AMO</span>
+                            <span className="text-gray-600 text-xs">Min. {minWithdraw} coin</span>
                           </div>
                         ) : null}
                       </div>
@@ -218,7 +218,7 @@ export default async function WalletPage() {
                             {tx.type === 'credit' ? '+' : '-'}
                           </span>
                           <div className="min-w-0">
-                            <p className="text-white text-sm">{Number(tx.amount).toFixed(2)} AMO</p>
+                            <p className="text-white text-sm">{Number(tx.amount).toFixed(2)} coin</p>
                             <p className="text-gray-600 text-xs truncate">{tx.note}</p>
                           </div>
                         </div>
@@ -245,7 +245,7 @@ export default async function WalletPage() {
                     {payouts.map((p: any) => (
                       <div key={p.id} className="flex items-center justify-between px-4 py-3">
                         <div className="min-w-0">
-                          <p className="text-white text-sm font-medium">{Number(p.amount).toFixed(2)} AMO</p>
+                          <p className="text-white text-sm font-medium">{Number(p.amount).toFixed(2)} coin</p>
                           <p className="text-gray-600 text-xs font-mono truncate">{p.wallet_address?.slice(0, 10)}…</p>
                         </div>
                         <p className="text-gray-600 text-xs shrink-0">

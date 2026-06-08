@@ -5,25 +5,22 @@ import { notFound, redirect } from 'next/navigation'
 import { AutoReleaseTimer } from '@/components/orders/AutoReleaseTimer'
 import { ProofUpload } from '@/components/orders/ProofUpload'
 import { ChatWindow } from '@/components/orders/ChatWindow'
-import { PaymentSection, type EscrowWallet } from '@/components/orders/PaymentSection'
 import { buyerConfirmReceived, openDispute } from '@/lib/actions/orders'
 import type { Message } from '@/lib/types'
 
-const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === 'true'
-
 const STEPS = [
-  { key: 'awaiting_payment', label: 'Payment' },
-  { key: 'paid_escrow',      label: 'Delivery' },
-  { key: 'delivered',        label: 'Confirm' },
-  { key: 'completed',        label: 'Complete' },
+  { key: 'paid_escrow', label: 'Paid' },
+  { key: 'delivered',   label: 'Delivery' },
+  { key: 'confirmed',   label: 'Confirm' },
+  { key: 'completed',   label: 'Complete' },
 ]
 
 function getStepIndex(status: string) {
   const map: Record<string, number> = {
-    awaiting_payment: 0,
-    paid_escrow: 1,
-    delivered: 2,
-    completed: 3,
+    paid_escrow: 0,
+    delivered:   1,
+    confirmed:   2,
+    completed:   3,
   }
   return map[status] ?? -1
 }
@@ -50,23 +47,10 @@ export default async function OrderDetailPage({
   const isSeller = user.id === order.seller_id
   if (!isBuyer && !isSeller) notFound()
 
-  const [{ data: proofs }, { data: conversation }, { data: escrowSettings }] = await Promise.all([
+  const [{ data: proofs }, { data: conversation }] = await Promise.all([
     supabase.from('order_proofs').select('screenshot_urls').eq('order_id', id),
     supabase.from('conversations').select('id').eq('order_id', id).single(),
-    supabase.from('platform_settings').select('key, value').in('key', [
-      'escrow_wallet_erc20', 'escrow_wallet_trc20',
-      'escrow_wallet_erc20_testnet', 'escrow_wallet_trc20_testnet',
-    ]),
   ])
-
-  const suffix = IS_TESTNET ? '_testnet' : ''
-  const erc20Address = escrowSettings?.find(s => s.key === `escrow_wallet_erc20${suffix}`)?.value ?? ''
-  const trc20Address = escrowSettings?.find(s => s.key === `escrow_wallet_trc20${suffix}`)?.value ?? ''
-
-  const escrowWallets: EscrowWallet[] = [
-    { network: 'TRC20', label: 'TRC20 (Tron)',     address: trc20Address },
-    { network: 'ERC20', label: 'ERC20 (Ethereum)', address: erc20Address },
-  ]
 
   let initialMessages: Message[] = []
   if (conversation) {
@@ -173,7 +157,7 @@ export default async function OrderDetailPage({
             <div className="px-4 py-4 flex gap-4">
               <div className="w-14 h-14 rounded-lg overflow-hidden bg-background shrink-0">
                 {itemImage ? (
-                  <img src={itemImage} alt="" className="w-full h-full object-cover" />
+                  <img src={itemImage} alt="" referrerPolicy="no-referrer" className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-700">
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -188,7 +172,7 @@ export default async function OrderDetailPage({
                   <div className="flex items-center gap-1.5">
                     <div className="w-5 h-5 rounded-full bg-background overflow-hidden shrink-0">
                       {counterparty?.avatar_url ? (
-                        <img src={counterparty.avatar_url} alt="" className="w-full h-full object-cover" />
+                        <img src={counterparty.avatar_url} alt="" referrerPolicy="no-referrer" className="w-full h-full object-cover" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-gray-600 text-[10px] font-bold">
                           {(counterparty?.username || '?')[0].toUpperCase()}
@@ -201,39 +185,38 @@ export default async function OrderDetailPage({
                 </div>
               </div>
               <div className="text-right shrink-0">
-                <p className="text-white text-sm font-bold">{order.amount} AMO</p>
+                <p className="text-white text-sm font-bold">{order.amount} coin</p>
               </div>
             </div>
           </div>
 
-          {/* Payment (buyer, awaiting) */}
-          {order.status === 'awaiting_payment' && isBuyer && (
-            <PaymentSection
-              orderId={id}
-              amount={order.amount}
-              wallets={escrowWallets}
-              isTestnet={IS_TESTNET}
-              alreadyNotified={!!(order as any).payment_notified_at}
-              submittedTxHash={(order as any).payment_tx_hash ?? null}
-              submittedNetwork={(order as any).payment_network ?? null}
-            />
+          {/* Paid from balance — seller notice */}
+          {order.status === 'paid_escrow' && isSeller && (
+            <div className="rounded-2xl border border-border bg-surface px-4 py-3 flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-accent/10 border border-accent/20 flex items-center justify-center shrink-0">
+                <svg className="w-4 h-4 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-white text-sm font-semibold">Payment received</p>
+                <p className="text-gray-500 text-xs">{order.amount} coin deducted from buyer's balance. Please deliver the item.</p>
+              </div>
+            </div>
           )}
 
-          {/* Payment pending (seller view) */}
-          {order.status === 'awaiting_payment' && isSeller && (
+          {/* Paid from balance — buyer notice */}
+          {order.status === 'paid_escrow' && isBuyer && (
             <div className="rounded-2xl border border-border bg-surface px-4 py-3 flex items-center gap-3">
               <div className="w-8 h-8 rounded-lg bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center shrink-0">
                 <svg className="w-4 h-4 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <div className="flex-1">
-                <p className="text-white text-sm">Waiting for buyer payment</p>
-                <p className="text-gray-500 text-xs">You'll be notified once confirmed.</p>
+              <div>
+                <p className="text-white text-sm font-semibold">Waiting for delivery</p>
+                <p className="text-gray-500 text-xs">{order.amount} coin deducted from your balance. Seller will deliver soon.</p>
               </div>
-              {(order as any).payment_notified_at && (
-                <span className="px-2 py-0.5 rounded bg-yellow-900/30 border border-yellow-700/40 text-yellow-400 text-xs">Notified</span>
-              )}
             </div>
           )}
 

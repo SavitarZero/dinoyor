@@ -14,14 +14,15 @@ const getNavbarData = cache(async () => {
 
   let profile = null
   let role: string = 'user'
+  let amoBalance = 0
   if (user) {
-    const { data } = await supabase
-      .from('profiles')
-      .select('username, avatar_url, role')
-      .eq('id', user.id)
-      .single()
-    profile = data
+    const [{ data: profileData }, { data: balanceData }] = await Promise.all([
+      supabase.from('profiles').select('username, avatar_url, role').eq('id', user.id).single(),
+      supabase.from('user_balances').select('balance').eq('user_id', user.id).eq('currency', 'USDT').maybeSingle(),
+    ])
+    profile = profileData
     role = profile?.role ?? 'user'
+    amoBalance = Number(balanceData?.balance ?? 0)
   }
 
   const avatarUrl =
@@ -29,11 +30,11 @@ const getNavbarData = cache(async () => {
     (user?.user_metadata?.avatar_url as string | undefined) ||
     null
 
-  return { user, profile, role, avatarUrl }
+  return { user, profile, role, avatarUrl, amoBalance }
 })
 
 export async function NavbarUser() {
-  const { user, profile, role, avatarUrl } = await getNavbarData()
+  const { user, profile, role, avatarUrl, amoBalance } = await getNavbarData()
 
   if (!user) {
     return (
@@ -74,13 +75,14 @@ export async function NavbarUser() {
         username={profile?.username ?? null}
         email={user.email ?? ''}
         role={role}
+        amoBalance={amoBalance}
       />
     </>
   )
 }
 
 export async function NavbarUserMobile() {
-  const { user, profile, role, avatarUrl } = await getNavbarData()
+  const { user, profile, role, avatarUrl, amoBalance } = await getNavbarData()
 
   if (!user) {
     return (
@@ -113,6 +115,7 @@ export async function NavbarUserMobile() {
         username={profile?.username ?? null}
         email={user.email ?? ''}
         role={role}
+        amoBalance={amoBalance}
       />
     </>
   )

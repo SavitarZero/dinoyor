@@ -72,7 +72,7 @@ export function BuyButton({ listingId, price, kycStatus, isLoggedIn, buyerBalanc
           <div>
             <p className="text-white font-semibold text-sm">Confirm Purchase</p>
             <p className="text-gray-400 text-xs mt-0.5">
-              <span className="text-accent font-bold">{price} USDT</span> will be deducted from your wallet balance.
+              <span className="text-accent font-bold">{price} coin</span> will be deducted from your balance.
             </p>
           </div>
         </div>
@@ -112,7 +112,7 @@ export function BuyButton({ listingId, price, kycStatus, isLoggedIn, buyerBalanc
           <span className="text-xs text-gray-400">Your balance</span>
         </div>
         <span className={`text-sm font-bold ${hasBalance ? 'text-green-400' : 'text-yellow-400'}`}>
-          {buyerBalance.toFixed(2)} USDT
+          {buyerBalance.toFixed(2)} coin
         </span>
       </div>
 
@@ -130,7 +130,7 @@ export function BuyButton({ listingId, price, kycStatus, isLoggedIn, buyerBalanc
           onClick={() => { setStep('confirm'); setError('') }}
           className="w-full py-3 rounded-xl bg-accent text-black font-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
         >
-          Buy Now · {price} USDT
+          Buy Now · {price} coin
         </button>
       ) : (
         <Link

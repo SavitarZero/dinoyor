@@ -69,7 +69,7 @@ export interface Conversation {
 
 export interface ListingWithGame extends Listing {
   games: Game | null
-  profiles?: { username: string | null } | null
+  profiles?: { username: string | null; avatar_url: string | null } | null
 }
 
 export interface Order {
