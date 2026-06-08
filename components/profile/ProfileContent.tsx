@@ -301,38 +301,39 @@ function OrderList({ orders, emptyText, emptyLink, emptyLinkText }: Readonly<{ o
       )}
 
       {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex items-center justify-between">
-          <p className="text-gray-600 text-xs">{filtered.length} results</p>
-          <div className="flex items-center gap-1">
+      <div className="flex items-center justify-between">
+        <p className="text-gray-600 text-xs">
+          {filtered.length} {filtered.length === 1 ? 'result' : 'results'}
+          {totalPages > 0 && <span> · Page {page} of {totalPages}</span>}
+        </p>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={() => setPage(p => Math.max(1, p - 1))}
+            disabled={page <= 1}
+            className="px-2 py-1 rounded-lg border border-border text-xs text-gray-400 hover:text-white hover:border-accent/50 disabled:opacity-30 disabled:pointer-events-none transition-colors"
+          >
+            ←
+          </button>
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
             <button
-              onClick={() => setPage(p => Math.max(1, p - 1))}
-              disabled={page <= 1}
-              className="px-2 py-1 rounded-lg border border-border text-xs text-gray-400 hover:text-white hover:border-accent/50 disabled:opacity-30 disabled:pointer-events-none transition-colors"
+              key={p}
+              onClick={() => setPage(p)}
+              className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-medium transition-colors ${
+                p === page ? 'bg-accent text-black' : 'border border-border text-gray-400 hover:text-white hover:border-accent/50'
+              }`}
             >
-              ←
+              {p}
             </button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-              <button
-                key={p}
-                onClick={() => setPage(p)}
-                className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-medium transition-colors ${
-                  p === page ? 'bg-accent text-black' : 'border border-border text-gray-400 hover:text-white hover:border-accent/50'
-                }`}
-              >
-                {p}
-              </button>
-            ))}
-            <button
-              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-              disabled={page >= totalPages}
-              className="px-2 py-1 rounded-lg border border-border text-xs text-gray-400 hover:text-white hover:border-accent/50 disabled:opacity-30 disabled:pointer-events-none transition-colors"
-            >
-              →
-            </button>
-          </div>
+          ))}
+          <button
+            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+            disabled={page >= totalPages}
+            className="px-2 py-1 rounded-lg border border-border text-xs text-gray-400 hover:text-white hover:border-accent/50 disabled:opacity-30 disabled:pointer-events-none transition-colors"
+          >
+            →
+          </button>
         </div>
-      )}
+      </div>
     </div>
   )
 }

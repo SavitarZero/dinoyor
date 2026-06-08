@@ -6,7 +6,6 @@ import { CustomSelect } from '@/components/ui/CustomSelect'
 const NETWORKS = [
   { value: 'TRC20', label: 'USDT TRC20 (Tron)' },
   { value: 'ERC20', label: 'USDT ERC20 (Ethereum)' },
-  { value: 'BEP20', label: 'USDT BEP20 (BNB Chain)' },
 ]
 
 interface Props {
