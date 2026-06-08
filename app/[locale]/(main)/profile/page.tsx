@@ -100,7 +100,7 @@ function BuyerOrderList({ orders }: Readonly<{ orders: any[] }>) {
             </p>
           </div>
           <div className="text-right shrink-0">
-            <p className="text-white text-sm font-medium">${Number(o.amount).toFixed(2)}</p>
+            <p className="text-white text-sm font-medium">{Number(o.amount).toFixed(2)} AMO</p>
             <p className={`text-xs capitalize ${orderStatusColor(o.status)}`}>
               {o.status.replaceAll('_', ' ')}
             </p>
@@ -264,9 +264,9 @@ export default async function ProfilePage() {
               <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-border">
                 {[
                   { label: 'Sales',    value: String(completedSales.length) },
-                  { label: 'Earnings', value: `$${totalEarnings.toFixed(0)}` },
+                  { label: 'Earnings', value: `${totalEarnings.toFixed(0)} AMO` },
                   { label: 'Listings', value: String(activeListings ?? 0) },
-                  { label: 'Balance',  value: `$${totalBalance.toFixed(2)}` },
+                  { label: 'Balance',  value: `${totalBalance.toFixed(2)} AMO` },
                 ].map(({ label, value }) => (
                   <div key={label} className="p-4">
                     <p className="text-gray-500 text-xs">{label}</p>

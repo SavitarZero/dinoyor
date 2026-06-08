@@ -218,7 +218,7 @@ export default async function WalletPage() {
                             {tx.type === 'credit' ? '+' : '-'}
                           </span>
                           <div className="min-w-0">
-                            <p className="text-white text-sm">{Number(tx.amount).toFixed(2)} USDT</p>
+                            <p className="text-white text-sm">{Number(tx.amount).toFixed(2)} AMO</p>
                             <p className="text-gray-600 text-xs truncate">{tx.note}</p>
                           </div>
                         </div>
@@ -245,7 +245,7 @@ export default async function WalletPage() {
                     {payouts.map((p: any) => (
                       <div key={p.id} className="flex items-center justify-between px-4 py-3">
                         <div className="min-w-0">
-                          <p className="text-white text-sm font-medium">{Number(p.amount).toFixed(2)} USDT</p>
+                          <p className="text-white text-sm font-medium">{Number(p.amount).toFixed(2)} AMO</p>
                           <p className="text-gray-600 text-xs font-mono truncate">{p.wallet_address?.slice(0, 10)}…</p>
                         </div>
                         <p className="text-gray-600 text-xs shrink-0">

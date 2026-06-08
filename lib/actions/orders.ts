@@ -133,14 +133,15 @@ export async function buyerConfirmReceived(orderId: string) {
   if (!order || order.buyer_id !== user.id) return { error: 'Unauthorized' }
   if (order.status !== 'delivered') return { error: 'Order not in correct state' }
 
-  const { data: feeSettings } = await supabase
+  const { data: flatFeeRow } = await supabase
     .from('platform_settings')
-    .select('key, value')
-    .in('key', ['platform_flat_fee'])
-  const flatFee = Number(feeSettings?.find(s => s.key === 'platform_flat_fee')?.value ?? 1)
+    .select('value')
+    .eq('key', 'platform_flat_fee')
+    .single()
+  const flatFee = Number(flatFeeRow?.value ?? 1)
 
   const fee = (order.amount * order.platform_fee_pct) / 100
-  const sellerAmount = order.amount - fee - flatFee
+  const sellerAmount = Math.max(0, order.amount - fee - flatFee)
 
   await supabase.from('orders').update({ status: 'completed' }).eq('id', orderId)
 
