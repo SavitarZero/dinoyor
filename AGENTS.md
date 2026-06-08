@@ -13,6 +13,12 @@ This version has breaking changes — APIs, conventions, and file structure may 
 - **Never use `any`.** Use proper types, `unknown`, or narrow with type guards. No `as any`, no `: any`, no generics with `any`.
 - If the shape is unknown, use `unknown` and narrow before use.
 - If a third-party return type is too broad, declare a local interface instead of casting to `any`.
+
+## No Admin Panel
+
+- **Never create anything under `app/**/admin/`.**
+- There is no admin panel in this project. Do not build one, suggest one, or scaffold admin routes for any reason.
+- Admin operations (if needed) are done directly in the Supabase dashboard.
 <!-- END:nextjs-agent-rules -->
 
 ## UI Rules — Responsive First

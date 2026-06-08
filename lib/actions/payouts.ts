@@ -1,6 +1,5 @@
 'use server'
 import { createClient } from '@/lib/supabase/server'
-import { createAdminClient } from '@/lib/supabase/admin'
 import { revalidatePath } from 'next/cache'
 
 export async function requestPayout(currency: string) {
@@ -26,7 +25,6 @@ export async function requestPayout(currency: string) {
 
   if (!balance || balance.pending_amount <= 0) return { error: 'No balance available' }
 
-  // Require at least 1 completed sale before first withdrawal
   const { count: completedSales } = await supabase
     .from('orders')
     .select('*', { count: 'exact', head: true })
@@ -36,7 +34,6 @@ export async function requestPayout(currency: string) {
     return { error: 'At least 1 completed sale is required before withdrawing' }
   }
 
-  // NEW — read from platform_settings
   const { data: settingsRows } = await supabase
     .from('platform_settings')
     .select('key, value')
@@ -77,75 +74,5 @@ export async function updatePayoutSettings(minAmount: number) {
     .eq('id', user.id)
 
   revalidatePath('/wallet')
-  return { success: true }
-}
-
-export async function approvePayoutRequest(requestId: string, txHash: string) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return { error: 'Not authenticated' }
-
-  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
-  if (profile?.role !== 'admin') return { error: 'Unauthorized' }
-
-  const { data: req } = await supabase
-    .from('payout_requests')
-    .select('*')
-    .eq('id', requestId)
-    .single()
-  if (!req || req.status !== 'pending') return { error: 'Request not found or already processed' }
-
-  const admin = createAdminClient()
-
-  const { data: payout } = await admin.from('payouts').insert({
-    seller_id: req.seller_id,
-    amount: req.amount,
-    currency: req.currency,
-    wallet_address: req.wallet_address,
-    tx_hash: txHash,
-    processed_by: user.id,
-  }).select('id').single()
-
-  await admin.from('seller_balances')
-    .update({ pending_amount: 0 })
-    .eq('seller_id', req.seller_id)
-    .eq('currency', req.currency)
-
-  await admin.from('balance_transactions').insert({
-    seller_id: req.seller_id,
-    payout_id: payout?.id,
-    type: 'debit',
-    amount: req.amount,
-    currency: req.currency,
-    note: 'Payout approved',
-  })
-
-  await admin.from('payout_requests').update({
-    status: 'approved',
-    reviewed_by: user.id,
-    reviewed_at: new Date().toISOString(),
-    payout_id: payout?.id,
-  }).eq('id', requestId)
-
-  revalidatePath('/admin/payouts')
-  return { success: true }
-}
-
-export async function rejectPayoutRequest(requestId: string, note: string) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) return { error: 'Not authenticated' }
-
-  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
-  if (profile?.role !== 'admin') return { error: 'Unauthorized' }
-
-  await supabase.from('payout_requests').update({
-    status: 'rejected',
-    note,
-    reviewed_by: user.id,
-    reviewed_at: new Date().toISOString(),
-  }).eq('id', requestId)
-
-  revalidatePath('/admin/payouts')
   return { success: true }
 }

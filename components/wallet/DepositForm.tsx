@@ -1,22 +1,21 @@
 'use client'
 import { useState } from 'react'
+import Link from 'next/link'
 import { submitDeposit } from '@/lib/actions/deposits'
 
 interface Props {
   escrowAddresses: { erc20: string; trc20: string }
-  hasDepositWallet: boolean
+  senderWallet: string | null
+  senderNetwork: 'TRC20' | 'ERC20' | null
   minDeposit: number
 }
 
-export function DepositForm({ escrowAddresses, hasDepositWallet, minDeposit }: Readonly<Props>) {
-  const [network, setNetwork]         = useState<'TRC20' | 'ERC20'>('TRC20')
-  const [txHash, setTxHash]           = useState('')
-  const [amount, setAmount]           = useState('')
-  const [senderAddress, setSender]    = useState('')
-  const [loading, setLoading]         = useState(false)
-  const [success, setSuccess]         = useState(false)
-  const [error, setError]             = useState('')
-  const [copied, setCopied]           = useState(false)
+export function DepositForm({ escrowAddresses, senderWallet, senderNetwork, minDeposit }: Readonly<Props>) {
+  const [network, setNetwork] = useState<'TRC20' | 'ERC20'>(senderNetwork ?? 'TRC20')
+  const [txHash, setTxHash]   = useState('')
+  const [loading, setLoading] = useState(false)
+  const [result, setResult]   = useState<{ ok: true; amount: number } | { ok: false; error: string } | null>(null)
+  const [copied, setCopied]   = useState(false)
 
   const address = network === 'TRC20' ? escrowAddresses.trc20 : escrowAddresses.erc20
 
@@ -27,22 +26,25 @@ export function DepositForm({ escrowAddresses, hasDepositWallet, minDeposit }: R
     setTimeout(() => setCopied(false), 2000)
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault()
-    setError('')
-    const amt = parseFloat(amount)
-    if (!txHash.trim()) { setError('Transaction hash is required'); return }
-    if (!amt || amt <= 0) { setError('Enter the amount you sent'); return }
+    setResult(null)
+    if (!txHash.trim()) {
+      setResult({ ok: false, error: 'Transaction hash is required' })
+      return
+    }
     setLoading(true)
-    const result = await submitDeposit(txHash.trim(), network, amt)
+    const res = await submitDeposit(txHash.trim(), network)
     setLoading(false)
-    if (result?.error) { setError(result.error); return }
-    setSuccess(true)
-    setTxHash('')
-    setAmount('')
+    if (res?.error) {
+      setResult({ ok: false, error: res.error })
+    } else if (res?.success) {
+      setResult({ ok: true, amount: res.amount ?? 0 })
+      setTxHash('')
+    }
   }
 
-  if (!hasDepositWallet) {
+  if (!senderWallet) {
     return (
       <div className="rounded-xl border border-yellow-700/40 bg-yellow-900/10 p-5 space-y-3">
         <div className="flex items-start gap-3">
@@ -51,27 +53,29 @@ export function DepositForm({ escrowAddresses, hasDepositWallet, minDeposit }: R
           </svg>
           <div>
             <p className="text-yellow-400 font-semibold text-sm">Set up your deposit wallet first</p>
-            <p className="text-gray-400 text-xs mt-1">You must register the wallet address you'll send from before making a deposit.</p>
+            <p className="text-gray-400 text-xs mt-1">Register the wallet address you'll send from before making a deposit.</p>
           </div>
         </div>
-        <a href="/profile#deposit-wallet" className="inline-flex items-center gap-1.5 text-accent text-sm font-medium hover:underline">
+        <Link href="/profile#deposit-wallet" className="inline-flex items-center gap-1.5 text-accent text-sm font-medium hover:underline">
           Go to Profile → Wallet Settings →
-        </a>
+        </Link>
       </div>
     )
   }
 
-  if (success) {
+  if (result?.ok) {
     return (
       <div className="rounded-xl border border-green-700/40 bg-green-900/10 p-5 space-y-2">
         <div className="flex items-center gap-2">
           <svg className="w-5 h-5 text-green-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
           </svg>
-          <p className="text-green-400 font-semibold text-sm">Deposit submitted — pending admin review</p>
+          <p className="text-green-400 font-semibold text-sm">
+            Verified — {result.amount.toFixed(2)} USDT credited to your balance
+          </p>
         </div>
-        <p className="text-gray-400 text-xs">Your balance will be credited within a few hours after verification.</p>
-        <button onClick={() => setSuccess(false)} className="text-accent text-xs hover:underline">Submit another deposit</button>
+        <p className="text-gray-400 text-xs">Your balance has been updated automatically.</p>
+        <button onClick={() => setResult(null)} className="text-accent text-xs hover:underline">Submit another deposit</button>
       </div>
     )
   }
@@ -81,30 +85,48 @@ export function DepositForm({ escrowAddresses, hasDepositWallet, minDeposit }: R
 
       {/* Step 1: Send crypto */}
       <div className="space-y-3">
-        <p className="text-white text-sm font-semibold">Step 1 — Send coin to the platform wallet</p>
+        <p className="text-white text-sm font-semibold">Step 1 — Send USDT to the platform wallet</p>
 
-        {/* Network selector */}
-        <div className="flex rounded-xl overflow-hidden border border-border">
-          {(['TRC20', 'ERC20'] as const).map(n => (
-            <button
-              key={n}
-              type="button"
-              onClick={() => { setNetwork(n); setCopied(false) }}
-              className={`flex-1 py-2.5 text-xs font-semibold transition-colors ${
-                network === n ? 'bg-surface text-white border-b-2 border-accent' : 'text-gray-500 hover:text-gray-300 bg-background'
-              }`}
-            >
-              {n}
-              {n === 'TRC20' && <span className="ml-1.5 px-1.5 py-0.5 rounded bg-accent/20 text-accent text-[10px] font-bold">Recommended</span>}
-            </button>
-          ))}
+        {/* Network selector — locked to registered network if set */}
+        {senderNetwork ? (
+          <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-background border border-border">
+            <span className="text-xs text-gray-500">Network</span>
+            <span className="text-white text-xs font-semibold">{senderNetwork}</span>
+            {senderNetwork === 'TRC20' && (
+              <span className="px-1.5 py-0.5 rounded bg-accent/20 text-accent text-[10px] font-bold">Recommended</span>
+            )}
+            <span className="ml-auto text-gray-600 text-xs">Matches your registered wallet</span>
+          </div>
+        ) : (
+          <div className="flex rounded-xl overflow-hidden border border-border">
+            {(['TRC20', 'ERC20'] as const).map(n => (
+              <button
+                key={n}
+                type="button"
+                onClick={() => { setNetwork(n); setCopied(false) }}
+                className={`flex-1 py-2.5 text-xs font-semibold transition-colors ${
+                  network === n ? 'bg-surface text-white border-b-2 border-accent' : 'text-gray-500 hover:text-gray-300 bg-background'
+                }`}
+              >
+                {n}
+                {n === 'TRC20' && <span className="ml-1.5 px-1.5 py-0.5 rounded bg-accent/20 text-accent text-[10px] font-bold">Recommended</span>}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Your registered sender wallet */}
+        <div className="rounded-xl bg-background border border-border p-3 space-y-0.5">
+          <p className="text-gray-500 text-xs uppercase tracking-wide">Send FROM this wallet</p>
+          <p className="text-white text-sm font-mono break-all">{senderWallet}</p>
+          <p className="text-gray-600 text-xs">Must match exactly — transactions from other addresses will be rejected</p>
         </div>
 
-        {/* Address */}
+        {/* Destination (platform escrow) address */}
         <div className="rounded-xl bg-background border border-border p-4 space-y-2">
           {address ? (
             <>
-              <p className="text-gray-500 text-xs uppercase tracking-wide">Deposit address ({network})</p>
+              <p className="text-gray-500 text-xs uppercase tracking-wide">Send TO ({network})</p>
               <div className="flex items-start gap-3">
                 <p className="text-white text-sm font-mono break-all flex-1">{address}</p>
                 <button
@@ -119,7 +141,7 @@ export function DepositForm({ escrowAddresses, hasDepositWallet, minDeposit }: R
                   {copied ? '✓ Copied' : 'Copy'}
                 </button>
               </div>
-              <p className="text-red-400/70 text-xs">⚠ Send coin on {network} only — wrong network = lost funds</p>
+              <p className="text-red-400/70 text-xs">⚠ Send on {network} only — wrong network = lost funds</p>
             </>
           ) : (
             <p className="text-gray-500 text-sm">Not configured — contact support.</p>
@@ -127,43 +149,35 @@ export function DepositForm({ escrowAddresses, hasDepositWallet, minDeposit }: R
         </div>
       </div>
 
-      {/* Step 2: Submit TX */}
+      {/* Step 2: Submit TX hash */}
       <div className="space-y-3">
-        <p className="text-white text-sm font-semibold">Step 2 — Submit your transaction</p>
+        <p className="text-white text-sm font-semibold">Step 2 — Paste your transaction hash</p>
         <form onSubmit={handleSubmit} className="space-y-3">
           <div>
-            <label className="block text-xs text-gray-400 mb-1.5">Amount sent (coin)</label>
+            <label htmlFor="tx-hash" className="block text-xs text-gray-400 mb-1.5">Transaction hash (TX ID)</label>
             <input
-              type="number"
-              min="0"
-              step="any"
-              value={amount}
-              onChange={e => setAmount(e.target.value)}
-              placeholder="e.g. 50"
-              className="w-full px-4 py-3 rounded-xl bg-background border border-border text-white text-sm placeholder-gray-600 focus:outline-none focus:border-accent transition-colors"
-            />
-            <p className="text-gray-600 text-xs mt-1.5">Minimum deposit: {minDeposit} coin</p>
-          </div>
-          <div>
-            <label className="block text-xs text-gray-400 mb-1.5">Transaction hash (TX ID)</label>
-            <input
+              id="tx-hash"
               type="text"
               value={txHash}
               onChange={e => setTxHash(e.target.value)}
-              placeholder={network === 'TRC20' ? 'e.g. a1b2c3d4...' : 'e.g. 0xa1b2c3...'}
+              placeholder={network === 'TRC20' ? 'e.g. a1b2c3d4e5...' : 'e.g. 0xa1b2c3...'}
               className="w-full px-4 py-3 rounded-xl bg-background border border-border text-white text-sm font-mono placeholder-gray-600 focus:outline-none focus:border-accent transition-colors"
             />
-            <p className="text-gray-600 text-xs mt-1.5">Find the TX ID in your wallet or exchange after sending</p>
+            <p className="text-gray-600 text-xs mt-1.5">
+              Find the TX ID in your wallet app or exchange after sending
+            </p>
           </div>
 
-          {error && <p className="text-red-400 text-xs">{error}</p>}
+          {result && !result.ok && (
+            <p className="text-red-400 text-xs">{result.error}</p>
+          )}
 
           <button
             type="submit"
             disabled={loading || !address}
             className="w-full py-3 rounded-xl bg-accent text-black font-bold text-sm hover:opacity-90 disabled:opacity-40 transition-opacity"
           >
-            {loading ? 'Submitting…' : 'Submit deposit'}
+            {loading ? 'Verifying on blockchain…' : `Verify & Credit — min ${minDeposit} USDT`}
           </button>
         </form>
       </div>

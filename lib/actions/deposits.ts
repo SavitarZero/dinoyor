@@ -1,6 +1,8 @@
 'use server'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { revalidatePath } from 'next/cache'
+import { verifyTrc20Deposit, verifyErc20Deposit } from '@/lib/blockchain/verify'
 
 export async function saveDepositWallet(walletAddress: string, network: 'TRC20' | 'ERC20') {
   const supabase = await createClient()
@@ -20,16 +22,14 @@ export async function saveDepositWallet(walletAddress: string, network: 'TRC20' 
   return { success: true }
 }
 
-export async function submitDeposit(
-  txHash: string,
-  network: 'TRC20' | 'ERC20',
-  claimedAmount: number
-) {
+export async function submitDeposit(txHash: string, network: 'TRC20' | 'ERC20') {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Not authenticated' }
 
-  // Sender address must match the pre-registered deposit wallet
+  const trimmedTx = txHash.trim()
+  if (!trimmedTx) return { error: 'Transaction hash is required' }
+
   const { data: profile } = await supabase
     .from('profiles')
     .select('deposit_wallet, deposit_wallet_network')
@@ -37,48 +37,71 @@ export async function submitDeposit(
     .single()
 
   if (!profile?.deposit_wallet) {
-    return { error: 'You must register your deposit wallet address first before submitting a deposit.' }
+    return { error: 'You must register your deposit wallet address first' }
   }
   if (profile.deposit_wallet_network !== network) {
-    return { error: `Your registered deposit wallet is ${profile.deposit_wallet_network}. Please select that network or update your wallet.` }
+    return { error: `Your registered deposit wallet is on ${profile.deposit_wallet_network}. Switch to that network or update your wallet.` }
   }
 
-  const trimmedTx = txHash.trim()
-  if (!trimmedTx) return { error: 'Transaction hash is required' }
-  if (claimedAmount <= 0) return { error: 'Amount must be greater than 0' }
-
-  // Fetch min deposit from platform settings
-  const { data: minRows } = await supabase
+  // Fetch platform settings (escrow address + min deposit)
+  const { data: settingsRows } = await supabase
     .from('platform_settings')
-    .select('value')
-    .eq('key', 'min_deposit_amo')
-    .single()
-  const minDeposit = Number(minRows?.value ?? 10)
-  if (claimedAmount < minDeposit) {
-    return { error: `Minimum deposit is ${minDeposit} coin` }
+    .select('key, value')
+    .in('key', ['min_deposit_amo', 'escrow_wallet_trc20', 'escrow_wallet_erc20'])
+
+  const settings = Object.fromEntries((settingsRows ?? []).map(r => [r.key, r.value as string]))
+  const minDeposit = Number(settings['min_deposit_amo'] ?? 10)
+  const escrowAddress = network === 'TRC20'
+    ? settings['escrow_wallet_trc20']
+    : settings['escrow_wallet_erc20']
+
+  if (!escrowAddress) {
+    return { error: 'Platform deposit address is not configured — contact support' }
   }
 
-  // Prevent reuse of an already-approved TX hash (globally, not just per user)
+  // Prevent re-use of an already-processed TX hash
   const { data: existing } = await supabase
     .from('deposit_requests')
     .select('id, status')
     .eq('tx_hash', trimmedTx)
     .maybeSingle()
-  if (existing?.status === 'approved') return { error: 'This TX hash has already been credited' }
-  if (existing?.status === 'pending')  return { error: 'This TX hash is already pending review' }
 
-  const { error } = await supabase.from('deposit_requests').insert({
+  if (existing?.status === 'approved') return { error: 'This transaction has already been credited' }
+  if (existing?.status === 'pending') return { error: 'This transaction is already pending review' }
+
+  // On-chain verification
+  const verification = network === 'TRC20'
+    ? await verifyTrc20Deposit(trimmedTx, profile.deposit_wallet, escrowAddress, minDeposit)
+    : await verifyErc20Deposit(trimmedTx, profile.deposit_wallet, escrowAddress, minDeposit)
+
+  if (!verification.ok) return { error: verification.error }
+
+  const verifiedAmount = verification.verifiedAmount!
+  const admin = createAdminClient()
+
+  // Record deposit as auto-approved
+  const { error: insertErr } = await admin.from('deposit_requests').insert({
     user_id: user.id,
     tx_hash: trimmedTx,
     network,
-    claimed_amount: claimedAmount,
+    claimed_amount: verifiedAmount,
+    approved_amount: verifiedAmount,
     sender_address: profile.deposit_wallet,
     currency: 'USDT',
+    status: 'approved',
+    reviewed_at: new Date().toISOString(),
   })
-  if (error) return { error: error.message }
+  if (insertErr) return { error: insertErr.message }
+
+  // Credit buyer balance atomically
+  await admin.rpc('increment_user_balance', {
+    p_user_id: user.id,
+    p_currency: 'USDT',
+    p_amount: verifiedAmount,
+  })
 
   revalidatePath('/wallet')
-  return { success: true }
+  return { success: true, amount: verifiedAmount }
 }
 
 export async function getUserBalance(currency = 'USDT') {

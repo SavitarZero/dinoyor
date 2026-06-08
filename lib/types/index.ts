@@ -140,6 +140,33 @@ export interface SellerBalance {
   currency: Currency
 }
 
+export interface BalanceTransaction {
+  id: string
+  seller_id: string
+  order_id: string | null
+  payout_id: string | null
+  type: 'credit' | 'debit'
+  amount: number
+  currency: string
+  note: string | null
+  created_at: string
+}
+
+export interface DepositRequest {
+  id: string
+  user_id: string
+  tx_hash: string
+  network: string
+  claimed_amount: number
+  approved_amount: number | null
+  currency: string
+  status: 'pending' | 'approved' | 'rejected'
+  note: string | null
+  reviewed_by: string | null
+  reviewed_at: string | null
+  created_at: string
+}
+
 export interface Payout {
   id: string
   seller_id: string
