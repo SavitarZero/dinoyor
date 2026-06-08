@@ -3,15 +3,13 @@ import Link from 'next/link'
 import type { ListingWithGame } from '@/lib/types/index'
 import { GameBanner } from '@/components/games/GameImage'
 
-const CURRENCY_SYMBOL: Record<string, string> = {
-  USD:  '$',
-  USDT: '$',
-  ETH:  'Ξ',
-  BTC:  '₿',
+function formatPrice(amount: number, currency: string) {
+  if (currency === 'ETH') return `Ξ${amount}`
+  if (currency === 'BTC') return `₿${amount}`
+  return `$${amount} USDT`
 }
 
 export function ListingCard({ listing, isHot }: { listing: ListingWithGame; isHot?: boolean }) {
-  const symbol = CURRENCY_SYMBOL[listing.price_currency] ?? listing.price_currency
   return (
     <Link
       href={`/market/${listing.id}`}
@@ -58,7 +56,7 @@ export function ListingCard({ listing, isHot }: { listing: ListingWithGame; isHo
         <div className="flex items-center justify-between gap-2 mt-auto">
           <div className="flex items-baseline gap-1">
             <span className="text-sm font-bold text-white">
-              {symbol}{listing.price_amount}
+              {formatPrice(listing.price_amount, listing.price_currency)}
             </span>
             <span className="text-[10px] text-gray-600">· {listing.sold_count ?? 0} sold</span>
           </div>
