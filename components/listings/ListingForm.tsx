@@ -6,6 +6,36 @@ import { createListing } from '@/lib/actions/listings'
 interface Game { id: string; name: string }
 interface ItemType { id: string; name: string; slug: string }
 
+function KycSellBanner({ kycStatus }: Readonly<{ kycStatus: string | null }>) {
+  return (
+    <div className="rounded-xl border border-border bg-surface p-4 space-y-3">
+      <div className="flex items-start gap-3">
+        <div className="w-8 h-8 rounded-lg bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center shrink-0">
+          <svg className="w-4 h-4 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+          </svg>
+        </div>
+        <div>
+          <p className="text-white text-sm font-semibold">Verify to sell</p>
+          <p className="text-gray-400 text-xs mt-0.5">
+            {kycStatus === 'pending'
+              ? 'Your verification is being reviewed — usually 1–2 business days.'
+              : 'Complete identity verification before publishing listings.'}
+          </p>
+        </div>
+      </div>
+      {kycStatus !== 'pending' && (
+        <a
+          href="/profile/kyc"
+          className="w-full py-2.5 rounded-xl bg-accent text-black text-sm font-bold text-center hover:opacity-90 transition-opacity flex items-center justify-center"
+        >
+          Verify identity
+        </a>
+      )}
+    </div>
+  )
+}
+
 const COVER_MAX_MB       = 2
 const ADDITIONAL_MAX_MB  = 3
 const ADDITIONAL_MAX_COUNT = 5
@@ -27,7 +57,38 @@ function syncFilesToInput(ref: React.RefObject<HTMLInputElement | null>, files: 
   ref.current.files = dt.files
 }
 
-export function ListingForm({ games }: { games: Game[] }) {
+async function processCover(file: File, ref: React.RefObject<HTMLInputElement | null>): Promise<{ url: string } | { error: string }> {
+  if (file.size > COVER_MAX_MB * 1024 * 1024) {
+    if (ref.current) ref.current.value = ''
+    return { error: `Cover image must be under ${COVER_MAX_MB} MB` }
+  }
+  const compressed = await compressImage(file, 800, 0.4)
+  const f = new File([compressed], compressed.name, { type: compressed.type })
+  syncFilesToInput(ref, [f])
+  return { url: URL.createObjectURL(f) }
+}
+
+async function processAdditional(
+  incoming: File[],
+  currentCount: number,
+  ref: React.RefObject<HTMLInputElement | null>,
+): Promise<{ files: File[] } | { error: string }> {
+  if (currentCount + incoming.length > ADDITIONAL_MAX_COUNT) {
+    if (ref.current) ref.current.value = ''
+    return { error: `Maximum ${ADDITIONAL_MAX_COUNT} additional images` }
+  }
+  const oversized = incoming.find(f => f.size > ADDITIONAL_MAX_MB * 1024 * 1024)
+  if (oversized) {
+    if (ref.current) ref.current.value = ''
+    return { error: `"${oversized.name}" exceeds ${ADDITIONAL_MAX_MB} MB` }
+  }
+  const compressed = await Promise.all(
+    incoming.map(f => compressImage(f, 1200, 0.7).then(c => new File([c], c.name, { type: c.type })))
+  )
+  return { files: compressed }
+}
+
+export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ games: Game[]; kycStatus: string | null; feePct?: number; flatFee?: number }>) {
   const [error, setError]   = useState('')
   const [loading, setLoading] = useState(false)
   const [price, setPrice] = useState('')
@@ -98,20 +159,11 @@ export function ListingForm({ games }: { games: Game[] }) {
   async function handleCover(files: FileList | null) {
     setCoverError('')
     if (!files || files.length === 0) return
-    const file = files[0]
-
-    if (file.size > COVER_MAX_MB * 1024 * 1024) {
-      setCoverError(`Cover image must be under ${COVER_MAX_MB} MB`)
-      if (coverRef.current) coverRef.current.value = ''
-      return
-    }
-
     setCoverCompressing(true)
     try {
-      const compressed = await compressImage(file, 800, 0.4)
-      const compressedFile = new File([compressed], compressed.name, { type: compressed.type })
-      syncFilesToInput(coverRef, [compressedFile])
-      setCoverPreview(URL.createObjectURL(compressedFile))
+      const result = await processCover(files[0], coverRef)
+      if ('error' in result) { setCoverError(result.error); return }
+      setCoverPreview(result.url)
     } catch {
       setCoverError('Failed to process image, please try again')
     } finally {
@@ -122,27 +174,12 @@ export function ListingForm({ games }: { games: Game[] }) {
   async function handleAdditional(files: FileList | null) {
     setAdditionalError('')
     if (!files || files.length === 0) return
-    const incoming = Array.from(files)
-
-    if (additionalPreviews.length + incoming.length > ADDITIONAL_MAX_COUNT) {
-      setAdditionalError(`Maximum ${ADDITIONAL_MAX_COUNT} additional images`)
-      if (additionalRef.current) additionalRef.current.value = ''
-      return
-    }
-    const oversized = incoming.find(f => f.size > ADDITIONAL_MAX_MB * 1024 * 1024)
-    if (oversized) {
-      setAdditionalError(`"${oversized.name}" exceeds ${ADDITIONAL_MAX_MB} MB`)
-      if (additionalRef.current) additionalRef.current.value = ''
-      return
-    }
-
     setAdditionalCompressing(true)
     try {
-      const compressed = await Promise.all(
-        incoming.map(f => compressImage(f, 1200, 0.7).then(c => new File([c], c.name, { type: c.type })))
-      )
+      const result = await processAdditional(Array.from(files), additionalPreviews.length, additionalRef)
+      if ('error' in result) { setAdditionalError(result.error); return }
       setAdditionalPreviews(prev => {
-        const updated = [...prev, ...compressed.map(f => ({ url: URL.createObjectURL(f), file: f }))]
+        const updated = [...prev, ...result.files.map(f => ({ url: URL.createObjectURL(f), file: f }))]
         syncFilesToInput(additionalRef, updated.map(p => p.file))
         return updated
       })
@@ -161,7 +198,7 @@ export function ListingForm({ games }: { games: Game[] }) {
     })
   }
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault()
     if (!coverPreview) { setError('Cover image is required'); return }
     setLoading(true)
@@ -172,8 +209,11 @@ export function ListingForm({ games }: { games: Game[] }) {
   }
 
   const priceNum = parseFloat(price) || 0
-  const fee = priceNum * 0.05
-  const sellerReceives = priceNum - fee
+  const resolvedFeePct = feePct ?? 5
+  const resolvedFlatFee = flatFee ?? 1
+  const percentFeeAmt = priceNum * resolvedFeePct / 100
+  const youReceive = Math.max(0, priceNum - percentFeeAmt - resolvedFlatFee)
+  const fee = percentFeeAmt
 
   const inputCls = 'w-full px-3 py-2.5 rounded-xl bg-background border border-border text-white placeholder-gray-600 text-sm focus:outline-none focus:border-accent transition-colors'
   const labelCls = 'block text-xs font-medium text-gray-400 mb-1.5'
@@ -376,7 +416,7 @@ export function ListingForm({ games }: { games: Game[] }) {
           <div className="rounded-xl border border-border bg-surface p-5 space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className={labelCls}>Price (USDT)</label>
+                <label className={labelCls}>Price (AMO)</label>
                 <div className="relative">
                   <input
                     name="price_amount"
@@ -402,6 +442,27 @@ export function ListingForm({ games }: { games: Game[] }) {
                     </button>
                   </div>
                 </div>
+                {/* Fee breakdown */}
+                {priceNum > 0 && (
+                  <div className="mt-2 rounded-xl bg-background border border-border p-4 space-y-1.5 text-sm">
+                    <div className="flex justify-between text-gray-400">
+                      <span>Price</span>
+                      <span>{priceNum.toFixed(2)} AMO</span>
+                    </div>
+                    <div className="flex justify-between text-gray-500 text-xs">
+                      <span>Platform fee ({resolvedFeePct}%)</span>
+                      <span>−{percentFeeAmt.toFixed(2)} AMO</span>
+                    </div>
+                    <div className="flex justify-between text-gray-500 text-xs">
+                      <span>Flat fee</span>
+                      <span>−{resolvedFlatFee.toFixed(2)} AMO</span>
+                    </div>
+                    <div className="border-t border-border pt-1.5 flex justify-between font-semibold">
+                      <span className="text-white">You receive</span>
+                      <span className="text-accent">{youReceive.toFixed(2)} AMO</span>
+                    </div>
+                  </div>
+                )}
                 <input type="hidden" name="price_currency" value="USD" />
               </div>
               <div>
@@ -466,26 +527,34 @@ export function ListingForm({ games }: { games: Game[] }) {
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-400">Listing price</span>
-                  <span className="text-white">{priceNum > 0 ? `$${priceNum.toFixed(2)}` : '—'}</span>
+                  <span className="text-white">{priceNum > 0 ? `${priceNum.toFixed(2)} AMO` : '—'}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">Platform fee (5%)</span>
-                  <span className="text-gray-400">{priceNum > 0 ? `-$${fee.toFixed(2)}` : '—'}</span>
+                  <span className="text-gray-400">Platform fee ({resolvedFeePct}%)</span>
+                  <span className="text-gray-400">{priceNum > 0 ? `−${fee.toFixed(2)} AMO` : '—'}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-400">Flat fee</span>
+                  <span className="text-gray-400">{priceNum > 0 ? `−${resolvedFlatFee.toFixed(2)} AMO` : '—'}</span>
                 </div>
                 <div className="border-t border-border pt-2 flex justify-between text-sm">
                   <span className="text-white font-medium">You receive</span>
-                  <span className="text-accent font-bold">{priceNum > 0 ? `$${sellerReceives.toFixed(2)}` : '—'}</span>
+                  <span className="text-accent font-bold">{priceNum > 0 ? `${youReceive.toFixed(2)} AMO` : '—'}</span>
                 </div>
               </div>
             </div>
 
-            <button
-              type="submit"
-              disabled={loading || coverCompressing || additionalCompressing}
-              className="w-full py-3 rounded-xl bg-accent text-black font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-40"
-            >
-              {loading ? 'Publishing…' : 'Publish listing'}
-            </button>
+            {kycStatus === 'approved' ? (
+              <button
+                type="submit"
+                disabled={loading || coverCompressing || additionalCompressing}
+                className="w-full py-3 rounded-xl bg-accent text-black font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-40"
+              >
+                {loading ? 'Publishing…' : 'Publish listing'}
+              </button>
+            ) : (
+              <KycSellBanner kycStatus={kycStatus} />
+            )}
           </div>
         </div>
       </div>
