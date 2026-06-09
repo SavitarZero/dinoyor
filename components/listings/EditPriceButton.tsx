@@ -5,6 +5,7 @@ import { updateListingPrice } from '@/lib/actions/listings'
 
 const FEE_PCT = 5
 const FLAT_FEE = 1
+const MIN_PRICE = 10
 
 export function EditPriceButton({ listingId, currentPrice, status, disabled }: { listingId: string; currentPrice: number; status: string; disabled?: boolean }) {
   const router = useRouter()
@@ -32,7 +33,7 @@ export function EditPriceButton({ listingId, currentPrice, status, disabled }: {
   async function handleSave() {
     if (loading) return
     const num = parseFloat(price)
-    if (!num || num <= 0) { setError('Price must be greater than 0'); return }
+    if (!num || num < MIN_PRICE) { setError(`Minimum price is ${MIN_PRICE} AMO`); return }
     setLoading(true)
     setError('')
     const result = await updateListingPrice(listingId, num)
@@ -122,7 +123,10 @@ export function EditPriceButton({ listingId, currentPrice, status, disabled }: {
                 {error && error !== 'cancel_required' && <p className="text-red-400 text-xs">{error}</p>}
 
                 <div>
-                  <label className="block text-gray-500 text-xs font-medium uppercase tracking-wide mb-1.5">New price (AMO)</label>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="text-gray-500 text-xs font-medium uppercase tracking-wide">New price (AMO)</label>
+                    <span className="text-gray-600 text-[10px]">min {MIN_PRICE} AMO</span>
+                  </div>
                   <input
                     type="number"
                     step="0.01"
