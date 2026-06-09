@@ -9,7 +9,7 @@ interface Props {
   minWithdraw: number
 }
 
-const GAS_FEE = 1.5 // estimated gas fee in USDT
+const GAS_FEE = 0.05 // estimated gas fee in USDT
 
 export function PayoutButton({ currency, amount, minWithdraw }: Props) {
   const router = useRouter()
