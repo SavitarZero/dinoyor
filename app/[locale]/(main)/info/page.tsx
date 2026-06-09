@@ -78,7 +78,7 @@ export default function InfoPage() {
             <tbody>
               {[
                 { action: 'Listing an item',       fee: 'Free' },
-                { action: 'Platform fee (seller)', fee: '5%' },
+                { action: 'Platform fee (seller)', fee: '5% + 1 USDT per sale' },
                 { action: 'Buyer fee',             fee: '0%' },
                 { action: 'Withdrawal',            fee: 'Network gas only' },
               ].map(({ action, fee }) => (
