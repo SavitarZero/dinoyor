@@ -1,18 +1,32 @@
 // On-chain verification for TRC20 (TRON Grid) and ERC20 (Ethereum JSON-RPC).
-// TRON Grid works for both mainnet and Shasta testnet — set env vars accordingly.
-//
-// Mainnet defaults:
-//   TRON_GRID_URL=https://api.trongrid.io
-//   TRON_USDT_CONTRACT=TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t
-//
-// Shasta testnet:
-//   TRON_GRID_URL=https://api.shasta.trongrid.io
-//   TRON_USDT_CONTRACT=TG3XXyExBkPp9nzdajDZsozEu4BkaSJozs
+// Nile testnet: TRON_GRID_URL=https://nile.trongrid.io
+// Mainnet: TRON_GRID_URL=https://api.trongrid.io
+
+import { createHash } from 'crypto'
 
 const TRON_GRID_URL = process.env.TRON_GRID_URL ?? 'https://api.trongrid.io'
 const TRON_USDT_CONTRACT = (process.env.TRON_USDT_CONTRACT ?? 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t').toLowerCase()
 const ETH_RPC_URL = process.env.ETH_RPC_URL ?? 'https://cloudflare-eth.com'
 const ETH_USDT_CONTRACT = (process.env.ETH_USDT_CONTRACT ?? '0xdAC17F958D2ee523a2206206994597C13D831ec7').toLowerCase()
+
+const BASE58_ALPHABET = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
+
+function tronBase58ToHex(base58Addr: string): string {
+  let num = BigInt(0)
+  for (const char of base58Addr) {
+    const idx = BASE58_ALPHABET.indexOf(char)
+    if (idx === -1) return base58Addr.toLowerCase()
+    num = num * 58n + BigInt(idx)
+  }
+  const hex = num.toString(16).padStart(50, '0')
+  return '0x' + hex.slice(2, 42)
+}
+
+function normalizeAddress(addr: string): string {
+  if (addr.startsWith('T') && addr.length >= 34) return tronBase58ToHex(addr)
+  if (addr.startsWith('0x')) return addr.toLowerCase()
+  return addr.toLowerCase()
+}
 const TRANSFER_TOPIC = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
 
 export interface VerifyResult {
@@ -50,23 +64,14 @@ export async function verifyTrc20Deposit(
   minAmount: number
 ): Promise<VerifyResult> {
   try {
-    // Check transaction is confirmed (only_confirmed=true returns empty data if not yet confirmed)
-    const txRes = await fetch(
-      `${TRON_GRID_URL}/v1/transactions/${encodeURIComponent(txHash)}?only_confirmed=true`,
-      { cache: 'no-store' }
-    )
-    if (!txRes.ok) return { ok: false, error: 'Could not reach TRON API — try again later' }
-
-    const txData = await txRes.json() as { data: unknown[] }
-    if (!txData.data?.length) {
-      return { ok: false, error: 'Transaction not confirmed yet. Please wait and try again.' }
-    }
-
-    // Fetch events to find the Transfer
+    // Fetch events to find the Transfer (works on Nile even if /transactions returns 404)
     const evRes = await fetch(
       `${TRON_GRID_URL}/v1/transactions/${encodeURIComponent(txHash)}/events`,
       { cache: 'no-store' }
     )
+    if (evRes.status === 404) {
+      return { ok: false, error: 'Transaction not found or not confirmed yet. Please wait and try again.' }
+    }
     if (!evRes.ok) return { ok: false, error: 'Could not reach TRON API — try again later' }
 
     const evData = await evRes.json() as TronGridEventsResponse
@@ -85,10 +90,13 @@ export async function verifyTrc20Deposit(
     const toAddr = (transfer.result['to'] ?? transfer.result['1'] ?? '').toLowerCase()
     const valueStr = transfer.result['value'] ?? transfer.result['2'] ?? '0'
 
-    if (fromAddr !== senderAddress.toLowerCase()) {
+    const normalizedSender = normalizeAddress(senderAddress)
+    const normalizedEscrow = normalizeAddress(escrowAddress)
+
+    if (fromAddr !== normalizedSender) {
       return { ok: false, error: 'Sender address does not match your registered deposit wallet' }
     }
-    if (toAddr !== escrowAddress.toLowerCase()) {
+    if (toAddr !== normalizedEscrow) {
       return { ok: false, error: 'Transaction recipient is not the platform deposit address' }
     }
 
