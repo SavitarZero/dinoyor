@@ -65,11 +65,14 @@ export default async function EarningsPage() {
     supabase.from('payouts').select('*').eq('seller_id', user.id).order('processed_at', { ascending: false }),
     supabase.from('balance_transactions').select('*').eq('seller_id', user.id).order('created_at', { ascending: false }).limit(50),
     supabase.from('payout_requests').select('*').eq('seller_id', user.id).order('created_at', { ascending: false }),
-    supabase.from('platform_settings').select('key, value').in('key', ['min_withdraw_amo']),
+    supabase.from('platform_settings').select('key, value').in('key', ['min_withdraw_amo', 'payout_hold_days']),
   ])
 
   const pendingRequests = payoutRequests?.filter(r => r.status === 'pending') ?? []
-  const minWithdraw = Number(Object.fromEntries((settings ?? []).map(s => [s.key, s.value]))['min_withdraw_amo'] ?? 200)
+  const settingsMap = Object.fromEntries((settings ?? []).map(s => [s.key, s.value]))
+  const minWithdraw = Number(settingsMap['min_withdraw_amo'] ?? 200)
+  const holdDays = Number(settingsMap['payout_hold_days'] ?? 7)
+  const holdLabel = holdDays >= 1 ? `${Math.round(holdDays)} day${Math.round(holdDays) !== 1 ? 's' : ''}` : `${Math.round(holdDays * 24 * 60)} min`
 
   const typedSellerBalances = (sellerBalances ?? []) as unknown as SellerBalance[]
   const typedTxLog = (txLog ?? []) as unknown as BalanceTransaction[]
@@ -104,7 +107,7 @@ export default async function EarningsPage() {
                 {totalPending.toFixed(2)}
                 <span className="text-base text-yellow-600 ml-1.5">USDT</span>
               </p>
-              <p className="text-gray-600 text-xs">Released after 7 days</p>
+              <p className="text-gray-600 text-xs">Released after {holdLabel}</p>
             </div>
           </div>
 
