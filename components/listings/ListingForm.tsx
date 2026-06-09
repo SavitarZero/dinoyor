@@ -64,7 +64,7 @@ async function processCover(file: File, ref: React.RefObject<HTMLInputElement | 
     if (ref.current) ref.current.value = ''
     return { error: `Cover image must be under ${COVER_MAX_MB} MB` }
   }
-  const compressed = await compressImage(file, 800, 0.4)
+  const compressed = await compressImage(file, 640, 0.4)
   const f = new File([compressed], compressed.name, { type: compressed.type })
   syncFilesToInput(ref, [f])
   return { url: URL.createObjectURL(f) }
@@ -336,7 +336,7 @@ export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ ga
 
           <div className="rounded border border-border bg-surface p-5 space-y-4">
             <div>
-              <label className={labelCls}>Cover image</label>
+              <label className={labelCls}>Cover image <span className="text-gray-600 font-normal">(1:1 ratio, 320×320px recommended)</span></label>
               <input
                 ref={coverRef}
                 name="cover"
@@ -346,11 +346,11 @@ export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ ga
                 className="hidden"
               />
               {coverCompressing ? (
-                <div className="aspect-[4/3] rounded border border-border bg-background flex items-center justify-center">
+                <div className="aspect-square max-w-[320px] rounded border border-border bg-background flex items-center justify-center">
                   <span className="text-gray-500 text-xs">Compressing…</span>
                 </div>
               ) : coverPreview ? (
-                <div className="relative aspect-[4/3] rounded overflow-hidden bg-background border border-border group cursor-pointer" onClick={() => coverRef.current?.click()}>
+                <div className="relative aspect-square max-w-[320px] rounded overflow-hidden bg-background border border-border group cursor-pointer" onClick={() => coverRef.current?.click()}>
                   <Image src={coverPreview} alt="cover" fill unoptimized className="object-cover" />
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <span className="text-white text-xs">Change</span>
@@ -360,14 +360,14 @@ export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ ga
                 <button
                   type="button"
                   onClick={() => coverRef.current?.click()}
-                  className="w-full aspect-[4/3] rounded border-2 border-dashed border-border hover:border-gray-500 transition-colors flex flex-col items-center justify-center gap-2"
+                  className="w-full max-w-[320px] aspect-square rounded border-2 border-dashed border-border hover:border-gray-500 transition-colors flex flex-col items-center justify-center gap-2"
                 >
                   <svg className="w-8 h-8 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0022.5 18.75V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z" />
                   </svg>
                   <div className="text-center">
                     <p className="text-sm text-gray-300">Click to upload cover image</p>
-                    <p className="text-xs text-gray-600 mt-0.5">JPG, PNG or WebP · max {COVER_MAX_MB} MB</p>
+                    <p className="text-xs text-gray-600 mt-0.5">1:1 ratio · JPG, PNG or WebP · max {COVER_MAX_MB} MB</p>
                   </div>
                 </button>
               )}
@@ -514,7 +514,7 @@ export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ ga
           <div className="lg:sticky lg:top-0 space-y-4">
 
             <div className="rounded border border-border bg-surface overflow-hidden">
-              <div className="relative aspect-4/3 bg-background overflow-hidden">
+              <div className="relative aspect-square bg-background overflow-hidden">
                 {coverPreview ? (
                   <Image src={coverPreview} alt="preview" fill unoptimized className="object-cover" />
                 ) : (

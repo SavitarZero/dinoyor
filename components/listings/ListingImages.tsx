@@ -14,7 +14,7 @@ export function ListingImages({ images, title, game }: Props) {
 
   if (images.length === 0) {
     return (
-      <div className="relative aspect-video rounded-xl overflow-hidden">
+      <div className="relative rounded-xl overflow-hidden bg-surface aspect-video">
         {game ? (
           <>
             <GameBanner src={null} slug={game.slug} name={game.name} className="w-full h-full" />
@@ -39,13 +39,14 @@ export function ListingImages({ images, title, game }: Props) {
   return (
     <div className="space-y-2">
       {/* Main frame */}
-      <div className="relative aspect-video rounded-xl overflow-hidden bg-surface group">
+      <div className="relative rounded-xl overflow-hidden bg-surface group">
         <Image
           key={current}
           src={images[current]}
           alt={title}
-          fill
-          className="object-cover"
+          width={800}
+          height={600}
+          className="w-full h-auto"
           priority={current === 0}
         />
 

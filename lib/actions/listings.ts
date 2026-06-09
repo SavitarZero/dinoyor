@@ -107,3 +107,45 @@ export async function cancelListing(listingId: string) {
   revalidatePath('/listings')
   return { success: true }
 }
+
+export async function relistListing(listingId: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Not authenticated' }
+
+  const { error } = await supabase
+    .from('listings')
+    .update({ status: 'active' })
+    .eq('id', listingId)
+    .eq('seller_id', user.id)
+    .eq('status', 'cancelled')
+  if (error) return { error: error.message }
+  revalidatePath('/listings')
+  return { success: true }
+}
+
+export async function updateListingPrice(listingId: string, newPrice: number) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Not authenticated' }
+  if (newPrice <= 0) return { error: 'Price must be greater than 0' }
+
+  const { data: listing } = await supabase
+    .from('listings')
+    .select('status')
+    .eq('id', listingId)
+    .eq('seller_id', user.id)
+    .single()
+
+  if (!listing) return { error: 'Listing not found' }
+  if (listing.status !== 'cancelled') return { error: 'Can only edit price of cancelled listings' }
+
+  const { error } = await supabase
+    .from('listings')
+    .update({ price_amount: newPrice })
+    .eq('id', listingId)
+    .eq('seller_id', user.id)
+  if (error) return { error: error.message }
+  revalidatePath('/listings')
+  return { success: true }
+}

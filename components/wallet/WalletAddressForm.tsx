@@ -4,8 +4,8 @@ import { updateWalletAddress, deleteWalletAddress } from '@/lib/actions/wallet'
 import { CustomSelect } from '@/components/ui/CustomSelect'
 
 const NETWORKS = [
-  { value: 'TRC20', label: 'USDT TRC20 (Tron)' },
-  { value: 'ERC20', label: 'USDT ERC20 (Ethereum)' },
+  { value: 'TRC20', label: 'TRC20 (Tron)' },
+  { value: 'ERC20', label: 'ERC20 (Ethereum)' },
 ]
 
 interface Props {
@@ -90,6 +90,11 @@ export function WalletAddressForm({ currentAddress, currentNetwork }: Props) {
     <form onSubmit={handleSave} className="space-y-3">
       {error && <p className="text-red-400 text-xs">{error}</p>}
       {saved && <p className="text-green-400 text-xs">Saved.</p>}
+
+      <div>
+        <label className="block text-gray-500 text-xs font-medium uppercase tracking-wide mb-1.5">Currency</label>
+        <div className="px-3 py-2 rounded-lg bg-background border border-border text-white text-sm">USDT</div>
+      </div>
 
       <div>
         <label className="block text-gray-500 text-xs font-medium uppercase tracking-wide mb-1.5">Network</label>

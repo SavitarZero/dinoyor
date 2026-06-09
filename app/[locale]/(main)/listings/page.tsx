@@ -3,6 +3,8 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { RemoveListingButton } from '@/components/listings/RemoveListingButton'
+import { RelistButton } from '@/components/listings/RelistButton'
+import { EditPriceButton } from '@/components/listings/EditPriceButton'
 
 const STATUS_LABEL: Record<string, string> = {
   active:    'Active',
@@ -16,7 +18,7 @@ const STATUS_CLASS: Record<string, string> = {
   cancelled: 'bg-border/50 text-gray-500 border-border',
 }
 
-type FilterStatus = 'all' | 'active' | 'sold' | 'cancelled'
+type FilterStatus = 'active' | 'cancelled'
 
 export default async function MyListingsPage({
   searchParams,
@@ -25,9 +27,9 @@ export default async function MyListingsPage({
 }>) {
   const { status: statusParam } = await searchParams
   const filter: FilterStatus =
-    ['active', 'sold', 'cancelled'].includes(statusParam ?? '')
+    ['active', 'cancelled'].includes(statusParam ?? '')
       ? (statusParam as FilterStatus)
-      : 'all'
+      : 'active'
 
   const supabase = await createClient()
   const { data: { session } } = await supabase.auth.getSession()
@@ -50,15 +52,13 @@ export default async function MyListingsPage({
     supabase.from('listings').select('*', { count: 'exact', head: true }).eq('seller_id', user.id).eq('status', 'cancelled'),
   ])
 
-  const filtered = filter === 'all' ? (listings ?? []) : (listings ?? []).filter(l => l.status === filter)
+  const filtered = (listings ?? []).filter(l => l.status === filter)
 
   const totalSoldItems = (listings ?? []).reduce((s, l) => s + (l.sold_count ?? 0), 0)
 
   const tabs: { label: string; value: FilterStatus; count: number | null }[] = [
-    { label: 'All',       value: 'all',       count: null },
-    { label: 'Active',    value: 'active',    count: totalActive ?? 0 },
-    { label: 'Sold',      value: 'sold',      count: totalSold ?? 0 },
-    { label: 'Cancelled', value: 'cancelled', count: totalCancelled ?? 0 },
+    { label: 'On Sale',    value: 'active',    count: totalActive ?? 0 },
+    { label: 'Cancelled',  value: 'cancelled', count: totalCancelled ?? 0 },
   ]
 
   return (
@@ -101,7 +101,7 @@ export default async function MyListingsPage({
         {tabs.map(tab => (
           <Link
             key={tab.value}
-            href={tab.value === 'all' ? '/listings' : `/listings?status=${tab.value}`}
+            href={tab.value === 'active' ? '/listings' : `/listings?status=${tab.value}`}
             className={`flex items-center gap-1.5 px-4 py-1.5 rounded text-sm font-medium transition-colors ${
               filter === tab.value
                 ? 'bg-accent text-black'
@@ -125,15 +125,14 @@ export default async function MyListingsPage({
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {filtered.map((listing: any) => {
             let cardClass = 'border-border hover:border-gray-500/40'
-            if (listing.status === 'cancelled') cardClass = 'border-border opacity-50'
-            else if (listing.status === 'sold') cardClass = 'border-border opacity-75'
+            if (listing.status === 'sold') cardClass = 'border-border opacity-75'
             return (
             <div
               key={listing.id}
               className={`flex flex-col rounded border bg-surface overflow-hidden transition-colors ${cardClass}`}
             >
               {/* Image */}
-              <div className="relative aspect-video bg-background overflow-hidden">
+              <div className="relative aspect-square bg-background overflow-hidden">
                 {listing.images?.[0] ? (
                   <img
                     src={listing.images[0]}
@@ -196,19 +195,23 @@ export default async function MyListingsPage({
                 {listing.status === 'active' && (
                   <RemoveListingButton listingId={listing.id} />
                 )}
+                <EditPriceButton listingId={listing.id} currentPrice={listing.price_amount} status={listing.status} />
+                {listing.status === 'cancelled' && (
+                  <RelistButton listingId={listing.id} />
+                )}
               </div>
             </div>
           )})}
         </div>
       ) : (
-        <div className="rounded border border-border bg-surface p-16 text-center space-y-3">
+        <div className="p-16 text-center space-y-3">
           <svg className="w-12 h-12 text-gray-700 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
           </svg>
           <p className="text-gray-500 text-sm">
-            {filter === 'all' ? 'No listings yet.' : `No ${filter} listings.`}
+            {`No ${filter === 'active' ? 'active' : 'cancelled'} listings.`}
           </p>
-          {filter === 'all' && (
+          {filter === 'active' && (
             <Link href="/listings/new" className="inline-block text-accent text-sm hover:underline">
               Create your first listing →
             </Link>

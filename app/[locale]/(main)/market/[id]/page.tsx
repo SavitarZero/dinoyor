@@ -64,7 +64,7 @@ export default async function ListingDetailPage({
     <div className="max-w-5xl mx-auto px-4 py-8 space-y-10">
 
       {/* Top section: image + details */}
-      <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+      <div className="grid md:grid-cols-2 gap-6 items-start">
 
         {/* Images */}
         <ListingImages

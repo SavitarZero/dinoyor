@@ -38,8 +38,8 @@ export function ListingCard({ listing, isHot }: Readonly<{ listing: ListingWithG
       href={`/market/${listing.id}`}
       className="group flex flex-col bg-surface rounded overflow-hidden border border-border hover:border-gray-500/60 hover:bg-surface-2 transition-all duration-150"
     >
-      {/* Image — landscape 16:9 */}
-      <div className="relative aspect-video bg-background overflow-hidden">
+      {/* Image */}
+      <div className="relative aspect-square bg-background overflow-hidden">
         <ListingImage listing={listing} />
 
         {isHot && (
