@@ -45,7 +45,7 @@ export default async function WalletPage() {
           <p className="text-gray-500 text-xs uppercase tracking-wide">Balance</p>
           <p className="text-3xl font-bold text-green-400">
             {buyerBalance.toFixed(2)}
-            <span className="text-lg text-green-600 ml-1.5">coin</span>
+            <span className="text-lg text-green-600 ml-1.5">AMO</span>
           </p>
           <p className="text-gray-500 text-xs">Used for purchases — topped up via deposit</p>
         </div>
@@ -71,7 +71,7 @@ export default async function WalletPage() {
                   <div key={d.id} className="flex items-center justify-between px-4 py-3">
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
-                        <p className="text-white text-sm font-medium">{Number(d.claimed_amount).toFixed(2)} coin</p>
+                        <p className="text-white text-sm font-medium">{Number(d.claimed_amount).toFixed(2)} AMO</p>
                         <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${statusClass}`}>
                           {statusLabel}
                         </span>
