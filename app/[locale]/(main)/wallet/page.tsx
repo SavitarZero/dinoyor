@@ -91,14 +91,14 @@ export default async function WalletPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
 
-      {/* === Buyer Wallet === */}
+      {/* === Coin Wallet === */}
       <section>
-        <h2 className="text-white text-base font-bold mb-4">My Wallet</h2>
+        <h2 className="text-white text-base font-bold mb-4">Coin Wallet</h2>
         <div className="grid lg:grid-cols-3 gap-5">
 
           {/* Balance card */}
           <div className="rounded-xl border border-accent/20 bg-accent/5 p-5 flex flex-col gap-2">
-            <p className="text-gray-500 text-xs uppercase tracking-wide">Spendable Balance</p>
+            <p className="text-gray-500 text-xs uppercase tracking-wide">Coin Wallet</p>
             <p className="text-3xl font-bold text-accent">
               {buyerBalance.toFixed(2)}
               <span className="text-lg text-accent/60 ml-1.5">coin</span>
@@ -164,7 +164,7 @@ export default async function WalletPage() {
       {/* === Seller Wallet === */}
       {typedSellerBalances.length > 0 && (
         <section>
-          <h2 className="text-white text-base font-bold mb-4">Seller Earnings</h2>
+          <h2 className="text-white text-base font-bold mb-4">Earnings</h2>
           <div className="grid lg:grid-cols-3 gap-5">
             <div className="lg:col-span-2 space-y-5">
 
@@ -258,7 +258,7 @@ export default async function WalletPage() {
             <div className="space-y-5">
               <div className="rounded-xl border border-border bg-surface">
                 <div className="px-4 py-3 border-b border-border">
-                  <p className="text-white text-sm font-medium">Earning History</p>
+                  <p className="text-white text-sm font-medium">Earnings History</p>
                 </div>
                 {typedTxLog.length ? (
                   <div className="divide-y divide-border max-h-80 overflow-y-auto">

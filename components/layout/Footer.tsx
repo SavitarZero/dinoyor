@@ -5,7 +5,7 @@ const LINKS = {
     { label: 'Browse Games',   href: '/market' },
     { label: 'Sell an Item',   href: '/listings/new' },
     { label: 'My Orders',      href: '/orders' },
-    { label: 'My Wallet',      href: '/wallet' },
+    { label: 'Coin Wallet',    href: '/wallet' },
   ],
   Support: [
     { label: 'How It Works',   href: '/info' },

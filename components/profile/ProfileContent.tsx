@@ -39,7 +39,7 @@ interface ProfileData {
 const MENU_ITEMS: { key: Tab; label: string; icon: string }[] = [
   { key: 'personal', label: 'Personal Info', icon: 'M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z' },
   { key: 'security', label: 'Security', icon: 'M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z' },
-  { key: 'wallet', label: 'Wallet', icon: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z' },
+  { key: 'wallet', label: 'Wallet Setting', icon: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z' },
   { key: 'purchases', label: 'Purchases', icon: 'M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z' },
   { key: 'sales', label: 'Sales', icon: 'M13.5 21v-7.5a.75.75 0 01.75-.75h3a.75.75 0 01.75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349m-16.5 11.65V9.35m0 0a3.001 3.001 0 003.75-.615A2.993 2.993 0 009.75 9.75c.896 0 1.7-.393 2.25-1.016a2.993 2.993 0 002.25 1.016c.896 0 1.7-.393 2.25-1.016A3.001 3.001 0 0021 9.349m-18 0a2.999 2.999 0 00.97-1.599L4.72 4.5h14.56l.75 3.25a3 3 0 00.97 1.599' },
   { key: 'kyc', label: 'Become a Seller', icon: 'M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z' },
@@ -221,7 +221,7 @@ function WalletSection({ data }: Readonly<{ data: ProfileData }>) {
       {/* Balance */}
       <div className="rounded border border-border bg-surface overflow-hidden">
         <div className="px-4 py-3 border-b border-border">
-          <p className="text-gray-500 text-xs font-medium uppercase tracking-wide">Balance</p>
+          <p className="text-gray-500 text-xs font-medium uppercase tracking-wide">Coin Wallet</p>
         </div>
         <div className="px-4 py-4">
           <p className="text-2xl font-bold text-accent">{data.amoBalance.toFixed(2)} <span className="text-base font-medium text-gray-500">coin</span></p>
@@ -244,11 +244,11 @@ function WalletSection({ data }: Readonly<{ data: ProfileData }>) {
         </div>
       </div>
 
-      {/* Deposit wallet */}
+      {/* Setting Wallet — Deposit sender */}
       <div className="rounded border border-border bg-surface">
         <div className="px-4 py-3 border-b border-border">
-          <p className="text-white text-sm font-semibold">Deposit Sender Address</p>
-          <p className="text-gray-500 text-xs">The wallet address you send coin from.</p>
+          <p className="text-white text-sm font-semibold">Setting Wallet</p>
+          <p className="text-gray-500 text-xs">Sender address — the wallet you send coin from.</p>
         </div>
         <div className="px-4 py-4">
           <DepositWalletForm
@@ -258,11 +258,11 @@ function WalletSection({ data }: Readonly<{ data: ProfileData }>) {
         </div>
       </div>
 
-      {/* Withdraw wallet */}
+      {/* Setting Wallet — Withdraw / payout */}
       <div className="rounded border border-border bg-surface">
         <div className="px-4 py-3 border-b border-border">
-          <p className="text-white text-sm font-semibold">Withdraw Wallet (Payout)</p>
-          <p className="text-gray-500 text-xs">Coin from your sales will be sent here.</p>
+          <p className="text-white text-sm font-semibold">Setting Wallet</p>
+          <p className="text-gray-500 text-xs">Withdraw address — coin from your sales will be sent here.</p>
         </div>
         <div className="px-4 py-4">
           <WalletAddressForm
