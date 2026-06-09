@@ -10,7 +10,6 @@ export default function RegisterPage() {
   const t = useTranslations('auth')
   const router = useRouter()
   const [username, setUsername]               = useState('')
-  const [email, setEmail]                     = useState('')
   const [password, setPassword]               = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError]                     = useState('')
@@ -24,7 +23,7 @@ export default function RegisterPage() {
       return
     }
     setLoading(true)
-    const result = await signUpWithUsername(username, password, email || undefined)
+    const result = await signUpWithUsername(username, password)
     setLoading(false)
     if (result?.error) { setError(result.error); return }
     router.push('/login')
@@ -35,7 +34,6 @@ export default function RegisterPage() {
   return (
     <div>
       <h1 className="text-2xl font-bold text-white mb-1">{t('createAccount')}</h1>
-      <p className="text-gray-500 text-sm mb-6">Add your email now or later — required for password reset.</p>
 
       {error && (
         <div className="mb-4 px-3 py-2.5 rounded-xl bg-red-900/20 border border-red-700/40">
@@ -58,21 +56,6 @@ export default function RegisterPage() {
             className={inputCls}
           />
           <p className="text-gray-600 text-[11px] mt-1">3–20 characters, letters, numbers or underscore</p>
-        </div>
-
-        <div>
-          <label htmlFor="email" className="block text-xs font-medium text-gray-400 mb-1.5">
-            Email address <span className="text-gray-600 font-normal">(optional — for password reset)</span>
-          </label>
-          <input
-            id="email"
-            type="email"
-            placeholder="your@email.com"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            className={inputCls}
-          />
-          <p className="text-gray-600 text-[11px] mt-1">Not shown publicly · can be added later from your profile</p>
         </div>
 
         <div>

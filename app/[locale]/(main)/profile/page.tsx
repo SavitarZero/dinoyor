@@ -37,7 +37,9 @@ export default async function ProfilePage() {
     status: String(o.status),
     amount: Number(o.amount),
     created_at: String(o.created_at),
-    listings: Array.isArray(o.listings) ? (o.listings[0] ?? null) : o.listings,
+    listings: Array.isArray(o.listings)
+      ? (o.listings[0] ? { title: o.listings[0].title ?? null, images: o.listings[0].images ?? null } : null)
+      : o.listings ? { title: (o.listings as Record<string, unknown>).title as string ?? null, images: (o.listings as Record<string, unknown>).images as string[] ?? null } : null,
   }))
   const kycData = kycSubmission.data
 
@@ -45,7 +47,7 @@ export default async function ProfilePage() {
   const hasRealEmail = !!(user.email && !user.email.endsWith('@dcore.internal'))
   const isOAuthOnly = !user.identities?.some(i => i.provider === 'email')
 
-  const data = {
+  const data = JSON.parse(JSON.stringify({
     displayName: profile?.username || user.email?.split('@')[0] || 'User',
     displayAvatar: profile?.avatar_url || (user.user_metadata?.avatar_url as string | undefined) || null,
     email: user.email ?? null,
@@ -62,8 +64,10 @@ export default async function ProfilePage() {
       status: String(o.status),
       amount: Number(o.amount),
       created_at: String(o.created_at),
-      listings: Array.isArray(o.listings) ? (o.listings[0] ?? null) : o.listings,
-    })) as ProfileOrder[],
+      listings: Array.isArray(o.listings)
+        ? (o.listings[0] ? { title: o.listings[0].title ?? null, images: o.listings[0].images ?? null } : null)
+        : o.listings ? { title: (o.listings as Record<string, unknown>).title as string ?? null, images: (o.listings as Record<string, unknown>).images as string[] ?? null } : null,
+    })),
     sellerOrders,
     kycSubmittedAt: kycData?.created_at ?? null,
     kycReviewedAt: kycData?.reviewed_at ?? null,
@@ -71,7 +75,7 @@ export default async function ProfilePage() {
     currentEmail: hasRealEmail ? user.email! : null,
     pendingEmail: profile?.pending_email ?? null,
     isOAuthOnly,
-  }
+  }))
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">

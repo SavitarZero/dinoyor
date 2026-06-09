@@ -26,8 +26,19 @@ export async function createOrder(listingId: string) {
     .select('id, seller_id, price_amount, price_currency, status, title, delivery_time')
     .eq('id', listingId)
     .single()
-  if (!listing || listing.status !== 'active') return { error: 'Listing not available' }
+  if (!listing) return { error: 'Listing not found' }
   if (listing.seller_id === user.id) return { error: 'Cannot buy your own listing' }
+  if (listing.status !== 'active') {
+    const { count } = await supabase
+      .from('orders')
+      .select('*', { count: 'exact', head: true })
+      .eq('listing_id', listingId)
+      .in('status', ['paid_escrow', 'delivered'])
+    if ((count ?? 0) > 0) {
+      return { error: 'This item is currently in a pending transaction. Please wait or try another listing.' }
+    }
+    return { error: 'This item is no longer available.' }
+  }
 
   // Check buyer balance
   const currency = 'USDT'

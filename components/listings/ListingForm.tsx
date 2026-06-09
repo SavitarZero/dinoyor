@@ -457,12 +457,8 @@ export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ ga
                       <span>{priceNum.toFixed(2)} coin</span>
                     </div>
                     <div className="flex justify-between text-gray-500 text-xs">
-                      <span>Platform fee ({resolvedFeePct}%)</span>
-                      <span>−{percentFeeAmt.toFixed(2)} coin</span>
-                    </div>
-                    <div className="flex justify-between text-gray-500 text-xs">
-                      <span>Flat fee</span>
-                      <span>−{resolvedFlatFee.toFixed(2)} coin</span>
+                      <span>Platform fee ({resolvedFeePct}% + {resolvedFlatFee} coin)</span>
+                      <span>−{(percentFeeAmt + resolvedFlatFee).toFixed(2)} coin</span>
                     </div>
                     <div className="border-t border-border pt-1.5 flex justify-between font-semibold">
                       <span className="text-white">You receive</span>
@@ -537,12 +533,8 @@ export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ ga
                   <span className="text-white">{priceNum > 0 ? `${priceNum.toFixed(2)} coin` : '—'}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">Platform fee ({resolvedFeePct}%)</span>
-                  <span className="text-gray-400">{priceNum > 0 ? `−${fee.toFixed(2)} coin` : '—'}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">Flat fee</span>
-                  <span className="text-gray-400">{priceNum > 0 ? `−${resolvedFlatFee.toFixed(2)} coin` : '—'}</span>
+                  <span className="text-gray-400">Platform fee ({resolvedFeePct}% + {resolvedFlatFee})</span>
+                  <span className="text-gray-400">{priceNum > 0 ? `−${(fee + resolvedFlatFee).toFixed(2)} coin` : '—'}</span>
                 </div>
                 <div className="border-t border-border pt-2 flex justify-between text-sm">
                   <span className="text-white font-medium">You receive</span>

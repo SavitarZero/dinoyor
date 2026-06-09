@@ -88,8 +88,8 @@ export default async function ListingDetailPage({
           <div>
             <h1 className="text-2xl font-bold text-white">{listing.title}</h1>
             {listing.status !== 'active' && (
-              <span className="mt-2 inline-block px-2.5 py-1 rounded-lg bg-surface border border-border text-gray-400 text-xs capitalize">
-                {listing.status}
+              <span className="mt-2 inline-block px-2.5 py-1 rounded-lg bg-yellow-500/10 border border-yellow-500/20 text-yellow-400 text-xs">
+                {listing.status === 'sold' ? 'Currently in transaction' : listing.status}
               </span>
             )}
           </div>
