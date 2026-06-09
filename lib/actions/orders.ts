@@ -29,15 +29,20 @@ export async function createOrder(listingId: string) {
   if (!listing) return { error: 'Listing not found' }
   if (listing.seller_id === user.id) return { error: 'Cannot buy your own listing' }
   if (listing.status !== 'active') {
-    const { count } = await supabase
-      .from('orders')
-      .select('*', { count: 'exact', head: true })
-      .eq('listing_id', listingId)
-      .in('status', ['paid_escrow', 'delivered'])
-    if ((count ?? 0) > 0) {
-      return { error: 'This item is currently in a pending transaction. Please wait or try another listing.' }
-    }
-    return { error: 'This item is no longer available.' }
+    return { error: 'This item has already been sold or is no longer available.' }
+  }
+
+  // Atomically mark listing as sold (only if still active) — prevents race condition
+  const admin = createAdminClient()
+  const { data: locked, error: lockErr } = await admin
+    .from('listings')
+    .update({ status: 'sold' })
+    .eq('id', listingId)
+    .eq('status', 'active')
+    .select('id')
+    .maybeSingle()
+  if (lockErr || !locked) {
+    return { error: 'This item has already been purchased by another buyer. Please try another listing.' }
   }
 
   // Check buyer balance
@@ -81,15 +86,13 @@ export async function createOrder(listingId: string) {
   }).select('id').single()
 
   if (error) {
-    // Rollback: refund buyer balance
+    // Rollback: refund buyer balance and restore listing
     await supabase.rpc('increment_user_balance', {
       p_user_id: user.id, p_currency: currency, p_amount: listing.price_amount,
     })
+    await admin.from('listings').update({ status: 'active' }).eq('id', listingId)
     return { error: error.message }
   }
-
-  const admin = createAdminClient()
-  await admin.from('listings').update({ status: 'sold' }).eq('id', listingId)
 
   const { data: conv } = await admin.from('conversations').insert({
     order_id: order.id,
