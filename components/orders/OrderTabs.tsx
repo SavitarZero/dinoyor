@@ -8,10 +8,10 @@ const ROLE_TABS = [
 ]
 
 const STATUS_TABS = [
-  { id: 'all', label: 'All Status' },
-  { id: 'active', label: 'Active' },
+  { id: 'all', label: 'All' },
+  { id: 'active', label: 'In Progress' },
   { id: 'completed', label: 'Completed' },
-  { id: 'disputed', label: 'Disputed' },
+  { id: 'disputed', label: 'Refunded' },
   { id: 'cancelled', label: 'Cancelled' },
 ]
 
@@ -43,15 +43,15 @@ export function OrderTabs({ activeRole, activeStatus }: { activeRole: string; ac
           </button>
         ))}
       </div>
-      <div className="flex gap-1.5 overflow-x-auto scrollbar-none">
+      <div className="flex gap-1 bg-surface border border-border rounded p-1 w-fit overflow-x-auto scrollbar-none">
         {STATUS_TABS.map(tab => (
           <button
             key={tab.id}
             onClick={() => router.push(buildUrl(activeRole, tab.id))}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${
+            className={`px-4 py-1.5 rounded text-sm font-medium whitespace-nowrap transition-colors ${
               activeStatus === tab.id
-                ? 'bg-accent/10 border border-accent/30 text-accent'
-                : 'border border-border text-gray-500 hover:text-white hover:border-gray-500'
+                ? 'bg-accent text-black'
+                : 'text-gray-400 hover:text-white'
             }`}
           >
             {tab.label}
