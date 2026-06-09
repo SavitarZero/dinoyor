@@ -9,12 +9,16 @@ interface Props {
   minWithdraw: number
 }
 
+const GAS_FEE = 1.5 // estimated gas fee in USDT
+
 export function PayoutButton({ currency, amount, minWithdraw }: Props) {
   const router = useRouter()
   const [showModal, setShowModal] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [submitted, setSubmitted] = useState(false)
+
+  const netAmount = Math.max(0, amount - GAS_FEE)
 
   async function handleConfirm() {
     if (loading) return
@@ -48,11 +52,11 @@ export function PayoutButton({ currency, amount, minWithdraw }: Props) {
       <div className="flex flex-col sm:flex-row sm:items-center gap-3">
         <button
           onClick={() => setShowModal(true)}
-          className="px-4 py-1.5 rounded-lg bg-accent text-black text-xs font-bold hover:opacity-90 transition-opacity"
+          className="px-4 py-1.5 rounded-lg bg-green-500 text-white text-xs font-bold hover:bg-green-600 transition-colors"
         >
           Request Payout
         </button>
-        <p className="text-gray-500 text-xs">Min withdrawal: {minWithdraw} coin</p>
+        <p className="text-gray-500 text-xs">Min withdrawal: {minWithdraw} AMO</p>
       </div>
 
       {showModal && (
@@ -61,10 +65,25 @@ export function PayoutButton({ currency, amount, minWithdraw }: Props) {
           <div className="relative w-full max-w-sm rounded-2xl border border-border bg-surface p-5 space-y-4">
             <div>
               <p className="text-white text-sm font-bold">Confirm Payout Request</p>
-              <p className="text-gray-400 text-xs mt-1">
-                You are requesting a withdrawal of <span className="text-white font-medium">{amount.toFixed(2)} {currency}</span> to your payout wallet.
-              </p>
+              <p className="text-gray-400 text-xs mt-1">Withdrawal breakdown:</p>
             </div>
+
+            <div className="rounded-lg border border-border bg-background p-3 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-gray-400 text-xs">Amount</span>
+                <span className="text-white text-sm font-medium">{amount.toFixed(2)} USDT</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-gray-400 text-xs">Gas fee (est.)</span>
+                <span className="text-red-400 text-sm font-medium">-{GAS_FEE.toFixed(2)} USDT</span>
+              </div>
+              <div className="border-t border-border pt-2 flex items-center justify-between">
+                <span className="text-gray-400 text-xs font-medium">You'll receive (est.)</span>
+                <span className="text-green-400 text-sm font-bold">{netAmount.toFixed(2)} USDT</span>
+              </div>
+            </div>
+
+            <p className="text-gray-600 text-[10px]">Gas fee is an estimate and may vary at the time of processing.</p>
 
             {error && <p className="text-red-400 text-sm">{error}</p>}
 
@@ -72,9 +91,9 @@ export function PayoutButton({ currency, amount, minWithdraw }: Props) {
               <button
                 onClick={handleConfirm}
                 disabled={loading}
-                className="px-4 py-1.5 rounded-lg bg-success text-black text-xs font-bold hover:bg-success-hover disabled:opacity-50 transition-colors"
+                className="px-4 py-1.5 rounded-lg bg-green-500 text-white text-xs font-bold hover:bg-green-600 disabled:opacity-50 transition-colors"
               >
-                {loading ? 'Processing…' : 'Confirm'}
+                {loading ? 'Processing…' : 'Confirm Withdrawal'}
               </button>
               <button
                 onClick={() => setShowModal(false)}
