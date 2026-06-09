@@ -14,6 +14,7 @@ export function KYCForm({ currentStatus, submittedAt, reviewedAt, hasEmail = tru
   const [error, setError]     = useState('')
   const [loading, setLoading] = useState(false)
   const [fileName, setFileName] = useState('')
+  const [preview, setPreview] = useState<string | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
 
   if (currentStatus === 'approved') {
@@ -147,27 +148,37 @@ export function KYCForm({ currentStatus, submittedAt, reviewedAt, hasEmail = tru
                 type="file"
                 accept="image/*"
                 required
-                onChange={e => setFileName(e.target.files?.[0]?.name ?? '')}
+                onChange={e => {
+                  const file = e.target.files?.[0]
+                  setFileName(file?.name ?? '')
+                  if (file) setPreview(URL.createObjectURL(file))
+                  else setPreview(null)
+                }}
                 className="hidden"
               />
               <button
                 type="button"
                 onClick={() => fileRef.current?.click()}
-                className={`w-full rounded border border-dashed py-6 text-center transition-colors ${fileName ? 'border-accent/50 bg-accent/5' : 'border-border hover:border-gray-500'}`}
+                className={`w-full rounded border border-dashed overflow-hidden transition-colors ${fileName ? 'border-green-500/50 bg-green-900/10' : 'border-border hover:border-gray-500'}`}
               >
-                {fileName ? (
-                  <p className="text-accent text-sm truncate px-4">{fileName}</p>
+                {preview ? (
+                  <div className="relative">
+                    <img src={preview} alt="Preview" className="w-full max-h-48 object-contain" />
+                    <p className="text-green-400 text-xs truncate px-4 py-2 bg-background/80">{fileName}</p>
+                  </div>
+                ) : fileName ? (
+                  <p className="text-green-400 text-sm truncate px-4 py-6">{fileName}</p>
                 ) : (
-                  <>
+                  <div className="py-6">
                     <p className="text-gray-400 text-sm">Click to upload photo</p>
                     <p className="text-gray-600 text-xs mt-0.5">JPG or PNG · max 10 MB</p>
-                  </>
+                  </div>
                 )}
               </button>
               {fileName && (
                 <button
                   type="button"
-                  onClick={() => { setFileName(''); if (fileRef.current) fileRef.current.value = '' }}
+                  onClick={() => { setFileName(''); setPreview(null); if (fileRef.current) fileRef.current.value = '' }}
                   className="mt-1 text-xs text-gray-600 hover:text-red-400"
                 >
                   Remove
