@@ -20,6 +20,7 @@ interface Props {
 export function CommentsSection({ listingId, initialComments, isAuthenticated, hasPurchased }: Props) {
   const [comments, setComments] = useState(initialComments)
   const [body, setBody] = useState('')
+  const [error, setError] = useState('')
   const [pending, startTransition] = useTransition()
   const router = useRouter()
   const canComment = isAuthenticated && hasPurchased
@@ -30,7 +31,14 @@ export function CommentsSection({ listingId, initialComments, isAuthenticated, h
 
     startTransition(async () => {
       const res = await addComment(listingId, body)
-      if (!res.error) {
+      if (res.error === 'already_reviewed') {
+        setError('You have already reviewed all your purchases of this item.')
+      } else if (res.error === 'purchase_required') {
+        setError('You must purchase this item before leaving a review.')
+      } else if (res.error) {
+        setError(res.error)
+      } else {
+        setError('')
         setComments(prev => [{
           id: crypto.randomUUID(),
           body: body.trim(),
@@ -51,6 +59,7 @@ export function CommentsSection({ listingId, initialComments, isAuthenticated, h
       {/* Form or gate */}
       {canComment ? (
         <form onSubmit={handleSubmit} className="mb-6 space-y-2">
+          {error && <p className="text-red-400 text-sm">{error}</p>}
           <textarea
             value={body}
             onChange={e => setBody(e.target.value)}
