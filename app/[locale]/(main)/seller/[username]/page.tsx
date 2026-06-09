@@ -118,7 +118,7 @@ export default async function SellerStorePage({
           </div>
           <div className="px-4 py-3 text-center">
             <p className="text-accent font-bold text-sm">{totalSold}</p>
-            <p className="text-gray-500 text-xs">Sold</p>
+            <p className="text-gray-500 text-xs">Total Sold</p>
           </div>
           <div className="px-4 py-3 text-center">
             <p className="text-white font-bold text-sm">{joinedDate ?? '—'}</p>
