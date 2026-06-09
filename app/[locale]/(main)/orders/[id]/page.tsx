@@ -237,7 +237,7 @@ export default async function OrderDetailPage({
                 <div className="flex items-center justify-between pt-2 border-t border-border">
                   <p className="text-gray-500 text-xs">
                     {new Date(order.delivery_deadline_at) > new Date()
-                      ? <>Cancel available after <span className="text-white">{new Date(order.delivery_deadline_at).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</span></>
+                      ? <>Cancel available after <span className="text-white">{new Date(order.delivery_deadline_at).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Bangkok' })}</span></>
                       : 'Delivery deadline has passed.'
                     }
                   </p>

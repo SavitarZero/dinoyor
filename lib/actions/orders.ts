@@ -6,13 +6,14 @@ import { redirect } from 'next/navigation'
 
 function deliveryMs(deliveryTime: string | null | undefined): number {
   if (!deliveryTime) return 24 * 60 * 60 * 1000
-  const s = deliveryTime.toLowerCase()
-  if (s === 'instant') return 2 * 60 * 60 * 1000
-  if (s.includes('< 1') || (s.includes('1') && s.includes('hour') && !s.includes('3'))) return 60 * 60 * 1000
-  if (s.includes('3') && s.includes('hour')) return 3 * 60 * 60 * 1000
-  if (s.includes('same day')) return 24 * 60 * 60 * 1000
-  if (s.includes('day')) return 2 * 24 * 60 * 60 * 1000
-  return 24 * 60 * 60 * 1000
+  switch (deliveryTime) {
+    case '30min': return 30 * 60 * 1000
+    case '1-3h':  return 3 * 60 * 60 * 1000
+    case '3-5h':  return 5 * 60 * 60 * 1000
+    case '6-12h': return 12 * 60 * 60 * 1000
+    case '1day':  return 24 * 60 * 60 * 1000
+    default:      return 24 * 60 * 60 * 1000
+  }
 }
 
 export async function createOrder(listingId: string) {
@@ -125,12 +126,14 @@ export async function confirmDelivery(orderId: string, screenshotFiles: File[]) 
 
   await admin.from('order_proofs').insert({ order_id: orderId, screenshot_urls: urls })
 
-  const { data: listing } = await supabase
-    .from('listings')
-    .select('delivery_time')
-    .eq('id', order.listing_id)
+  // Buyer has X days to confirm after delivery, then auto-release to seller
+  const { data: autoReleaseSetting } = await supabase
+    .from('platform_settings')
+    .select('value')
+    .eq('key', 'auto_release_days')
     .single()
-  const autoReleaseAt = new Date(Date.now() + deliveryMs(listing?.delivery_time)).toISOString()
+  const autoReleaseDays = Number(autoReleaseSetting?.value ?? 3)
+  const autoReleaseAt = new Date(Date.now() + autoReleaseDays * 24 * 60 * 60 * 1000).toISOString()
 
   await admin.from('orders').update({
     status: 'delivered',

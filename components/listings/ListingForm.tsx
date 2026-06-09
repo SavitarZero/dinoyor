@@ -125,12 +125,11 @@ export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ ga
   const deliveryRef = useRef<HTMLDivElement>(null)
 
   const deliveryOptions = [
-    { value: '', label: 'Not specified' },
-    { value: 'Instant', label: 'Instant' },
-    { value: '< 1 hour', label: '< 1 hour' },
-    { value: '1–3 hours', label: '1–3 hours' },
-    { value: 'Same day', label: 'Same day' },
-    { value: '1–2 days', label: '1–2 days' },
+    { value: '30min', label: 'Within 30 minutes' },
+    { value: '1-3h', label: 'Within 1–3 hours' },
+    { value: '3-5h', label: 'Within 3–5 hours' },
+    { value: '6-12h', label: 'Within 6–12 hours' },
+    { value: '1day', label: 'Within 1 day' },
   ]
 
   // Fetch item types whenever selected game changes

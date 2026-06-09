@@ -2,7 +2,7 @@ import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { cancelListing } from '@/lib/actions/listings'
+import { RemoveListingButton } from '@/components/listings/RemoveListingButton'
 
 const STATUS_LABEL: Record<string, string> = {
   active:    'Active',
@@ -194,17 +194,7 @@ export default async function MyListingsPage({
                   View
                 </Link>
                 {listing.status === 'active' && (
-                  <form action={async () => {
-                    'use server'
-                    await cancelListing(listing.id)
-                  }}>
-                    <button
-                      type="submit"
-                      className="px-3 py-1.5 rounded border border-red-700/40 text-red-400 text-xs font-medium hover:bg-red-900/20 transition-colors"
-                    >
-                      Remove
-                    </button>
-                  </form>
+                  <RemoveListingButton listingId={listing.id} />
                 )}
               </div>
             </div>
