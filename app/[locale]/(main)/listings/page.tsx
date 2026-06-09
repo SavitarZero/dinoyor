@@ -126,12 +126,11 @@ export default async function MyListingsPage({
 
       {/* Stats */}
       <div className="rounded-2xl border border-border bg-surface">
-        <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-border">
+        <div className="grid grid-cols-3 divide-x divide-border">
           {[
-            { label: 'Active',         value: totalActive ?? 0,    color: 'text-green-400' },
-            { label: 'Sold',           value: totalSold ?? 0,      color: 'text-accent' },
-            { label: 'Units sold',     value: totalSoldItems,       color: 'text-white' },
-            { label: 'Total',          value: (totalActive ?? 0) + (totalSold ?? 0) + (totalCancelled ?? 0), color: 'text-white' },
+            { label: 'On Sale',    value: totalActive ?? 0,    color: 'text-green-400' },
+            { label: 'Sold',       value: totalSoldItems,       color: 'text-accent' },
+            { label: 'Cancelled',  value: totalCancelled ?? 0,  color: 'text-gray-400' },
           ].map(({ label, value, color }) => (
             <div key={label} className="px-4 py-3 text-center">
               <p className={`font-bold text-sm ${color}`}>{value}</p>
