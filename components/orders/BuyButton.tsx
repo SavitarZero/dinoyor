@@ -100,7 +100,7 @@ export function BuyButton({ listingId, price, isLoggedIn, buyerBalance }: Readon
       {hasBalance ? (
         <button
           onClick={() => { setStep('confirm'); setError('') }}
-          className="w-full py-3 rounded-xl bg-accent text-black font-bold hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+          className="w-full py-3 rounded-xl bg-white text-black font-bold hover:bg-gray-200 transition-colors flex items-center justify-center gap-2"
         >
           Buy Now · {price} coin
         </button>

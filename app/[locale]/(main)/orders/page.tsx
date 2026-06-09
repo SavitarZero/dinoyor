@@ -52,6 +52,7 @@ export default async function OrdersPage({ searchParams }: Props) {
   if (tab === 'active')    q = q.in('status', ACTIVE_STATUSES)
   if (tab === 'completed') q = q.eq('status', 'completed')
   if (tab === 'disputed')  q = q.eq('status', 'disputed')
+  if (tab === 'cancelled') q = q.eq('status', 'cancelled')
 
   const { data: orders, count } = await q
   const total = count ?? 0

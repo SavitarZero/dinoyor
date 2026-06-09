@@ -12,6 +12,7 @@ const STATUS_TABS = [
   { id: 'active', label: 'Active' },
   { id: 'completed', label: 'Completed' },
   { id: 'disputed', label: 'Disputed' },
+  { id: 'cancelled', label: 'Cancelled' },
 ]
 
 export function OrderTabs({ activeRole, activeStatus }: { activeRole: string; activeStatus: string }) {

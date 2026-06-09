@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
 import { notFound, redirect } from 'next/navigation'
 import { AutoReleaseTimer } from '@/components/orders/AutoReleaseTimer'
+import { OrderStatusWatcher } from '@/components/orders/OrderStatusWatcher'
 import { ProofUpload } from '@/components/orders/ProofUpload'
 import { ChatWindow } from '@/components/orders/ChatWindow'
 import { buyerConfirmReceived, openDispute, cancelOrder } from '@/lib/actions/orders'
@@ -64,6 +65,7 @@ export default async function OrderDetailPage({
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-6">
+      <OrderStatusWatcher orderId={id} />
 
       {/* Breadcrumb */}
       <div className="flex items-center justify-between mb-5">
@@ -135,8 +137,16 @@ export default async function OrderDetailPage({
             </div>
           )}
           {isCancelled && (
-            <div className="rounded border border-border bg-surface px-4 py-3">
-              <p className="text-gray-500 text-sm">This order has been cancelled.</p>
+            <div className="rounded border border-border bg-surface px-4 py-3 flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-gray-500/10 border border-gray-500/20 flex items-center justify-center shrink-0">
+                <svg className="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-gray-400 text-sm font-semibold">Order Cancelled</p>
+                <p className="text-gray-500 text-xs">This order has been cancelled and the funds have been refunded to the buyer.</p>
+              </div>
             </div>
           )}
 
@@ -211,7 +221,7 @@ export default async function OrderDetailPage({
 
           {/* Paid from balance — buyer notice */}
           {order.status === 'paid_escrow' && isBuyer && (
-            <div className="rounded border border-border bg-surface px-4 py-3 flex items-center justify-between gap-3">
+            <div className="rounded border border-border bg-surface px-4 py-3 space-y-2">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center shrink-0">
                   <svg className="w-4 h-4 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -223,14 +233,26 @@ export default async function OrderDetailPage({
                   <p className="text-gray-500 text-xs">{order.amount} coin held securely. Seller will deliver soon.</p>
                 </div>
               </div>
-              <form action={async () => {
-                'use server'
-                await cancelOrder(id)
-              }}>
-                <button className="px-3 py-1.5 rounded-lg border border-red-700/40 text-red-400 text-xs font-bold hover:bg-red-900/20 transition-colors">
-                  Cancel Order
-                </button>
-              </form>
+              {order.delivery_deadline_at && (
+                <div className="flex items-center justify-between pt-2 border-t border-border">
+                  <p className="text-gray-500 text-xs">
+                    {new Date(order.delivery_deadline_at) > new Date()
+                      ? <>Cancel available after <span className="text-white">{new Date(order.delivery_deadline_at).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</span></>
+                      : 'Delivery deadline has passed.'
+                    }
+                  </p>
+                  {new Date(order.delivery_deadline_at) <= new Date() && (
+                    <form action={async () => {
+                      'use server'
+                      await cancelOrder(id)
+                    }}>
+                      <button className="px-3 py-1.5 rounded-lg border border-red-700/40 text-red-400 text-xs font-bold hover:bg-red-900/20 transition-colors">
+                        Cancel & Refund
+                      </button>
+                    </form>
+                  )}
+                </div>
+              )}
             </div>
           )}
 

@@ -5,14 +5,14 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
 function deliveryMs(deliveryTime: string | null | undefined): number {
-  if (!deliveryTime) return 3 * 24 * 60 * 60 * 1000
+  if (!deliveryTime) return 24 * 60 * 60 * 1000
   const s = deliveryTime.toLowerCase()
   if (s === 'instant') return 2 * 60 * 60 * 1000
   if (s.includes('< 1') || (s.includes('1') && s.includes('hour') && !s.includes('3'))) return 60 * 60 * 1000
   if (s.includes('3') && s.includes('hour')) return 3 * 60 * 60 * 1000
   if (s.includes('same day')) return 24 * 60 * 60 * 1000
   if (s.includes('day')) return 2 * 24 * 60 * 60 * 1000
-  return 3 * 24 * 60 * 60 * 1000
+  return 24 * 60 * 60 * 1000
 }
 
 export async function createOrder(listingId: string) {
@@ -112,19 +112,19 @@ export async function confirmDelivery(orderId: string, screenshotFiles: File[]) 
   if (order.status !== 'paid_escrow') return { error: 'Order not in correct state' }
 
   const urls: string[] = []
+  const admin = createAdminClient()
   for (const file of screenshotFiles) {
     if (file.size === 0) continue
     const path = `${orderId}/${Date.now()}-${file.name}`
-    const { error } = await supabase.storage.from('order-proofs').upload(path, file)
+    const { error } = await admin.storage.from('order-proofs').upload(path, file)
     if (error) return { error: error.message }
-    const { data: { publicUrl } } = supabase.storage.from('order-proofs').getPublicUrl(path)
+    const { data: { publicUrl } } = admin.storage.from('order-proofs').getPublicUrl(path)
     urls.push(publicUrl)
   }
   if (urls.length === 0) return { error: 'At least one screenshot required' }
 
-  await supabase.from('order_proofs').insert({ order_id: orderId, screenshot_urls: urls })
+  await admin.from('order_proofs').insert({ order_id: orderId, screenshot_urls: urls })
 
-  // auto_release_at: buyer has delivery_time to confirm before order auto-completes
   const { data: listing } = await supabase
     .from('listings')
     .select('delivery_time')
@@ -132,7 +132,7 @@ export async function confirmDelivery(orderId: string, screenshotFiles: File[]) 
     .single()
   const autoReleaseAt = new Date(Date.now() + deliveryMs(listing?.delivery_time)).toISOString()
 
-  await supabase.from('orders').update({
+  await admin.from('orders').update({
     status: 'delivered',
     auto_release_at: autoReleaseAt,
   }).eq('id', orderId)
@@ -142,19 +142,20 @@ export async function confirmDelivery(orderId: string, screenshotFiles: File[]) 
 }
 
 export async function creditSeller(
-  supabase: Awaited<ReturnType<typeof createClient>>,
+  _supabase: Awaited<ReturnType<typeof createClient>>,
   orderId: string,
   sellerId: string,
   amount: number,
   holdDays: number,
 ) {
+  const admin = createAdminClient()
   const availableAt = new Date(Date.now() + holdDays * 24 * 60 * 60 * 1000).toISOString()
-  await supabase.rpc('increment_seller_balance', {
+  await admin.rpc('increment_seller_balance', {
     p_seller_id: sellerId,
     p_currency: 'USDT',
     p_amount: amount,
   })
-  await supabase.from('balance_transactions').insert({
+  await admin.from('balance_transactions').insert({
     seller_id: sellerId,
     order_id: orderId,
     type: 'credit',
@@ -189,8 +190,9 @@ export async function buyerConfirmReceived(orderId: string) {
   const fee = (order.amount * order.platform_fee_pct) / 100
   const sellerAmount = Math.max(0, order.amount - fee - flatFee)
 
-  await supabase.from('orders').update({ status: 'completed' }).eq('id', orderId)
-  await creditSeller(supabase, orderId, order.seller_id, sellerAmount, holdDays)
+  const admin = createAdminClient()
+  await admin.from('orders').update({ status: 'completed' }).eq('id', orderId)
+  await creditSeller(admin, orderId, order.seller_id, sellerAmount, holdDays)
 
   revalidatePath(`/orders/${orderId}`)
   return { success: true }
@@ -259,7 +261,7 @@ export async function cancelOrder(orderId: string) {
 
   const { data: order } = await supabase
     .from('orders')
-    .select('id, buyer_id, seller_id, amount, status, listing_id')
+    .select('id, buyer_id, seller_id, amount, status, listing_id, delivery_deadline_at')
     .eq('id', orderId)
     .single()
 
@@ -267,14 +269,26 @@ export async function cancelOrder(orderId: string) {
   if (order.buyer_id !== user.id && order.seller_id !== user.id) return { error: 'Unauthorized' }
   if (order.status !== 'paid_escrow') return { error: 'Can only cancel orders that are pending delivery' }
 
-  await supabase.rpc('increment_user_balance', {
+  const isBuyer = order.buyer_id === user.id
+
+  if (isBuyer) {
+    const deadline = order.delivery_deadline_at
+      ? new Date(order.delivery_deadline_at)
+      : null
+    if (!deadline || new Date() < deadline) {
+      return { error: 'You can cancel after the delivery deadline has passed.' }
+    }
+  }
+
+  const admin = createAdminClient()
+  await admin.rpc('increment_user_balance', {
     p_user_id: order.buyer_id,
     p_currency: 'USDT',
     p_amount: order.amount,
   })
 
-  await supabase.from('orders').update({ status: 'cancelled' }).eq('id', orderId)
-  await supabase.from('listings').update({ status: 'active' }).eq('id', order.listing_id)
+  await admin.from('orders').update({ status: 'cancelled' }).eq('id', orderId)
+  await admin.from('listings').update({ status: 'active' }).eq('id', order.listing_id)
 
   revalidatePath(`/orders/${orderId}`)
   revalidatePath('/orders')
