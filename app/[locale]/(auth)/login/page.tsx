@@ -38,7 +38,7 @@ export default function LoginPage() {
           required
           className="w-full px-4 py-2 rounded-lg bg-background border border-border text-white focus:outline-none focus:border-focus-border"
         />
-        <button type="submit" className="w-full py-2 rounded-lg bg-accent text-black font-semibold hover:opacity-90">
+        <button type="submit" className="w-full py-2 rounded-lg bg-success text-black font-semibold hover:bg-success-hover transition-colors">
           {t('signIn')}
         </button>
         <div className="flex items-center justify-end gap-2">

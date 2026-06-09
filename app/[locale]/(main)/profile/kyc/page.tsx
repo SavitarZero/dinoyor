@@ -27,7 +27,7 @@ export default async function KYCPage() {
     kycData = data
   }
 
-  const hasEmail = !!(user.email && !user.email.endsWith('@dinoyor.internal'))
+  const hasEmail = !!(user.email && !user.email.endsWith('@dcore.internal'))
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
@@ -41,6 +41,7 @@ export default async function KYCPage() {
         submittedAt={kycData?.created_at ?? null}
         reviewedAt={kycData?.reviewed_at ?? null}
         hasEmail={hasEmail}
+        email={hasEmail ? user.email : null}
       />
     </div>
   )

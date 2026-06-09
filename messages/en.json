@@ -13,7 +13,7 @@
     "hero": {
       "title": "Trade Game Items.",
       "titleAccent": "Secured by Escrow.",
-      "subtitle": "Buy and sell in-game items with crypto — every transaction protected by Dinoyor's centralized escrow wallet for SEA gamers.",
+      "subtitle": "Buy and sell in-game items with crypto — every transaction protected by DCORE's centralized escrow wallet for SEA gamers.",
       "browse": "Browse Market",
       "sell": "Start Selling"
     },
@@ -27,8 +27,8 @@
     "seeAll": "See all →"
   },
   "auth": {
-    "signInTitle": "Sign in to Dinoyor",
-    "createAccount": "Sign up for Dinoyor",
+    "signInTitle": "Sign in to DCORE",
+    "createAccount": "Sign up for DCORE",
     "username": "Username",
     "usernamePlaceholder": "Username (3–20 chars, letters & numbers)",
     "email": "Email",

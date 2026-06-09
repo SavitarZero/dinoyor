@@ -1,1 +1,1 @@
-# dinoyor
+# dcore

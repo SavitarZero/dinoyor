@@ -1,4 +1,4 @@
-# Dinoyor — Gaming Item Marketplace Design Spec
+# DCORE — Gaming Item Marketplace Design Spec
 
 **Date:** 2026-06-05
 **Status:** Approved
@@ -7,7 +7,7 @@
 
 ## 1. Product Overview
 
-**Dinoyor** is a peer-to-peer marketplace for gamers in Southeast Asia to buy and sell tradeable in-game items (skins, weapons, cosmetics) using cryptocurrency payments, protected by a centralized escrow wallet.
+**DCORE** is a peer-to-peer marketplace for gamers in Southeast Asia to buy and sell tradeable in-game items (skins, weapons, cosmetics) using cryptocurrency payments, protected by a centralized escrow wallet.
 
 - **Primary language:** EN + TH (bilingual)
 - **Target region:** Southeast Asia

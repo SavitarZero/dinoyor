@@ -36,7 +36,7 @@ export function ProofUpload({ orderId }: { orderId: string }) {
       <button
         type="submit"
         disabled={loading}
-        className="px-4 py-2 rounded-lg bg-accent text-black font-semibold disabled:opacity-50"
+        className="px-4 py-2 rounded-lg bg-success text-black font-semibold disabled:opacity-50"
       >
         {loading ? 'Uploading...' : 'Confirm Delivery'}
       </button>

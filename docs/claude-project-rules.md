@@ -1,6 +1,6 @@
-# Dinoyor — Claude Project Rules
+# DCORE — Claude Project Rules
 
-You are working on **Dinoyor**, a P2P in-game item marketplace built with Next.js App Router, Tailwind CSS, and Supabase. Follow these rules strictly when writing any UI code.
+You are working on **DCORE**, a P2P in-game item marketplace built with Next.js App Router, Tailwind CSS, and Supabase. Follow these rules strictly when writing any UI code.
 
 ---
 

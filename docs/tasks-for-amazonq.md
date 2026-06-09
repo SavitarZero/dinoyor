@@ -1,6 +1,6 @@
-# Dinoyor — Implementation Tasks
+# DCORE — Implementation Tasks
 
-**Project:** Dinoyor (P2P Game Item Marketplace)  
+**Project:** DCORE (P2P Game Item Marketplace)  
 **Stack:** Next.js App Router · Supabase · Tailwind CSS · TypeScript  
 **Working directory:** repo root (where `package.json` lives)
 
@@ -8,7 +8,7 @@
 
 ## Context
 
-Dinoyor is a game-item escrow marketplace. Sellers list items, buyers pay USDT to an escrow wallet, admin confirms payment, seller delivers, buyer confirms → seller balance credited.
+DCORE is a game-item escrow marketplace. Sellers list items, buyers pay USDT to an escrow wallet, admin confirms payment, seller delivers, buyer confirms → seller balance credited.
 
 ### Current state (already built)
 - Listings list + single listing page

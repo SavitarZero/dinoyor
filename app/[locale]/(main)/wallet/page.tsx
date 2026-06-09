@@ -62,7 +62,7 @@ export default async function WalletPage() {
                 let statusLabel = 'Pending review'
                 if (d.status === 'approved') {
                   statusClass = 'bg-green-400/10 text-green-400'
-                  statusLabel = `Approved · ${Number(d.approved_amount).toFixed(2)} coin`
+                  statusLabel = `Approved`
                 } else if (d.status === 'rejected') {
                   statusClass = 'bg-red-400/10 text-red-400'
                   statusLabel = 'Rejected'

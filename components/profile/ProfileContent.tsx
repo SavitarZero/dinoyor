@@ -352,6 +352,7 @@ function KYCSection({ data }: Readonly<{ data: ProfileData }>) {
       submittedAt={data.kycSubmittedAt}
       reviewedAt={data.kycReviewedAt}
       hasEmail={data.hasRealEmail}
+      email={data.currentEmail}
     />
   )
 }

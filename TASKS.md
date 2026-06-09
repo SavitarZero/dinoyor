@@ -1,4 +1,4 @@
-# Dinoyor — Task Handoff Document
+# DCORE — Task Handoff Document
 
 > Read AGENTS.md first for project rules and UI conventions.
 
@@ -72,7 +72,7 @@ Admin pays out on 1st of month
 
 ## Auth System
 
-- Username/password users: Supabase stores email as `{username}@dinoyor.internal` internally
+- Username/password users: Supabase stores email as `{username}@dcore.internal` internally
 - Google OAuth users also supported
 - KYC required only for SELLERS (not buyers)
 - Password reset via email verification (user must add a real email in `/profile/email` first)

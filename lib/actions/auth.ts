@@ -12,7 +12,7 @@ export async function signInWithUsername(username: string, password: string) {
     .eq('username', username)
     .maybeSingle()
 
-  const authEmail = profile?.email ?? `${username}@dinoyor.internal`
+  const authEmail = profile?.email ?? `${username}@dcore.internal`
 
   const { error } = await supabase.auth.signInWithPassword({ email: authEmail, password })
   if (error) return { error: 'Username or password is incorrect' }
@@ -51,7 +51,7 @@ export async function signUpWithUsername(username: string, password: string, ema
     }
   } else {
     const { error } = await admin.auth.admin.createUser({
-      email: `${username}@dinoyor.internal`,
+      email: `${username}@dcore.internal`,
       password,
       email_confirm: true,
       user_metadata: { user_name: username },
@@ -90,10 +90,10 @@ export async function updateEmail(email: string) {
   }
 
   const trimmed = email.trim().toLowerCase()
-  const isInternalEmail = user.email?.endsWith('@dinoyor.internal')
+  const isInternalEmail = user.email?.endsWith('@dcore.internal')
 
   if (isInternalEmail) {
-    // Old email is fake — Secure Email Change would fail trying to send to @dinoyor.internal.
+    // Old email is fake — Secure Email Change would fail trying to send to @dcore.internal.
     // Use admin to update directly; user is already authenticated so this is safe.
     const admin = createAdminClient()
     const { error } = await admin.auth.admin.updateUserById(user.id, {

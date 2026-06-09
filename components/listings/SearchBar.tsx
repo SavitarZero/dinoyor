@@ -41,7 +41,7 @@ function SearchBarInner() {
         </select>
         <button
           type="submit"
-          className="px-5 py-2.5 rounded-xl bg-accent text-black text-sm font-bold hover:opacity-90 transition-opacity"
+          className="px-5 py-2.5 rounded-xl bg-success text-black text-sm font-bold hover:bg-success-hover transition-colors"
         >
           Search
         </button>

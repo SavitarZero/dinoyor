@@ -1,4 +1,4 @@
-# Dinoyor Marketplace Implementation Plan
+# DCORE Marketplace Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
@@ -614,7 +614,7 @@ export default function LoginPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-white mb-6">Sign in to Dinoyor</h1>
+      <h1 className="text-2xl font-bold text-white mb-6">Sign in to DCORE</h1>
       {error && <p className="text-red-400 text-sm mb-4">{error}</p>}
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
@@ -1867,7 +1867,7 @@ export async function Navbar() {
   return (
     <header className="border-b border-border bg-surface sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
-        <Link href="/" className="text-accent font-bold text-xl tracking-tight">DINOYOR</Link>
+        <Link href="/" className="text-accent font-bold text-xl tracking-tight">DCORE</Link>
         <nav className="flex items-center gap-6">
           <Link href="/listings" className="text-gray-400 hover:text-white text-sm">Marketplace</Link>
           {user ? (
@@ -2021,7 +2021,7 @@ export default async function HomePage() {
           <span className="text-accent">Secured by Escrow.</span>
         </h1>
         <p className="text-gray-400 max-w-lg mx-auto mb-8">
-          Buy and sell in-game items with crypto — protected by Dinoyor's centralized escrow wallet.
+          Buy and sell in-game items with crypto — protected by DCORE's centralized escrow wallet.
         </p>
         <Link href="/listings" className="px-6 py-3 rounded-lg bg-accent text-black font-semibold">
           Browse Marketplace

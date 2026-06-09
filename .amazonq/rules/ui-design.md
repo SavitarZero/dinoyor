@@ -1,4 +1,4 @@
-# Dinoyor UI Design Rules
+# DCORE UI Design Rules
 
 ## Layout
 - Account/settings pages use sidebar + main content layout (flex col on mobile, flex row on lg)

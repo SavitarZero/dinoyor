@@ -64,7 +64,7 @@ export function CommentsSection({ listingId, initialComments, isAuthenticated, h
             <button
               type="submit"
               disabled={pending || !body.trim()}
-              className="px-4 py-2 rounded-xl bg-accent text-black text-sm font-bold disabled:opacity-40 hover:opacity-90 transition-opacity"
+              className="px-4 py-2 rounded-xl bg-success text-black text-sm font-bold disabled:opacity-40 hover:bg-success-hover transition-colors"
             >
               Post Review
             </button>

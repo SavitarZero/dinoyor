@@ -126,7 +126,7 @@ export function ChatWindow({ conversationId, initialMessages, currentUserId }: P
         <button
           type="submit"
           disabled={!body.trim() || sending}
-          className="px-4 py-2 rounded-xl bg-accent text-black text-sm font-semibold disabled:opacity-40 hover:opacity-90 transition-opacity shrink-0"
+          className="px-4 py-2 rounded-xl bg-success text-black text-sm font-semibold disabled:opacity-40 hover:bg-success-hover transition-colors shrink-0"
         >
           Send
         </button>

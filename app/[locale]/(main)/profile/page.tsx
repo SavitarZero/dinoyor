@@ -42,7 +42,7 @@ export default async function ProfilePage() {
   const kycData = kycSubmission.data
 
   const completedSales = sellerOrders.filter(o => o.status === 'completed')
-  const hasRealEmail = !!(user.email && !user.email.endsWith('@dinoyor.internal'))
+  const hasRealEmail = !!(user.email && !user.email.endsWith('@dcore.internal'))
   const isOAuthOnly = !user.identities?.some(i => i.provider === 'email')
 
   const data = {

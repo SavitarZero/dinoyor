@@ -13,8 +13,7 @@ export async function submitKYC(formData: FormData) {
 
   const email = (formData.get('email') as string | null)?.trim() || null
   if (email) {
-    const { error: emailError } = await supabase.auth.updateUser({ email })
-    if (emailError) return { error: emailError.message }
+    await supabase.from('profiles').update({ email }).eq('id', user.id)
   }
 
   const ext = photoFile.name.split('.').pop()

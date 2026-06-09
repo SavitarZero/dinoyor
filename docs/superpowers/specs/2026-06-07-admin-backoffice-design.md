@@ -1,7 +1,7 @@
 # Admin Backoffice — Handoff Spec
 
 **Date:** 2026-06-07  
-**Project:** Dinoyor (Game Item Marketplace)  
+**Project:** DCORE (Game Item Marketplace)  
 **For:** External developer building standalone admin backoffice  
 **Status:** Approved
 
@@ -9,7 +9,7 @@
 
 ## 1. Context
 
-Dinoyor is a game-item trading marketplace. Buyers and sellers trade game accounts/items via escrow. The **main app** (Next.js, `dinoyor.com`) handles the buyer/seller experience. This document describes a **separate admin backoffice** to be built on a separate domain (e.g., `admin.dinoyor.com`).
+DCORE is a game-item trading marketplace. Buyers and sellers trade game accounts/items via escrow. The **main app** (Next.js, `dcore.com`) handles the buyer/seller experience. This document describes a **separate admin backoffice** to be built on a separate domain (e.g., `admin.dcore.com`).
 
 A basic admin UI already exists inside the main app at `/admin/` — it handles day-to-day operations (KYC review, order payment confirmation, dispute resolution, payouts). The **new backoffice** adds configuration and management capabilities that are missing from the existing admin.
 
@@ -61,7 +61,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_XlQxxORmMZSkN4UotVFyEA_o55CJok2
 # Service role key — NEVER expose to browser, server-side only
 SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh1ZW9zbnZyaXN6d2t3anFqcWN2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MDY2MzA1MSwiZXhwIjoyMDk2MjM5MDUxfQ._xJGfJFKOWk9HliWESmh-ihkvnD72wYTH-9ff73XPoQ
 
-NEXT_PUBLIC_SITE_URL=https://admin.dinoyor.com
+NEXT_PUBLIC_SITE_URL=https://admin.dcore.com
 ```
 
 > **Security note:** `SUPABASE_SERVICE_ROLE_KEY` bypasses Row Level Security (RLS). Only use it in server components / server actions — never import in client components.
@@ -590,7 +590,7 @@ alter table public.profiles
 ## 11. Navigation Sidebar
 
 ```
-[Logo: Dinoyor Admin]
+[Logo: DCORE Admin]
 ─────────────────────
  Dashboard
  Games
@@ -605,7 +605,7 @@ alter table public.profiles
 
 ## 12. Existing Admin Capabilities (in Main App)
 
-These are **already handled** in the main app (`dinoyor.com/admin/`). The backoffice does **not** need to duplicate them:
+These are **already handled** in the main app (`dcore.com/admin/`). The backoffice does **not** need to duplicate them:
 
 | Feature | Main app route | Description |
 |---------|---------------|-------------|
@@ -621,7 +621,7 @@ These are **already handled** in the main app (`dinoyor.com/admin/`). The backof
 Supabase handles CORS automatically for the anon key. No additional CORS configuration is needed.
 
 For the backoffice domain to use Supabase Auth cookies properly, add the backoffice URL to:
-- Supabase Dashboard → Authentication → URL Configuration → **Redirect URLs**: add `https://admin.dinoyor.com/**`
+- Supabase Dashboard → Authentication → URL Configuration → **Redirect URLs**: add `https://admin.dcore.com/**`
 - Supabase Dashboard → Authentication → URL Configuration → **Site URL**: can stay as main app URL
 
 ---
@@ -629,10 +629,10 @@ For the backoffice domain to use Supabase Auth cookies properly, add the backoff
 ## 14. Deployment
 
 Deploy on Vercel (recommended):
-1. `npx create-next-app@latest dinoyor-admin`
+1. `npx create-next-app@latest dcore-admin`
 2. Add env vars in Vercel project settings (same values as section 4)
-3. Set custom domain `admin.dinoyor.com` in Vercel
-4. Add `https://admin.dinoyor.com/**` to Supabase Auth redirect URLs
+3. Set custom domain `admin.dcore.com` in Vercel
+4. Add `https://admin.dcore.com/**` to Supabase Auth redirect URLs
 
 ---
 

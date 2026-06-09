@@ -3,11 +3,12 @@ import { useState, useRef } from 'react'
 import { submitKYC } from '@/lib/actions/kyc'
 import type { KYCStatus } from '@/lib/types/index'
 
-export function KYCForm({ currentStatus, submittedAt, reviewedAt, hasEmail = true }: {
+export function KYCForm({ currentStatus, submittedAt, reviewedAt, hasEmail = true, email }: {
   currentStatus: KYCStatus
   submittedAt?: string | null
   reviewedAt?: string | null
   hasEmail?: boolean
+  email?: string | null
 }) {
   const [message, setMessage] = useState('')
   const [error, setError]     = useState('')
@@ -111,7 +112,12 @@ export function KYCForm({ currentStatus, submittedAt, reviewedAt, hasEmail = tru
         <div className="px-4 py-4">
           <form onSubmit={handleSubmit} className="space-y-5">
 
-            {!hasEmail && (
+            {hasEmail && email ? (
+              <div>
+                <label className="block text-gray-500 text-xs font-medium uppercase tracking-wide mb-1.5">Email address</label>
+                <p className="text-white text-sm">{email}</p>
+              </div>
+            ) : !hasEmail && (
               <div>
                 <label className="block text-gray-500 text-xs font-medium uppercase tracking-wide mb-1.5">Email address</label>
                 <input
