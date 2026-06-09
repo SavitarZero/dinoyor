@@ -5,16 +5,20 @@ import { redirect } from 'next/navigation'
 
 export async function signInWithUsername(username: string, password: string) {
   const supabase = await createClient()
+  const admin = createAdminClient()
 
-  const { data: profile } = await supabase
+  const { data: profile } = await admin
     .from('profiles')
-    .select('email')
+    .select('id')
     .eq('username', username)
     .maybeSingle()
 
-  const authEmail = profile?.email ?? `${username}@dcore.internal`
+  if (!profile) return { error: 'Username or password is incorrect' }
 
-  const { error } = await supabase.auth.signInWithPassword({ email: authEmail, password })
+  const { data: { user: authUser } } = await admin.auth.admin.getUserById(profile.id)
+  if (!authUser?.email) return { error: 'Username or password is incorrect' }
+
+  const { error } = await supabase.auth.signInWithPassword({ email: authUser.email, password })
   if (error) return { error: 'Username or password is incorrect' }
   redirect('/')
 }
