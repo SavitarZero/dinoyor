@@ -192,7 +192,16 @@ export async function buyerConfirmReceived(orderId: string) {
 
   const admin = createAdminClient()
   await admin.from('orders').update({ status: 'completed' }).eq('id', orderId)
-  await creditSeller(admin, orderId, order.seller_id, sellerAmount, holdDays)
+  await Promise.all([
+    creditSeller(admin, orderId, order.seller_id, sellerAmount, holdDays),
+    admin.from('platform_revenue').insert({
+      order_id: orderId,
+      fee_pct:  order.platform_fee_pct,
+      flat_fee: flatFee,
+      amount:   fee + flatFee,
+      currency: 'USDT',
+    }),
+  ])
 
   revalidatePath(`/orders/${orderId}`)
   return { success: true }

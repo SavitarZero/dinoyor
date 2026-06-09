@@ -1,8 +1,0 @@
-{
-  "crons": [
-    {
-      "path": "/api/cron/release-funds",
-      "schedule": "*/5 * * * *"
-    }
-  ]
-}
