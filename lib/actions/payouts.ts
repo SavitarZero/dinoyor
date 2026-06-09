@@ -60,6 +60,7 @@ export async function requestPayout(currency: string) {
   })
 
   revalidatePath('/wallet')
+  revalidatePath('/earnings')
   return { success: true }
 }
 

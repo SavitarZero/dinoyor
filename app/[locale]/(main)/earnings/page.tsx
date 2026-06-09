@@ -2,7 +2,8 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { WalletAddressForm } from '@/components/wallet/WalletAddressForm'
-import { requestPayout } from '@/lib/actions/payouts'
+import { DepositForm } from '@/components/wallet/DepositForm'
+import { PayoutButton } from '@/components/wallet/PayoutButton'
 import type { SellerBalance, BalanceTransaction, Payout, Currency } from '@/lib/types'
 
 function PayoutAction({
@@ -22,23 +23,16 @@ function PayoutAction({
     <p className="text-yellow-400 text-xs">Set your payout wallet below before requesting a withdrawal.</p>
   )
   if (hasPendingRequest) return (
-    <div className="flex items-center gap-2">
-      <span className="w-2 h-2 rounded-full bg-yellow-400 shrink-0" />
-      <p className="text-yellow-400 text-sm">Payout request submitted — awaiting admin approval.</p>
+    <div className="space-y-1">
+      <div className="flex items-center gap-2">
+        <span className="w-2 h-2 rounded-full bg-yellow-400 shrink-0" />
+        <p className="text-yellow-400 text-sm">Payout request submitted — awaiting admin approval.</p>
+      </div>
+      <p className="text-gray-500 text-xs">Your next request will be available after this one is processed.</p>
     </div>
   )
   if (availableAmount > 0) return (
-    <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-      <form action={async () => {
-        'use server'
-        await requestPayout(currency)
-      }}>
-        <button className="px-5 py-2.5 rounded bg-accent text-black text-sm font-bold hover:opacity-90 transition-opacity">
-          Request Payout
-        </button>
-      </form>
-      <p className="text-gray-500 text-xs">Minimum withdrawal: {minWithdraw} USDT</p>
-    </div>
+    <PayoutButton currency={currency} amount={availableAmount} minWithdraw={minWithdraw} />
   )
   return <p className="text-gray-500 text-sm">No available balance to withdraw yet.</p>
 }
