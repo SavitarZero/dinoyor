@@ -177,6 +177,34 @@ export function HomeSections({ games, byCategory, listings, hotIds, categories }
           </div>
         )}
 
+        {/* ── Category game banners (when category filter active) ── */}
+        {activeCatId && !activeGame && visibleGames.length > 0 && (
+          <div className="pt-5 pb-5">
+            {visibleGames.filter(g => g.banner_url).length > 0 && (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {visibleGames.filter(g => g.banner_url).map(g => (
+                  <button key={g.id} onClick={() => setActiveGame(g.slug)}
+                    className="group relative rounded overflow-hidden text-left"
+                    style={{ height: 'clamp(80px, 12vw, 140px)' }}
+                  >
+                    <div className="absolute inset-0 group-hover:scale-105 transition-transform duration-300">
+                      <GameBanner src={g.banner_url} slug={g.slug} name={g.name} className="w-full h-full" />
+                    </div>
+                    <div className="absolute inset-0 bg-linear-to-t from-black/85 via-black/20 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-3 flex items-center gap-2">
+                      <GameLogo src={g.logo_url} slug={g.slug} name={g.name} className="w-6 h-6 rounded-md shrink-0" />
+                      <div className="min-w-0">
+                        <p className="text-white font-bold text-xs truncate">{g.name}</p>
+                        <p className="text-gray-400 text-[10px]">{g.listing_count} items</p>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* ── Selected game banner ── */}
         {selectedGame && (
           <div className="pt-5 pb-5">
@@ -228,7 +256,7 @@ export function HomeSections({ games, byCategory, listings, hotIds, categories }
                     <p className="text-gray-600 text-[10px]">{game.category}</p>
                   </div>
                   <Link href={`/market?game=${game.slug}`}
-                    className="flex items-center gap-0.5 text-accent text-xs font-medium hover:underline shrink-0">
+                    className="flex items-center gap-0.5 text-gray-400 text-xs font-medium hover:text-white shrink-0">
                     See all <ChevronRight size={12} />
                   </Link>
                 </div>
@@ -248,7 +276,7 @@ export function HomeSections({ games, byCategory, listings, hotIds, categories }
             <div className="flex-1 h-px bg-border" />
             <Link
               href="/market"
-              className="flex items-center gap-0.5 text-accent text-xs font-medium hover:underline shrink-0"
+              className="flex items-center gap-0.5 text-gray-400 text-xs font-medium hover:text-white shrink-0"
             >
               See all in Market <ChevronRight size={12} />
             </Link>
