@@ -85,7 +85,7 @@ export default async function OrderDetailPage({
 
           {/* Progress stepper */}
           {!isDisputed && !isCancelled && (
-            <div className="rounded-xl border border-border bg-surface px-4 py-4">
+            <div className="rounded border border-border bg-surface px-4 py-4">
               <div className="flex items-center">
                 {STEPS.map((step, i) => {
                   const done    = i < stepIndex
@@ -120,7 +120,7 @@ export default async function OrderDetailPage({
 
           {/* Disputed / Cancelled */}
           {isDisputed && (
-            <div className="rounded-xl border border-border bg-surface px-4 py-3 flex items-center gap-3">
+            <div className="rounded border border-border bg-surface px-4 py-3 flex items-center gap-3">
               <div className="w-8 h-8 rounded-lg bg-red-500/10 border border-red-500/20 flex items-center justify-center shrink-0">
                 <svg className="w-4 h-4 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
@@ -133,13 +133,13 @@ export default async function OrderDetailPage({
             </div>
           )}
           {isCancelled && (
-            <div className="rounded-xl border border-border bg-surface px-4 py-3">
+            <div className="rounded border border-border bg-surface px-4 py-3">
               <p className="text-gray-500 text-sm">This order has been cancelled.</p>
             </div>
           )}
 
           {/* Item card */}
-          <div className="rounded-xl border border-border bg-surface overflow-hidden">
+          <div className="rounded border border-border bg-surface overflow-hidden">
             <div className="px-4 py-3 border-b border-border flex items-center justify-between">
               <p className="text-gray-500 text-xs font-medium uppercase tracking-wide">Item</p>
               <p className="text-gray-600 text-xs">
@@ -184,7 +184,7 @@ export default async function OrderDetailPage({
 
           {/* Paid from balance — seller notice */}
           {order.status === 'paid_escrow' && isSeller && (
-            <div className="rounded-xl border border-border bg-surface px-4 py-3 flex items-center gap-3">
+            <div className="rounded border border-border bg-surface px-4 py-3 flex items-center gap-3">
               <div className="w-8 h-8 rounded-lg bg-accent/10 border border-accent/20 flex items-center justify-center shrink-0">
                 <svg className="w-4 h-4 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
@@ -199,7 +199,7 @@ export default async function OrderDetailPage({
 
           {/* Paid from balance — buyer notice */}
           {order.status === 'paid_escrow' && isBuyer && (
-            <div className="rounded-xl border border-border bg-surface px-4 py-3 flex items-center gap-3">
+            <div className="rounded border border-border bg-surface px-4 py-3 flex items-center gap-3">
               <div className="w-8 h-8 rounded-lg bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center shrink-0">
                 <svg className="w-4 h-4 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -219,7 +219,7 @@ export default async function OrderDetailPage({
 
           {/* Delivery proof upload (seller) */}
           {isSeller && order.status === 'paid_escrow' && (
-            <div className="rounded-xl border border-border bg-surface overflow-hidden">
+            <div className="rounded border border-border bg-surface overflow-hidden">
               <div className="px-4 py-3 border-b border-border">
                 <p className="text-white text-sm font-semibold">Upload Delivery Proof</p>
                 <p className="text-gray-500 text-xs">Screenshot showing you've delivered the item.</p>
@@ -232,7 +232,7 @@ export default async function OrderDetailPage({
 
           {/* View proofs */}
           {proofs && proofs.length > 0 && (
-            <div className="rounded-xl border border-border bg-surface overflow-hidden">
+            <div className="rounded border border-border bg-surface overflow-hidden">
               <div className="px-4 py-3 border-b border-border">
                 <p className="text-gray-500 text-xs font-medium uppercase tracking-wide">Delivery Proof</p>
               </div>
@@ -248,7 +248,7 @@ export default async function OrderDetailPage({
 
           {/* Buyer confirm / dispute */}
           {isBuyer && order.status === 'delivered' && (
-            <div className="rounded-xl border border-border bg-surface overflow-hidden">
+            <div className="rounded border border-border bg-surface overflow-hidden">
               <div className="px-4 py-3 border-b border-border">
                 <p className="text-white text-sm font-semibold">Confirm Receipt</p>
                 <p className="text-gray-500 text-xs">Confirming will release payment to the seller.</p>
@@ -294,7 +294,7 @@ export default async function OrderDetailPage({
 
           {/* Completed */}
           {order.status === 'completed' && (
-            <div className="rounded-xl border border-border bg-surface px-4 py-3 flex items-center gap-3">
+            <div className="rounded border border-border bg-surface px-4 py-3 flex items-center gap-3">
               <div className="w-8 h-8 rounded-lg bg-green-500/10 border border-green-500/20 flex items-center justify-center shrink-0">
                 <svg className="w-4 h-4 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
