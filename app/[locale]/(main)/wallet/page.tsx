@@ -103,7 +103,7 @@ export default async function WalletPage() {
               {buyerBalance.toFixed(2)}
               <span className="text-lg text-accent/60 ml-1.5">coin</span>
             </p>
-            <p className="text-gray-500 text-xs">Deducted automatically when you buy</p>
+            <p className="text-gray-500 text-xs">Used for purchases — topped up via deposit</p>
           </div>
 
           {/* Deposit history */}

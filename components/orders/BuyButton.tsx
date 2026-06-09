@@ -44,7 +44,7 @@ export function BuyButton({ listingId, price, isLoggedIn, buyerBalance }: Readon
           <div>
             <p className="text-white font-semibold text-sm">Confirm Purchase</p>
             <p className="text-gray-400 text-xs mt-0.5">
-              <span className="text-accent font-bold">{price} coin</span> will be deducted from your balance.
+              <span className="text-accent font-bold">{price} coin</span> will be deducted from your Coin Wallet.
             </p>
           </div>
         </div>
@@ -81,7 +81,7 @@ export function BuyButton({ listingId, price, isLoggedIn, buyerBalance }: Readon
           <svg className={`w-3.5 h-3.5 ${hasBalance ? 'text-green-400' : 'text-yellow-400'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a2.25 2.25 0 00-2.25-2.25H15a3 3 0 11-6 0H5.25A2.25 2.25 0 003 12m18 0v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 9m18 0V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v3" />
           </svg>
-          <span className="text-xs text-gray-400">Your balance</span>
+          <span className="text-xs text-gray-400">Coin Wallet</span>
         </div>
         <span className={`text-sm font-bold ${hasBalance ? 'text-green-400' : 'text-yellow-400'}`}>
           {buyerBalance.toFixed(2)} coin
@@ -109,7 +109,7 @@ export function BuyButton({ listingId, price, isLoggedIn, buyerBalance }: Readon
           href="/wallet"
           className="w-full py-3 rounded-xl bg-yellow-500 text-black font-bold text-sm text-center hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
         >
-          Top up wallet to buy
+          Top up Coin Wallet
         </Link>
       )}
     </div>

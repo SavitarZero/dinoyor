@@ -200,7 +200,7 @@ export default async function OrderDetailPage({
               </div>
               <div>
                 <p className="text-white text-sm font-semibold">Payment received</p>
-                <p className="text-gray-500 text-xs">{order.amount} coin deducted from buyer's balance. Please deliver the item.</p>
+                <p className="text-gray-500 text-xs">{order.amount} coin deducted from buyer's Coin Wallet. Please deliver the item.</p>
               </div>
             </div>
           )}
@@ -215,7 +215,7 @@ export default async function OrderDetailPage({
               </div>
               <div>
                 <p className="text-white text-sm font-semibold">Waiting for delivery</p>
-                <p className="text-gray-500 text-xs">{order.amount} coin deducted from your balance. Seller will deliver soon.</p>
+                <p className="text-gray-500 text-xs">{order.amount} coin deducted from your Coin Wallet. Seller will deliver soon.</p>
               </div>
             </div>
           )}

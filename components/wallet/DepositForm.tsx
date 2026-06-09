@@ -71,10 +71,10 @@ export function DepositForm({ escrowAddresses, senderWallet, senderNetwork, minD
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
           </svg>
           <p className="text-green-400 font-semibold text-sm">
-            Verified — {result.amount.toFixed(2)} USDT credited to your balance
+            Verified — {result.amount.toFixed(2)} USDT added to your Coin Wallet
           </p>
         </div>
-        <p className="text-gray-400 text-xs">Your balance has been updated automatically.</p>
+        <p className="text-gray-400 text-xs">Your Coin Wallet has been updated automatically.</p>
         <button onClick={() => setResult(null)} className="text-accent text-xs hover:underline">Submit another deposit</button>
       </div>
     )
