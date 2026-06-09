@@ -22,12 +22,12 @@ interface Props {
 const BASE_ITEMS = [
   { href: '/profile', label: 'Profile',     Icon: LayoutDashboard },
   { href: '/orders',  label: 'Orders',      Icon: Package },
+  { href: '/listings', label: 'My Listings', Icon: Store },
   { href: '/wallet',  label: 'Coin Wallet', Icon: Wallet },
 ]
 
 const SELLER_ITEMS = [
   { href: '/earnings', label: 'Earnings',    Icon: TrendingUp },
-  { href: '/listings', label: 'My Listings', Icon: Store },
 ]
 
 export function ProfileDropdown({ avatarUrl, username, email, role, amoBalance }: Props) {
