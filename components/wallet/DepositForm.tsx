@@ -1,6 +1,33 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { submitDeposit, saveDepositWallet, deleteDepositWallet } from '@/lib/actions/deposits'
+
+function DepositSuccess({ amount, onReset }: { amount: number; onReset: () => void }) {
+  const [countdown, setCountdown] = useState(5)
+
+  useEffect(() => {
+    if (countdown <= 0) { onReset(); return }
+    const timer = setTimeout(() => setCountdown(c => c - 1), 1000)
+    return () => clearTimeout(timer)
+  }, [countdown, onReset])
+
+  return (
+    <div className="rounded border border-green-700/40 bg-green-900/10 p-5 space-y-2">
+      <div className="flex items-center gap-2">
+        <svg className="w-5 h-5 text-green-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+        </svg>
+        <p className="text-green-400 font-semibold text-sm">
+          Verified — {amount.toFixed(2)} USDT added to your Coin Wallet
+        </p>
+      </div>
+      <p className="text-gray-400 text-xs">Your Coin Wallet has been updated automatically.</p>
+      <button onClick={onReset} className="text-gray-500 text-xs underline hover:text-white transition-colors">
+        New deposit ({countdown}s)
+      </button>
+    </div>
+  )
+}
 
 interface Props {
   escrowAddresses: { erc20: string; trc20: string }
@@ -82,20 +109,7 @@ export function DepositForm({ escrowAddresses, senderWallets, minDeposit }: Read
   }
 
   if (result?.ok) {
-    return (
-      <div className="rounded border border-green-700/40 bg-green-900/10 p-5 space-y-2">
-        <div className="flex items-center gap-2">
-          <svg className="w-5 h-5 text-green-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-          </svg>
-          <p className="text-green-400 font-semibold text-sm">
-            Verified — {result.amount.toFixed(2)} USDT added to your Coin Wallet
-          </p>
-        </div>
-        <p className="text-gray-400 text-xs">Your Coin Wallet has been updated automatically.</p>
-        <button onClick={() => setResult(null)} className="text-accent text-xs hover:underline">Submit another deposit</button>
-      </div>
-    )
+    return <DepositSuccess amount={result.amount} onReset={() => setResult(null)} />
   }
 
   return (
