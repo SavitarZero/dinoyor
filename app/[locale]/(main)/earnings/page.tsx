@@ -107,7 +107,7 @@ export default async function EarningsPage() {
                 {totalPending.toFixed(2)}
                 <span className="text-base text-yellow-600 ml-1.5">USDT</span>
               </p>
-              <p className="text-gray-600 text-xs">Released after {holdLabel}</p>
+              <p className="text-gray-600 text-xs">Available in {holdLabel}</p>
             </div>
           </div>
 
