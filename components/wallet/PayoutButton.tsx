@@ -74,12 +74,12 @@ export function PayoutButton({ currency, amount, minWithdraw }: Props) {
                 <span className="text-white text-sm font-medium">{amount.toFixed(2)} USDT</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-gray-400 text-xs">Gas fee (est.)</span>
+                <span className="text-gray-400 text-xs">Gas fee ~</span>
                 <span className="text-red-400 text-sm font-medium">-{GAS_FEE.toFixed(2)} USDT</span>
               </div>
               <div className="border-t border-border pt-2 flex items-center justify-between">
-                <span className="text-gray-400 text-xs font-medium">You'll receive (est.)</span>
-                <span className="text-green-400 text-sm font-bold">{netAmount.toFixed(2)} USDT</span>
+                <span className="text-gray-400 text-xs font-medium">You'll receive ~</span>
+                <span className="text-green-400 text-sm font-bold">≈ {netAmount.toFixed(2)} USDT</span>
               </div>
             </div>
 
