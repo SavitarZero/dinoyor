@@ -12,12 +12,10 @@ export default async function ProfilePage() {
   const [
     { data: profile },
     { count: activeListings },
-    { data: balances },
     { data: buyerOrdersRaw },
   ] = await Promise.all([
     supabase.from('profiles').select('username, avatar_url, kyc_status, role, pending_email, created_at').eq('id', user.id).single(),
     supabase.from('listings').select('*', { count: 'exact', head: true }).eq('seller_id', user.id).eq('status', 'active'),
-    supabase.from('seller_balances').select('pending_amount, currency').eq('seller_id', user.id),
     supabase.from('orders').select('id, status, amount, created_at, listings(title, images)').eq('buyer_id', user.id).order('created_at', { ascending: false }).limit(50),
   ])
 
@@ -59,7 +57,6 @@ export default async function ProfilePage() {
     completedSales: completedSales.length,
     totalEarnings: completedSales.reduce((sum, o) => sum + Number(o.amount), 0),
     activeListings: activeListings ?? 0,
-    totalBalance: balances?.reduce((sum, b) => sum + Number(b.pending_amount), 0) ?? 0,
     buyerOrders: (buyerOrdersRaw ?? []).map((o: { id: unknown; status: unknown; amount: unknown; created_at: unknown; listings: unknown }) => ({
       id: String(o.id),
       status: String(o.status),

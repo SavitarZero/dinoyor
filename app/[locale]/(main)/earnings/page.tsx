@@ -62,7 +62,6 @@ export default async function EarningsPage() {
     { data: txLog },
     { data: payoutRequests },
     { data: settings },
-    { count: completedSalesCount },
   ] = await Promise.all([
     supabase.from('profiles').select('wallet_address, wallet_network, kyc_status').eq('id', user.id).single(),
     supabase.from('seller_balances').select('*').eq('seller_id', user.id),
@@ -70,7 +69,6 @@ export default async function EarningsPage() {
     supabase.from('balance_transactions').select('*').eq('seller_id', user.id).order('created_at', { ascending: false }).limit(50),
     supabase.from('payout_requests').select('*').eq('seller_id', user.id).order('created_at', { ascending: false }),
     supabase.from('platform_settings').select('key, value').in('key', ['min_withdraw_amo']),
-    supabase.from('orders').select('*', { count: 'exact', head: true }).eq('seller_id', user.id).eq('status', 'completed'),
   ])
 
   const pendingRequests = payoutRequests?.filter(r => r.status === 'pending') ?? []
@@ -138,11 +136,6 @@ export default async function EarningsPage() {
                   met: !!profile?.wallet_address,
                   label: 'Withdraw wallet set',
                   action: profile?.wallet_address ? null : { href: '/profile#withdraw-wallet', text: 'Set wallet →' },
-                },
-                {
-                  met: (completedSalesCount ?? 0) >= 1,
-                  label: 'At least 1 completed sale',
-                  action: null,
                 },
               ].map(({ met, label, action }) => (
                 <div key={label} className="flex items-center justify-between">
