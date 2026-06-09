@@ -108,13 +108,13 @@ export function HomeSections({ games, byCategory, listings, hotIds, categories }
         {!activeGame && !activeCatId && featuredGames.length > 0 && heroGame && (
           <div className="pt-5 pb-5">
             <div className="relative rounded overflow-hidden group" style={{ height: 'clamp(180px, 30vw, 400px)' }}>
-              <div className="absolute inset-0">
+              <div className="absolute inset-0" key={heroGame.slug}>
                 <GameBanner src={heroGame.banner_url} slug={heroGame.slug} name={heroGame.name} className="w-full h-full transition-all duration-500" />
               </div>
               <div className="absolute inset-0 bg-linear-to-r from-black/80 via-black/30 to-transparent" />
               <div className="absolute inset-0 flex items-end p-6 md:p-10">
                 <div className="flex items-end gap-4">
-                  <GameLogo src={heroGame.logo_url} slug={heroGame.slug} name={heroGame.name} className="hidden sm:flex w-16 h-16 md:w-20 md:h-20 rounded shadow-2xl shrink-0 items-center justify-center" />
+                  <GameLogo key={heroGame.slug} src={heroGame.logo_url} slug={heroGame.slug} name={heroGame.name} className="hidden sm:flex w-16 h-16 md:w-20 md:h-20 rounded shadow-2xl shrink-0 items-center justify-center" />
                   <div>
                     <span className="inline-block px-2 py-0.5 rounded bg-accent/20 border border-accent/40 text-accent text-[10px] font-bold uppercase tracking-widest mb-2">
                       {heroGame.category ?? 'Featured'}

@@ -41,13 +41,21 @@ export function GameLogo({ src, slug, name, className = 'w-8 h-8 rounded-lg' }: 
       <span className="font-black text-[55%] leading-none select-none" style={{ color: accent }}>{initial}</span>
       {src && (
         <>
-          <span className="absolute inset-0 bg-white/5 animate-pulse" />
+          <span className="absolute inset-0 bg-white/5 animate-pulse" data-skeleton />
           <img
             src={src}
             alt=""
             className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-300"
-            onLoad={(e) => { e.currentTarget.style.opacity = '1'; (e.currentTarget.previousElementSibling as HTMLElement).style.display = 'none' }}
-            onError={(e) => { e.currentTarget.style.display = 'none'; (e.currentTarget.previousElementSibling as HTMLElement).style.display = 'none' }}
+            onLoad={(e) => {
+              e.currentTarget.style.opacity = '1'
+              const skel = e.currentTarget.previousElementSibling as HTMLElement
+              if (skel) skel.style.display = 'none'
+            }}
+            onError={(e) => {
+              e.currentTarget.style.opacity = '0'
+              const skel = e.currentTarget.previousElementSibling as HTMLElement
+              if (skel) skel.style.display = 'none'
+            }}
           />
         </>
       )}
@@ -80,13 +88,21 @@ export function GameBanner({ src, slug, name, className = 'w-full h-full', child
       </span>
       {src && (
         <>
-          <div className="absolute inset-0 bg-white/5 animate-pulse" />
+          <div className="absolute inset-0 bg-white/5 animate-pulse" data-skeleton />
           <img
             src={src}
             alt=""
             className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-300"
-            onLoad={(e) => { e.currentTarget.style.opacity = '1'; (e.currentTarget.previousElementSibling as HTMLElement).style.display = 'none' }}
-            onError={(e) => { e.currentTarget.style.display = 'none'; (e.currentTarget.previousElementSibling as HTMLElement).style.display = 'none' }}
+            onLoad={(e) => {
+              e.currentTarget.style.opacity = '1'
+              const skel = e.currentTarget.previousElementSibling as HTMLElement
+              if (skel) skel.style.display = 'none'
+            }}
+            onError={(e) => {
+              e.currentTarget.style.opacity = '0'
+              const skel = e.currentTarget.previousElementSibling as HTMLElement
+              if (skel) skel.style.display = 'none'
+            }}
           />
         </>
       )}
