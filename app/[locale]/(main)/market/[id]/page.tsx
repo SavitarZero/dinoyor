@@ -98,7 +98,7 @@ export default async function ListingDetailPage({
           <div className="flex items-center gap-4">
             <p className="text-3xl font-bold text-accent-gold">
               {currencyPrefix(listing.price_currency)}{listing.price_amount}
-              <span className="text-lg text-accent-gold/60 ml-1">coin</span>
+              <span className="text-lg text-accent-gold/60 ml-1">AMO</span>
             </p>
             <div className="flex items-center gap-3">
               <LikeButton

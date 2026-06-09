@@ -42,11 +42,11 @@ function DepositSuccess({
           />
         </svg>
         <p className="text-green-400 font-semibold text-sm">
-          Verified — {amount.toFixed(2)} USDT added to your Coin Wallet
+          Verified — {amount.toFixed(2)} USDT added to your AMO Wallet
         </p>
       </div>
       <p className="text-gray-400 text-xs">
-        Your Coin Wallet has been updated automatically.
+        Your AMO Wallet has been updated automatically.
       </p>
       <button
         onClick={onReset}

@@ -289,7 +289,7 @@ function OrderList({ orders, emptyText, emptyLink, emptyLinkText }: Readonly<{ o
                 </p>
               </div>
               <div className="text-right shrink-0">
-                <p className="text-accent-gold text-sm font-medium">{Number(o.amount).toFixed(2)} coin</p>
+                <p className="text-accent-gold text-sm font-medium">{Number(o.amount).toFixed(2)} AMO</p>
                 <p className={`text-xs capitalize ${orderStatusColor(o.status)}`}>
                   {o.status.replaceAll('_', ' ')}
                 </p>

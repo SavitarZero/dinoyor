@@ -189,7 +189,7 @@ export default async function OrderDetailPage({
                 </div>
               </div>
               <div className="text-right shrink-0">
-                <p className="text-accent-gold text-sm font-bold">{order.amount} coin</p>
+                <p className="text-accent-gold text-sm font-bold">{order.amount} AMO</p>
               </div>
             </div>
           </div>
@@ -205,7 +205,7 @@ export default async function OrderDetailPage({
                 </div>
                 <div>
                   <p className="text-white text-sm font-semibold">Payment received</p>
-                  <p className="text-gray-500 text-xs">{order.amount} coin deducted from buyer. Please deliver the item.</p>
+                  <p className="text-gray-500 text-xs">{order.amount} AMO deducted from buyer. Please deliver the item.</p>
                 </div>
               </div>
               <form action={async () => {
@@ -230,7 +230,7 @@ export default async function OrderDetailPage({
                 </div>
                 <div>
                   <p className="text-white text-sm font-semibold">Waiting for delivery</p>
-                  <p className="text-gray-500 text-xs">{order.amount} coin held securely. Seller will deliver soon.</p>
+                  <p className="text-gray-500 text-xs">{order.amount} AMO held securely. Seller will deliver soon.</p>
                 </div>
               </div>
               {order.delivery_deadline_at && (

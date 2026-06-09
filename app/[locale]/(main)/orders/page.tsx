@@ -137,7 +137,7 @@ export default async function OrdersPage({ searchParams }: Props) {
                 </div>
 
                 <div className="text-right shrink-0">
-                  <p className="text-accent-gold text-sm font-bold">{o.amount} coin</p>
+                  <p className="text-accent-gold text-sm font-bold">{o.amount} AMO</p>
                 </div>
 
                 <svg className="w-4 h-4 text-gray-600 group-hover:text-accent transition-colors shrink-0 hidden sm:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

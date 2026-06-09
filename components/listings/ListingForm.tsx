@@ -203,7 +203,7 @@ export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ ga
     e.preventDefault()
     if (!coverPreview) { setError('Cover image is required'); return }
     const p = parseFloat(price) || 0
-    if (p < MIN_PRICE) { setError(`Minimum price is ${MIN_PRICE} coin`); return }
+    if (p < MIN_PRICE) { setError(`Minimum price is ${MIN_PRICE} AMO`); return }
     setLoading(true)
     setError('')
     const result = await createListing(new FormData(e.currentTarget))
@@ -421,8 +421,8 @@ export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ ga
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <div className="flex items-baseline gap-2 mb-1.5">
-                  <label className="text-xs font-medium text-gray-400">Price (coin)</label>
-                  <span className="text-gray-600 text-[10px]">min {MIN_PRICE} coin</span>
+                  <label className="text-xs font-medium text-gray-400">Price (AMO)</label>
+                  <span className="text-gray-600 text-[10px]">min {MIN_PRICE} AMO</span>
                 </div>
                 <div className="relative">
                   <input
@@ -454,15 +454,15 @@ export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ ga
                   <div className="mt-2 rounded bg-background border border-border p-4 space-y-1.5 text-sm">
                     <div className="flex justify-between text-gray-400">
                       <span>Price</span>
-                      <span>{priceNum.toFixed(2)} coin</span>
+                      <span>{priceNum.toFixed(2)} AMO</span>
                     </div>
                     <div className="flex justify-between text-gray-500 text-xs">
-                      <span>Platform fee ({resolvedFeePct}% + {resolvedFlatFee} coin)</span>
-                      <span>−{(percentFeeAmt + resolvedFlatFee).toFixed(2)} coin</span>
+                      <span>Platform fee ({resolvedFeePct}% + {resolvedFlatFee} AMO)</span>
+                      <span>−{(percentFeeAmt + resolvedFlatFee).toFixed(2)} AMO</span>
                     </div>
                     <div className="border-t border-border pt-1.5 flex justify-between font-semibold">
                       <span className="text-white">You receive</span>
-                      <span className="text-accent-gold">{youReceive.toFixed(2)} coin</span>
+                      <span className="text-accent-gold">{youReceive.toFixed(2)} AMB</span>
                     </div>
                   </div>
                 )}
@@ -530,15 +530,15 @@ export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ ga
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-400">Listing price</span>
-                  <span className="text-white">{priceNum > 0 ? `${priceNum.toFixed(2)} coin` : '—'}</span>
+                  <span className="text-white">{priceNum > 0 ? `${priceNum.toFixed(2)} AMO` : '—'}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-400">Platform fee ({resolvedFeePct}% + {resolvedFlatFee})</span>
-                  <span className="text-gray-400">{priceNum > 0 ? `−${(fee + resolvedFlatFee).toFixed(2)} coin` : '—'}</span>
+                  <span className="text-gray-400">{priceNum > 0 ? `−${(fee + resolvedFlatFee).toFixed(2)} AMO` : '—'}</span>
                 </div>
                 <div className="border-t border-border pt-2 flex justify-between text-sm">
                   <span className="text-white font-medium">You receive</span>
-                  <span className="text-accent-gold font-bold">{priceNum > 0 ? `${youReceive.toFixed(2)} coin` : '—'}</span>
+                  <span className="text-accent-gold font-bold">{priceNum > 0 ? `${youReceive.toFixed(2)} AMB` : '—'}</span>
                 </div>
               </div>
             </div>

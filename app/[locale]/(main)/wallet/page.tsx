@@ -37,7 +37,7 @@ export default async function WalletPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <h1 className="text-white text-xl font-bold mb-6">Ammonite Coin Wallet</h1>
+      <h1 className="text-white text-xl font-bold mb-6">AMO Wallet</h1>
       <div className="grid lg:grid-cols-3 gap-5">
 
         {/* Balance card */}

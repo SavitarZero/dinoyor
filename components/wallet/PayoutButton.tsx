@@ -56,7 +56,7 @@ export function PayoutButton({ currency, amount, minWithdraw }: Props) {
         >
           Request Payout
         </button>
-        <p className="text-gray-500 text-xs">Min withdrawal: {minWithdraw} AMO</p>
+        <p className="text-gray-500 text-xs">Min withdrawal: {minWithdraw} AMB</p>
       </div>
 
       {showModal && (

@@ -75,7 +75,7 @@ export async function NavbarUser() {
         className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded border border-border bg-surface-2 hover:border-gray-500 transition-colors mr-3"
       >
         <span className="text-accent-gold text-xs font-bold tabular-nums">{amoBalance.toFixed(2)}</span>
-        <span className="text-muted text-[10px] font-medium">coin</span>
+        <span className="text-muted text-[10px] font-medium">AMO</span>
       </Link>
       <ProfileDropdown
         avatarUrl={avatarUrl}
@@ -116,7 +116,7 @@ export async function NavbarUserMobile() {
         className="flex items-center gap-1.5 px-2.5 py-1 rounded border border-border bg-surface-2 hover:border-gray-500 transition-colors"
       >
         <span className="text-accent-gold text-xs font-bold tabular-nums">{amoBalance.toFixed(2)}</span>
-        <span className="text-muted text-[10px] font-medium">coin</span>
+        <span className="text-muted text-[10px] font-medium">AMO</span>
       </Link>
       {isSeller && (
         <Link href="/listings/new" className={textBtn}>

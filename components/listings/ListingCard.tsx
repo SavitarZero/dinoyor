@@ -6,7 +6,7 @@ import { GameBanner } from '@/components/games/GameImage'
 function formatPrice(amount: number, currency: string) {
   if (currency === 'ETH') return `Ξ${amount}`
   if (currency === 'BTC') return `₿${amount}`
-  return `${amount} coin`
+  return `${amount} AMO`
 }
 
 function ListingImage({ listing }: { readonly listing: ListingWithGame }) {

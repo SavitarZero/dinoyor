@@ -81,7 +81,7 @@ export function EditPriceButton({ listingId, currentPrice, status }: { listingId
                 {error && error !== 'cancel_required' && <p className="text-red-400 text-xs">{error}</p>}
 
                 <div>
-                  <label className="block text-gray-500 text-xs font-medium uppercase tracking-wide mb-1.5">New price (coin)</label>
+                  <label className="block text-gray-500 text-xs font-medium uppercase tracking-wide mb-1.5">New price (AMO)</label>
                   <input
                     type="number"
                     step="0.01"
@@ -96,15 +96,15 @@ export function EditPriceButton({ listingId, currentPrice, status }: { listingId
                   <div className="rounded-lg bg-background border border-border p-3 space-y-1.5 text-xs">
                     <div className="flex justify-between text-gray-400">
                       <span>Price</span>
-                      <span>{priceNum.toFixed(2)} coin</span>
+                      <span>{priceNum.toFixed(2)} AMO</span>
                     </div>
                     <div className="flex justify-between text-gray-500">
-                      <span>Platform fee ({FEE_PCT}% + {FLAT_FEE} coin)</span>
-                      <span>−{totalFee.toFixed(2)} coin</span>
+                      <span>Platform fee ({FEE_PCT}% + {FLAT_FEE} AMO)</span>
+                      <span>−{totalFee.toFixed(2)} AMO</span>
                     </div>
                     <div className="border-t border-border pt-1.5 flex justify-between font-semibold">
                       <span className="text-white">You receive</span>
-                      <span className="text-accent-gold">{youReceive.toFixed(2)} coin</span>
+                      <span className="text-accent-gold">{youReceive.toFixed(2)} AMB</span>
                     </div>
                   </div>
                 )}
