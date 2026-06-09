@@ -4,6 +4,9 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { revalidatePath } from 'next/cache'
 import { verifyTrc20Deposit, verifyErc20Deposit } from '@/lib/blockchain/verify'
 
+const walletCol = (network: 'TRC20' | 'ERC20') =>
+  network === 'TRC20' ? 'deposit_wallet_trc20' : 'deposit_wallet_erc20'
+
 export async function saveDepositWallet(walletAddress: string, network: 'TRC20' | 'ERC20') {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -12,21 +15,20 @@ export async function saveDepositWallet(walletAddress: string, network: 'TRC20' 
   const trimmed = walletAddress.trim()
   if (!trimmed) return { error: 'Wallet address is required' }
 
-  // Check uniqueness: same address + same network cannot belong to two accounts
+  // Check uniqueness: same address on same network cannot belong to two accounts
   const admin = createAdminClient()
+  const col = walletCol(network)
   const { data: conflict } = await admin
     .from('profiles')
     .select('id')
-    .ilike('deposit_wallet', trimmed)
-    .eq('deposit_wallet_network', network)
+    .ilike(col, trimmed)
     .neq('id', user.id)
     .maybeSingle()
 
-  if (conflict) return { error: 'This wallet address is already registered by another account on the same network' }
+  if (conflict) return { error: 'This wallet address is already registered by another account' }
 
   const { error } = await supabase.from('profiles').update({
-    deposit_wallet: trimmed,
-    deposit_wallet_network: network,
+    [col]: trimmed,
   }).eq('id', user.id)
   if (error) return { error: error.message }
 
@@ -35,14 +37,13 @@ export async function saveDepositWallet(walletAddress: string, network: 'TRC20' 
   return { success: true }
 }
 
-export async function deleteDepositWallet() {
+export async function deleteDepositWallet(network: 'TRC20' | 'ERC20') {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Not authenticated' }
 
   const { error } = await supabase.from('profiles').update({
-    deposit_wallet: null,
-    deposit_wallet_network: null,
+    [walletCol(network)]: null,
   }).eq('id', user.id)
   if (error) return { error: error.message }
 
@@ -59,17 +60,16 @@ export async function submitDeposit(txHash: string, network: 'TRC20' | 'ERC20') 
   const trimmedTx = txHash.trim()
   if (!trimmedTx) return { error: 'Transaction hash is required' }
 
+  const col = walletCol(network)
   const { data: profile } = await supabase
     .from('profiles')
-    .select('deposit_wallet, deposit_wallet_network')
+    .select(`${col}`)
     .eq('id', user.id)
     .single()
 
-  if (!profile?.deposit_wallet) {
-    return { error: 'You must register your deposit wallet address first' }
-  }
-  if (profile.deposit_wallet_network !== network) {
-    return { error: `Your registered deposit wallet is on ${profile.deposit_wallet_network}. Switch to that network or update your wallet.` }
+  const senderAddress = (profile as Record<string, string | null> | null)?.[col] ?? null
+  if (!senderAddress) {
+    return { error: `Register your ${network} sender wallet address first` }
   }
 
   // Fetch platform settings (escrow address + min deposit)
@@ -102,29 +102,27 @@ export async function submitDeposit(txHash: string, network: 'TRC20' | 'ERC20') 
 
   // On-chain verification
   const verification = network === 'TRC20'
-    ? await verifyTrc20Deposit(trimmedTx, profile.deposit_wallet, escrowAddress, minDeposit)
-    : await verifyErc20Deposit(trimmedTx, profile.deposit_wallet, escrowAddress, minDeposit)
+    ? await verifyTrc20Deposit(trimmedTx, senderAddress, escrowAddress, minDeposit)
+    : await verifyErc20Deposit(trimmedTx, senderAddress, escrowAddress, minDeposit)
 
   if (!verification.ok) return { error: verification.error }
 
   const verifiedAmount = verification.verifiedAmount!
   const admin = createAdminClient()
 
-  // Record deposit as auto-approved
   const { error: insertErr } = await admin.from('deposit_requests').insert({
     user_id: user.id,
     tx_hash: trimmedTx,
     network,
     claimed_amount: verifiedAmount,
     approved_amount: verifiedAmount,
-    sender_address: profile.deposit_wallet,
+    sender_address: senderAddress,
     currency: 'USDT',
     status: 'approved',
     reviewed_at: new Date().toISOString(),
   })
   if (insertErr) return { error: insertErr.message }
 
-  // Credit buyer balance atomically
   await admin.rpc('increment_user_balance', {
     p_user_id: user.id,
     p_currency: 'USDT',

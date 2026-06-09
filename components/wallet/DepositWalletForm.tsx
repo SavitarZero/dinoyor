@@ -1,35 +1,30 @@
 'use client'
 import { useState } from 'react'
 import { saveDepositWallet, deleteDepositWallet } from '@/lib/actions/deposits'
-import { CustomSelect } from '@/components/ui/CustomSelect'
-
-const NETWORKS = [
-  { value: 'TRC20', label: 'USDT TRC20 (Tron)' },
-  { value: 'ERC20', label: 'USDT ERC20 (Ethereum)' },
-]
 
 interface Props {
-  currentAddress: string | null
-  currentNetwork: string | null
+  trc20Address: string | null
+  erc20Address: string | null
 }
 
-export function DepositWalletForm({ currentAddress, currentNetwork }: Readonly<Props>) {
-  const [editing, setEditing]   = useState(!currentAddress)
-  const [address, setAddress]   = useState(currentAddress ?? '')
-  const [network, setNetwork]   = useState(currentNetwork ?? 'TRC20')
-  const [loading, setLoading]   = useState(false)
-  const [error, setError]       = useState('')
-  const [saved, setSaved]       = useState(false)
+type Network = 'TRC20' | 'ERC20'
+
+function NetworkWallet({ network, address }: Readonly<{ network: Network; address: string | null }>) {
+  const [editing, setEditing]       = useState(!address)
+  const [value, setValue]           = useState(address ?? '')
+  const [loading, setLoading]       = useState(false)
+  const [error, setError]           = useState('')
+  const [saved, setSaved]           = useState(false)
   const [confirmDel, setConfirmDel] = useState(false)
 
   const placeholder = network === 'ERC20' ? 'e.g. 0x...' : 'e.g. TXyz...'
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSave(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault()
     setError('')
     setSaved(false)
     setLoading(true)
-    const result = await saveDepositWallet(address, network as 'TRC20' | 'ERC20')
+    const result = await saveDepositWallet(value, network)
     setLoading(false)
     if (result?.error) { setError(result.error); return }
     setSaved(true)
@@ -39,113 +34,82 @@ export function DepositWalletForm({ currentAddress, currentNetwork }: Readonly<P
   async function handleDelete() {
     setLoading(true)
     setError('')
-    const result = await deleteDepositWallet()
+    const result = await deleteDepositWallet(network)
     setLoading(false)
     if (result?.error) { setError(result.error); setConfirmDel(false); return }
-    setAddress('')
-    setNetwork('TRC20')
+    setValue('')
     setEditing(true)
     setConfirmDel(false)
     setSaved(false)
   }
 
-  // View mode — wallet already saved
-  if (!editing && address) {
-    return (
-      <div className="space-y-3">
-        <div className="flex items-center gap-2 min-w-0">
-          <span className="shrink-0 rounded bg-accent/10 text-accent text-xs font-bold px-2 py-0.5">
-            {network}
-          </span>
-          <span className="text-white text-sm font-mono truncate flex-1">{address}</span>
-        </div>
-
-        {error && <p className="text-red-400 text-sm">{error}</p>}
-
-        {confirmDel ? (
-          <div className="flex items-center gap-2">
-            <p className="text-gray-400 text-xs flex-1">Remove this wallet?</p>
-            <button
-              onClick={handleDelete}
-              disabled={loading}
-              className="px-3 py-1.5 rounded-lg bg-red-600 text-white text-xs font-bold hover:opacity-90 disabled:opacity-50"
-            >
-              {loading ? 'Removing…' : 'Yes, remove'}
-            </button>
-            <button
-              onClick={() => setConfirmDel(false)}
-              className="px-3 py-1.5 rounded-lg border border-border text-gray-400 text-xs font-medium hover:text-white"
-            >
-              Cancel
-            </button>
-          </div>
-        ) : (
-          <div className="flex gap-2">
-            <button
-              onClick={() => { setEditing(true); setSaved(false) }}
-              className="px-3 py-1.5 rounded-lg border border-border text-gray-400 text-xs font-medium hover:text-white hover:border-accent transition-colors"
-            >
-              Edit
-            </button>
-            <button
-              onClick={() => setConfirmDel(true)}
-              className="px-3 py-1.5 rounded-lg border border-red-700/40 text-red-400 text-xs font-medium hover:bg-red-900/20 transition-colors"
-            >
-              Delete
-            </button>
-          </div>
-        )}
-      </div>
-    )
-  }
-
-  // Edit / add mode
   return (
-    <form onSubmit={handleSubmit} className="space-y-3">
-      {error && <p className="text-red-400 text-sm">{error}</p>}
-      {saved && <p className="text-green-400 text-sm">Deposit wallet saved.</p>}
-
-      <div>
-        <label className="block text-gray-500 text-xs font-medium uppercase tracking-wide mb-1.5">Network</label>
-        <CustomSelect
-          value={network}
-          onChange={setNetwork}
-          options={NETWORKS}
-          placeholder="Select network…"
-        />
-      </div>
-
-      <div>
-        <label className="block text-gray-500 text-xs font-medium uppercase tracking-wide mb-1.5">Sender wallet address</label>
-        <input
-          type="text"
-          value={address}
-          onChange={e => setAddress(e.target.value)}
-          placeholder={placeholder}
-          required
-          className="w-full px-3 py-2 rounded-lg bg-background border border-border text-white text-sm font-mono placeholder-gray-600 focus:outline-none focus:border-accent transition-colors"
-        />
-        <p className="text-gray-600 text-xs mt-1">Only deposits sent from this address will be accepted.</p>
-      </div>
-
-      <div className="flex gap-2">
-        <button
-          type="submit"
-          disabled={loading}
-          className="px-4 py-1.5 rounded-lg bg-accent text-black text-xs font-bold hover:opacity-90 disabled:opacity-50"
-        >
-          {loading ? 'Saving…' : 'Save'}
-        </button>
-        {currentAddress && (
-          <button
-            type="button"
-            onClick={() => { setAddress(currentAddress); setNetwork(currentNetwork ?? 'TRC20'); setEditing(false); setError('') }}
-            className="px-4 py-1.5 rounded-lg border border-border text-gray-400 text-xs font-medium hover:text-white transition-colors"
-          >
-            Cancel
-          </button>
+    <div className="rounded-lg border border-border bg-background p-3 space-y-2">
+      <div className="flex items-center gap-2">
+        <span className="text-xs font-bold px-2 py-0.5 rounded bg-surface border border-border text-gray-400">{network}</span>
+        {address && !editing && (
+          <span className="text-[10px] text-green-400 font-medium">Registered</span>
         )}
       </div>
-    </form>
+
+      {!editing && value ? (
+        <div className="space-y-2">
+          <p className="text-white text-xs font-mono break-all">{value}</p>
+          {error && <p className="text-red-400 text-xs">{error}</p>}
+          {confirmDel ? (
+            <div className="flex items-center gap-2">
+              <p className="text-gray-400 text-xs flex-1">Remove this wallet?</p>
+              <button onClick={handleDelete} disabled={loading} className="px-3 py-1 rounded bg-red-600 text-white text-xs font-bold hover:opacity-90 disabled:opacity-50">
+                {loading ? 'Removing…' : 'Yes'}
+              </button>
+              <button onClick={() => setConfirmDel(false)} className="px-3 py-1 rounded border border-border text-gray-400 text-xs hover:text-white">
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <div className="flex gap-2">
+              <button onClick={() => { setEditing(true); setSaved(false) }} className="px-3 py-1 rounded border border-border text-gray-400 text-xs hover:text-white hover:border-accent transition-colors">
+                Edit
+              </button>
+              <button onClick={() => setConfirmDel(true)} className="px-3 py-1 rounded border border-red-700/40 text-red-400 text-xs hover:bg-red-900/20 transition-colors">
+                Delete
+              </button>
+            </div>
+          )}
+        </div>
+      ) : (
+        <form onSubmit={handleSave} className="space-y-2">
+          {error && <p className="text-red-400 text-xs">{error}</p>}
+          {saved && <p className="text-green-400 text-xs">Saved.</p>}
+          <input
+            type="text"
+            value={value}
+            onChange={e => setValue(e.target.value)}
+            placeholder={placeholder}
+            required
+            className="w-full px-3 py-2 rounded-lg bg-surface border border-border text-white text-xs font-mono placeholder-gray-600 focus:outline-none focus:border-accent transition-colors"
+          />
+          <div className="flex gap-2">
+            <button type="submit" disabled={loading} className="px-3 py-1 rounded bg-accent text-black text-xs font-bold hover:opacity-90 disabled:opacity-50">
+              {loading ? 'Saving…' : 'Save'}
+            </button>
+            {address && (
+              <button type="button" onClick={() => { setValue(address); setEditing(false); setError('') }} className="px-3 py-1 rounded border border-border text-gray-400 text-xs hover:text-white transition-colors">
+                Cancel
+              </button>
+            )}
+          </div>
+        </form>
+      )}
+    </div>
+  )
+}
+
+export function DepositWalletForm({ trc20Address, erc20Address }: Readonly<Props>) {
+  return (
+    <div className="space-y-2">
+      <NetworkWallet network="TRC20" address={trc20Address} />
+      <NetworkWallet network="ERC20" address={erc20Address} />
+    </div>
   )
 }

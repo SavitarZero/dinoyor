@@ -3,7 +3,6 @@ import Image from 'next/image'
 import { useState } from 'react'
 import Link from 'next/link'
 import { WalletAddressForm } from '@/components/wallet/WalletAddressForm'
-import { DepositWalletForm } from '@/components/wallet/DepositWalletForm'
 import { KYCForm } from '@/components/kyc/KYCForm'
 import { EmailForm } from '@/components/profile/EmailForm'
 import type { KYCStatus, ProfileOrder } from '@/lib/types'
@@ -19,8 +18,6 @@ interface ProfileData {
   kycStatus: string | null
   walletAddress: string | null
   walletNetwork: string | null
-  depositWallet: string | null
-  depositWalletNetwork: string | null
   amoBalance: number
   completedSales: number
   totalEarnings: number
@@ -241,20 +238,6 @@ function WalletSection({ data }: Readonly<{ data: ProfileData }>) {
               </div>
             </div>
           )}
-        </div>
-      </div>
-
-      {/* Setting Wallet — Deposit sender */}
-      <div className="rounded border border-border bg-surface">
-        <div className="px-4 py-3 border-b border-border">
-          <p className="text-white text-sm font-semibold">Setting Wallet</p>
-          <p className="text-gray-500 text-xs">Sender address — the wallet you send coin from.</p>
-        </div>
-        <div className="px-4 py-4">
-          <DepositWalletForm
-            currentAddress={data.depositWallet}
-            currentNetwork={data.depositWalletNetwork}
-          />
         </div>
       </div>
 

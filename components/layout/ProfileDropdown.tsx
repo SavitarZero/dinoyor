@@ -7,6 +7,7 @@ import {
   LayoutDashboard,
   Package,
   Wallet,
+  TrendingUp,
   LogOut,
   Store,
 } from 'lucide-react'
@@ -25,7 +26,8 @@ const BASE_ITEMS = [
 ]
 
 const SELLER_ITEMS = [
-  { href: '/wallet',      label: 'Wallet',          Icon: Wallet },
+  { href: '/wallet',      label: 'Coin Wallet',     Icon: Wallet },
+  { href: '/earnings',    label: 'Earnings',        Icon: TrendingUp },
   { href: '/listings',    label: 'My Listings',     Icon: Store },
 ]
 
@@ -83,7 +85,7 @@ export function ProfileDropdown({ avatarUrl, username, email, role, amoBalance }
           <div className="min-w-0">
             <p className="text-white text-sm font-semibold truncate">{username || 'User'}</p>
             <p className="text-gray-500 text-xs truncate">{email}</p>
-            <p className="text-accent-gold text-xs font-bold mt-0.5 tabular-nums">Coin Wallet · {amoBalance.toFixed(2)} coin</p>
+            <p className="text-accent-gold text-xs font-bold mt-0.5 tabular-nums">{amoBalance.toFixed(2)} coin</p>
           </div>
         </div>
 
