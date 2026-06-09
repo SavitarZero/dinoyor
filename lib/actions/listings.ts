@@ -118,7 +118,7 @@ export async function relistListing(listingId: string) {
     .update({ status: 'active' })
     .eq('id', listingId)
     .eq('seller_id', user.id)
-    .eq('status', 'cancelled')
+    .in('status', ['cancelled', 'sold'])
   if (error) return { error: error.message }
   revalidatePath('/listings')
   return { success: true }
