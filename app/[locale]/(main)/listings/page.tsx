@@ -238,7 +238,7 @@ export default async function MyListingsPage({
                   >
                     {listing.status === 'sold' && orderMap[listing.id] ? 'View Order' : 'View'}
                   </Link>
-                  <EditPriceButton listingId={listing.id} currentPrice={listing.price_amount} status={listing.status} />
+                  <EditPriceButton listingId={listing.id} currentPrice={listing.price_amount} status={listing.status} disabled={activeOrderSet.has(listing.id)} />
                   {listing.status === 'active' && (
                     <RemoveListingButton listingId={listing.id} />
                   )}
