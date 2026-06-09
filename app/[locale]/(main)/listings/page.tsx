@@ -240,7 +240,7 @@ export default async function MyListingsPage({
                     <RemoveListingButton listingId={listing.id} />
                   )}
                   <EditPriceButton listingId={listing.id} currentPrice={listing.price_amount} status={listing.status} />
-                  {listing.status === 'cancelled' && (
+                  {(listing.status === 'cancelled' || listing.status === 'sold') && (
                     <RelistButton listingId={listing.id} />
                   )}
                 </div>
