@@ -136,7 +136,7 @@ export default async function EarningsPage() {
                 {
                   met: !!profile?.wallet_address,
                   label: 'Withdraw wallet set',
-                  action: profile?.wallet_address ? null : { href: '/profile#withdraw-wallet', text: 'Set wallet →' },
+                  action: null,
                 },
               ].map(({ met, label, action }) => (
                 <div key={label} className="flex items-center justify-between">
