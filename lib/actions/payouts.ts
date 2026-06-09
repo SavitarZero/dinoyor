@@ -18,12 +18,12 @@ export async function requestPayout(currency: string) {
 
   const { data: balance } = await supabase
     .from('seller_balances')
-    .select('pending_amount')
+    .select('available_amount')
     .eq('seller_id', user.id)
     .eq('currency', currency)
     .single()
 
-  if (!balance || balance.pending_amount <= 0) return { error: 'No balance available' }
+  if (!balance || balance.available_amount <= 0) return { error: 'No available balance. Funds are held for 7 days after each sale.' }
 
   const { count: completedSales } = await supabase
     .from('orders')
@@ -39,7 +39,7 @@ export async function requestPayout(currency: string) {
     .select('key, value')
     .eq('key', 'min_withdraw_amo')
   const minWithdraw = Number(settingsRows?.[0]?.value ?? 200)
-  if (Number(balance.pending_amount) < minWithdraw) {
+  if (Number(balance.available_amount) < minWithdraw) {
     return { error: `Minimum withdrawal is ${minWithdraw} coin` }
   }
 
@@ -54,7 +54,7 @@ export async function requestPayout(currency: string) {
 
   await supabase.from('payout_requests').insert({
     seller_id: user.id,
-    amount: balance.pending_amount,
+    amount: balance.available_amount,
     currency,
     wallet_address: profile.wallet_address,
   })

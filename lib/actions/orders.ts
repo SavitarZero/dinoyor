@@ -4,6 +4,17 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
+function deliveryMs(deliveryTime: string | null | undefined): number {
+  if (!deliveryTime) return 3 * 24 * 60 * 60 * 1000
+  const s = deliveryTime.toLowerCase()
+  if (s === 'instant') return 2 * 60 * 60 * 1000
+  if (s.includes('< 1') || (s.includes('1') && s.includes('hour') && !s.includes('3'))) return 60 * 60 * 1000
+  if (s.includes('3') && s.includes('hour')) return 3 * 60 * 60 * 1000
+  if (s.includes('same day')) return 24 * 60 * 60 * 1000
+  if (s.includes('day')) return 2 * 24 * 60 * 60 * 1000
+  return 3 * 24 * 60 * 60 * 1000
+}
+
 export async function createOrder(listingId: string) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -45,6 +56,8 @@ export async function createOrder(listingId: string) {
     .single()
   const feePct = parseFloat(settings?.value ?? '5.00')
 
+  const deliveryDeadlineAt = new Date(Date.now() + deliveryMs(listing.delivery_time)).toISOString()
+
   const { data: order, error } = await supabase.from('orders').insert({
     listing_id: listingId,
     buyer_id: user.id,
@@ -52,6 +65,7 @@ export async function createOrder(listingId: string) {
     amount: listing.price_amount,
     platform_fee_pct: feePct,
     status: 'paid_escrow',
+    delivery_deadline_at: deliveryDeadlineAt,
   }).select('id').single()
 
   if (error) {
@@ -91,7 +105,7 @@ export async function confirmDelivery(orderId: string, screenshotFiles: File[]) 
 
   const { data: order } = await supabase
     .from('orders')
-    .select('id, seller_id, status')
+    .select('id, seller_id, status, listing_id')
     .eq('id', orderId)
     .single()
   if (!order || order.seller_id !== user.id) return { error: 'Unauthorized' }
@@ -110,7 +124,14 @@ export async function confirmDelivery(orderId: string, screenshotFiles: File[]) 
 
   await supabase.from('order_proofs').insert({ order_id: orderId, screenshot_urls: urls })
 
-  const autoReleaseAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
+  // auto_release_at: buyer has delivery_time to confirm before order auto-completes
+  const { data: listing } = await supabase
+    .from('listings')
+    .select('delivery_time')
+    .eq('id', order.listing_id)
+    .single()
+  const autoReleaseAt = new Date(Date.now() + deliveryMs(listing?.delivery_time)).toISOString()
+
   await supabase.from('orders').update({
     status: 'delivered',
     auto_release_at: autoReleaseAt,
@@ -118,6 +139,31 @@ export async function confirmDelivery(orderId: string, screenshotFiles: File[]) 
 
   revalidatePath(`/orders/${orderId}`)
   return { success: true }
+}
+
+export async function creditSeller(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  orderId: string,
+  sellerId: string,
+  amount: number,
+  holdDays: number,
+) {
+  const availableAt = new Date(Date.now() + holdDays * 24 * 60 * 60 * 1000).toISOString()
+  await supabase.rpc('increment_seller_balance', {
+    p_seller_id: sellerId,
+    p_currency: 'USDT',
+    p_amount: amount,
+  })
+  await supabase.from('balance_transactions').insert({
+    seller_id: sellerId,
+    order_id: orderId,
+    type: 'credit',
+    amount,
+    currency: 'USDT',
+    note: `Order #${orderId.slice(0, 8).toUpperCase()} completed`,
+    available_at: availableAt,
+    hold_released: false,
+  })
 }
 
 export async function buyerConfirmReceived(orderId: string) {
@@ -133,32 +179,18 @@ export async function buyerConfirmReceived(orderId: string) {
   if (!order || order.buyer_id !== user.id) return { error: 'Unauthorized' }
   if (order.status !== 'delivered') return { error: 'Order not in correct state' }
 
-  const { data: flatFeeRow } = await supabase
-    .from('platform_settings')
-    .select('value')
-    .eq('key', 'platform_flat_fee')
-    .single()
+  const [{ data: flatFeeRow }, { data: holdRow }] = await Promise.all([
+    supabase.from('platform_settings').select('value').eq('key', 'platform_flat_fee').single(),
+    supabase.from('platform_settings').select('value').eq('key', 'payout_hold_days').single(),
+  ])
   const flatFee = Number(flatFeeRow?.value ?? 1)
+  const holdDays = Number(holdRow?.value ?? 7)
 
   const fee = (order.amount * order.platform_fee_pct) / 100
   const sellerAmount = Math.max(0, order.amount - fee - flatFee)
 
   await supabase.from('orders').update({ status: 'completed' }).eq('id', orderId)
-
-  await supabase.rpc('increment_seller_balance', {
-    p_seller_id: order.seller_id,
-    p_currency: 'USDT',
-    p_amount: sellerAmount,
-  })
-
-  await supabase.from('balance_transactions').insert({
-    seller_id: order.seller_id,
-    order_id: orderId,
-    type: 'credit',
-    amount: sellerAmount,
-    currency: 'USDT',
-    note: `Order #${orderId.slice(0, 8).toUpperCase()} completed`,
-  })
+  await creditSeller(supabase, orderId, order.seller_id, sellerAmount, holdDays)
 
   revalidatePath(`/orders/${orderId}`)
   return { success: true }

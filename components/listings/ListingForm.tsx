@@ -1,12 +1,12 @@
 'use client'
 import { useState, useRef, useEffect } from 'react'
+import Image from 'next/image'
 import imageCompression from 'browser-image-compression'
 import { createListing } from '@/lib/actions/listings'
 import Link from 'next/link'
 
 interface Game { id: string; name: string }
 interface ItemType { id: string; name: string; slug: string }
-interface Category { id: string; name: string }
 
 function KycSellBanner({ kycStatus }: Readonly<{ kycStatus: string | null }>) {
   return (
@@ -90,7 +90,7 @@ async function processAdditional(
   return { files: compressed }
 }
 
-export function ListingForm({ games, categories, kycStatus, feePct, flatFee }: Readonly<{ games: Game[]; categories: Category[]; kycStatus: string | null; feePct?: number; flatFee?: number }>) {
+export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ games: Game[]; kycStatus: string | null; feePct?: number; flatFee?: number }>) {
   const [error, setError]   = useState('')
   const [loading, setLoading] = useState(false)
   const [price, setPrice] = useState('')
@@ -203,6 +203,8 @@ export function ListingForm({ games, categories, kycStatus, feePct, flatFee }: R
   async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
     e.preventDefault()
     if (!coverPreview) { setError('Cover image is required'); return }
+    const p = parseFloat(price) || 0
+    if (p < MIN_PRICE) { setError(`Minimum price is ${MIN_PRICE} coin`); return }
     setLoading(true)
     setError('')
     const result = await createListing(new FormData(e.currentTarget))
@@ -210,6 +212,7 @@ export function ListingForm({ games, categories, kycStatus, feePct, flatFee }: R
     if (result?.error) setError(result.error)
   }
 
+  const MIN_PRICE = 10
   const priceNum = parseFloat(price) || 0
   const resolvedFeePct = feePct ?? 5
   const resolvedFlatFee = flatFee ?? 1
@@ -310,22 +313,6 @@ export function ListingForm({ games, categories, kycStatus, feePct, flatFee }: R
                 )}
               </div>
             </div>
-            {categories.length > 0 && (
-              <div>
-                <label htmlFor="category_id" className={labelCls}>Category</label>
-                <select
-                  id="category_id"
-                  name="category_id"
-                  className="w-full px-3 py-2.5 rounded bg-background border border-border text-white text-sm appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%236b7280%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-size-[16px] bg-position-[right_0.75rem_center] bg-no-repeat pr-8 focus:outline-none focus:border-accent transition-colors"
-                  defaultValue=""
-                >
-                  <option value="">— No category —</option>
-                  {categories.map(c => (
-                    <option key={c.id} value={c.id}>{c.name}</option>
-                  ))}
-                </select>
-              </div>
-            )}
             <div>
               <label className={labelCls}>Item name</label>
               <input
@@ -365,7 +352,7 @@ export function ListingForm({ games, categories, kycStatus, feePct, flatFee }: R
                 </div>
               ) : coverPreview ? (
                 <div className="relative aspect-[4/3] rounded overflow-hidden bg-background border border-border group cursor-pointer" onClick={() => coverRef.current?.click()}>
-                  <img src={coverPreview} alt="cover" className="w-full h-full object-cover" />
+                  <Image src={coverPreview} alt="cover" fill unoptimized className="object-cover" />
                   <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <span className="text-white text-xs">Change</span>
                   </div>
@@ -402,7 +389,7 @@ export function ListingForm({ games, categories, kycStatus, feePct, flatFee }: R
               <div className="grid grid-cols-4 sm:grid-cols-5 gap-2">
                 {additionalPreviews.map((img, i) => (
                   <div key={i} className="relative aspect-square rounded overflow-hidden bg-background border border-border group">
-                    <img src={img.url} alt="" className="w-full h-full object-cover" />
+                    <Image src={img.url} alt="" fill unoptimized className="object-cover" />
                     <button
                       type="button"
                       onClick={() => removeAdditional(i)}
@@ -434,7 +421,10 @@ export function ListingForm({ games, categories, kycStatus, feePct, flatFee }: R
           <div className="rounded border border-border bg-surface p-5 space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className={labelCls}>Price (coin)</label>
+                <div className="flex items-baseline gap-2 mb-1.5">
+                  <label className="text-xs font-medium text-gray-400">Price (coin)</label>
+                  <span className="text-gray-600 text-[10px]">min {MIN_PRICE} coin</span>
+                </div>
                 <div className="relative">
                   <input
                     name="price_amount"
@@ -529,9 +519,9 @@ export function ListingForm({ games, categories, kycStatus, feePct, flatFee }: R
           <div className="lg:sticky lg:top-0 space-y-4">
 
             <div className="rounded border border-border bg-surface overflow-hidden">
-              <div className="aspect-[4/3] bg-background">
+              <div className="relative aspect-4/3 bg-background overflow-hidden">
                 {coverPreview ? (
-                  <img src={coverPreview} alt="preview" className="w-full h-full object-cover" />
+                  <Image src={coverPreview} alt="preview" fill unoptimized className="object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
                     <span className="text-gray-600 text-xs">Cover preview</span>
@@ -565,7 +555,7 @@ export function ListingForm({ games, categories, kycStatus, feePct, flatFee }: R
             {kycStatus === 'approved' ? (
               <button
                 type="submit"
-                disabled={loading || coverCompressing || additionalCompressing}
+                disabled={loading || coverCompressing || additionalCompressing || priceNum < MIN_PRICE}
                 className="w-full py-3 rounded bg-accent text-black font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-40"
               >
                 {loading ? 'Publishing…' : 'Publish listing'}

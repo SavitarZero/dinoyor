@@ -137,6 +137,7 @@ export interface SellerBalance {
   id: string
   seller_id: string
   pending_amount: number
+  available_amount: number
   currency: Currency
 }
 

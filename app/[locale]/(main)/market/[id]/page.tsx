@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
@@ -23,7 +24,7 @@ export default async function ListingDetailPage({
 
   const { data: { user } } = await supabase.auth.getUser()
 
-  const [{ data: listing }, { data: likes }, { data: comments }, { data: purchase }, { data: profile }, { data: balanceRow }] = await Promise.all([
+  const [{ data: listing }, { data: likes }, { data: comments }, { data: purchase }, { data: balanceRow }] = await Promise.all([
     supabase
       .from('listings')
       .select('*, games(name, slug, logo_url, banner_url), seller:profiles!seller_id(username, avatar_url)')
@@ -46,10 +47,6 @@ export default async function ListingDetailPage({
       : Promise.resolve({ data: null }),
 
     user
-      ? supabase.from('profiles').select('kyc_status').eq('id', user.id).single()
-      : Promise.resolve({ data: null }),
-
-    user
       ? supabase.from('user_balances').select('balance').eq('user_id', user.id).eq('currency', 'USDT').maybeSingle()
       : Promise.resolve({ data: null }),
   ])
@@ -61,7 +58,6 @@ export default async function ListingDetailPage({
   const likeCount   = likes?.length ?? 0
   const userLiked   = !!(user && likes?.some(l => l.user_id === user.id))
   const hasPurchased = !!purchase
-  const kycStatus    = profile?.kyc_status ?? null
   const buyerBalance = Number(balanceRow?.balance ?? 0)
 
   return (
@@ -128,9 +124,9 @@ export default async function ListingDetailPage({
             href={seller?.username ? `/seller/${seller.username}` : '#'}
             className="flex items-center gap-3 p-3 rounded-xl bg-surface border border-border hover:border-accent/50 transition-colors group"
           >
-            <div className="w-9 h-9 rounded-full bg-background overflow-hidden shrink-0">
+            <div className="relative w-9 h-9 rounded-full bg-background overflow-hidden shrink-0">
               {seller?.avatar_url ? (
-                <img src={seller.avatar_url} alt="" referrerPolicy="no-referrer" className="w-full h-full object-cover" />
+                <Image src={seller.avatar_url} alt="" fill unoptimized className="object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-gray-600 text-sm font-medium">
                   {(seller?.username || '?')[0].toUpperCase()}
@@ -148,7 +144,7 @@ export default async function ListingDetailPage({
           {/* Actions */}
           <div className="space-y-2 mt-auto">
             {!isSeller && user && listing.status === 'active' && (
-              <BuyButton listingId={listing.id} price={listing.price_amount} kycStatus={kycStatus} isLoggedIn={!!user} buyerBalance={buyerBalance} />
+              <BuyButton listingId={listing.id} price={listing.price_amount} isLoggedIn={!!user} buyerBalance={buyerBalance} />
             )}
             {!user && (
               <div className="p-4 rounded-xl bg-surface border border-border text-center">

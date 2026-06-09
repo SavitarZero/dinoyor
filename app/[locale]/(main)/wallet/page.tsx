@@ -4,7 +4,42 @@ import Link from 'next/link'
 import { WalletAddressForm } from '@/components/wallet/WalletAddressForm'
 import { DepositForm } from '@/components/wallet/DepositForm'
 import { requestPayout } from '@/lib/actions/payouts'
-import type { SellerBalance, BalanceTransaction, DepositRequest, Payout } from '@/lib/types'
+import type { SellerBalance, BalanceTransaction, DepositRequest, Payout, Currency } from '@/lib/types'
+
+function PayoutAction({
+  hasWallet,
+  hasPendingRequest,
+  availableAmount,
+  currency,
+  minWithdraw,
+}: Readonly<{
+  hasWallet: boolean
+  hasPendingRequest: boolean
+  availableAmount: number
+  currency: Currency
+  minWithdraw: number
+}>) {
+  if (!hasWallet) return <p className="text-yellow-400 text-xs">Set payout wallet first</p>
+  if (hasPendingRequest) return (
+    <span className="inline-block px-3 py-1.5 rounded-full bg-yellow-900/30 border border-yellow-700/40 text-yellow-400 text-xs font-medium">
+      Payout request pending approval
+    </span>
+  )
+  if (availableAmount > 0) return (
+    <div className="flex items-center gap-2">
+      <form action={async () => {
+        'use server'
+        await requestPayout(currency)
+      }}>
+        <button className="px-4 py-2 rounded-xl bg-accent text-black text-sm font-semibold hover:opacity-90">
+          Request Payout
+        </button>
+      </form>
+      <span className="text-gray-600 text-xs">Min. {minWithdraw} coin</span>
+    </div>
+  )
+  return null
+}
 
 export default async function WalletPage() {
   const supabase = await createClient()
@@ -30,7 +65,7 @@ export default async function WalletPage() {
     supabase.from('payout_requests').select('*').eq('seller_id', user.id).order('created_at', { ascending: false }),
     supabase.from('user_balances').select('balance, currency').eq('user_id', user.id).maybeSingle(),
     supabase.from('deposit_requests').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(20),
-    supabase.from('platform_settings').select('key, value').in('key', ['escrow_wallet_trc20', 'escrow_wallet_erc20', 'min_deposit_amo', 'min_withdraw_amo']),
+    supabase.from('platform_settings').select('key, value').in('key', ['escrow_wallet_trc20', 'escrow_wallet_erc20', 'escrow_wallet_trc20_testnet', 'escrow_wallet_erc20_testnet', 'min_deposit_amo', 'min_withdraw_amo']),
     supabase.from('orders').select('*', { count: 'exact', head: true }).eq('seller_id', user.id).eq('status', 'completed'),
   ])
 
@@ -38,9 +73,10 @@ export default async function WalletPage() {
   const buyerBalance = Number(userBalance?.balance ?? 0)
 
   const escrowMap = Object.fromEntries((settings ?? []).map(s => [s.key, s.value]))
+  const isTestnet = process.env.NEXT_PUBLIC_IS_TESTNET === 'true'
   const escrowAddresses = {
-    trc20: escrowMap['escrow_wallet_trc20'] ?? '',
-    erc20: escrowMap['escrow_wallet_erc20'] ?? '',
+    trc20: (isTestnet ? escrowMap['escrow_wallet_trc20_testnet'] : escrowMap['escrow_wallet_trc20']) ?? '',
+    erc20: (isTestnet ? escrowMap['escrow_wallet_erc20_testnet'] : escrowMap['escrow_wallet_erc20']) ?? '',
   }
   const senderWallet = profile?.deposit_wallet ?? null
   const senderNetwork = (profile?.deposit_wallet_network as 'TRC20' | 'ERC20' | null) ?? null
@@ -166,43 +202,41 @@ export default async function WalletPage() {
                 </div>
               </div>
 
-              <div className="rounded-xl border border-border bg-surface p-5">
-                <p className="text-gray-500 text-xs uppercase tracking-wide mb-3">Pending Balance</p>
-                <div className="space-y-3">
-                  {typedSellerBalances.map((b) => {
-                    const hasPending = pendingRequests.some(r => r.currency === b.currency)
-                    const hasWallet = !!profile?.wallet_address
-                    const hasBalance = Number(b.pending_amount) > 0
-                    return (
-                      <div key={b.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                        <p className="text-2xl font-bold text-white">
-                          {Number(b.pending_amount).toFixed(2)} <span className="text-sm text-gray-500">{b.currency}</span>
-                        </p>
-                        {hasWallet ? (
-                          hasPending ? (
-                            <span className="px-3 py-1.5 rounded-full bg-yellow-900/30 border border-yellow-700/40 text-yellow-400 text-xs font-medium">
-                              Pending approval
-                            </span>
-                          ) : hasBalance ? (
-                            <div className="flex items-center gap-2">
-                              <form action={async () => {
-                                'use server'
-                                await requestPayout(b.currency)
-                              }}>
-                                <button className="px-4 py-2 rounded-xl bg-accent text-black text-sm font-semibold hover:opacity-90">
-                                  Request Payout
-                                </button>
-                              </form>
-                              <span className="text-gray-600 text-xs">Min. {minWithdraw} coin</span>
-                            </div>
-                          ) : null
-                        ) : (
-                          <p className="text-yellow-400 text-xs">Set payout wallet first</p>
-                        )}
+              <div className="rounded-xl border border-border bg-surface p-5 space-y-4">
+                {typedSellerBalances.map((b) => {
+                  const hasPendingRequest = pendingRequests.some(r => r.currency === b.currency)
+                  const hasWallet = !!profile?.wallet_address
+                  const availableAmount = Number(b.available_amount ?? 0)
+                  const pendingAmount = Number(b.pending_amount ?? 0)
+
+                  return (
+                    <div key={b.id} className="space-y-3">
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="rounded-lg bg-background border border-border p-3">
+                          <p className="text-gray-500 text-[10px] uppercase tracking-wide mb-1">Available</p>
+                          <p className="text-xl font-bold text-white">
+                            {availableAmount.toFixed(2)} <span className="text-xs text-gray-500">{b.currency}</span>
+                          </p>
+                          <p className="text-gray-600 text-[10px] mt-0.5">Ready to withdraw</p>
+                        </div>
+                        <div className="rounded-lg bg-background border border-border p-3">
+                          <p className="text-gray-500 text-[10px] uppercase tracking-wide mb-1">On Hold</p>
+                          <p className="text-xl font-bold text-gray-400">
+                            {pendingAmount.toFixed(2)} <span className="text-xs text-gray-600">{b.currency}</span>
+                          </p>
+                          <p className="text-gray-600 text-[10px] mt-0.5">Released after 7 days</p>
+                        </div>
                       </div>
-                    )
-                  })}
-                </div>
+                      <PayoutAction
+                        hasWallet={hasWallet}
+                        hasPendingRequest={hasPendingRequest}
+                        availableAmount={availableAmount}
+                        currency={b.currency}
+                        minWithdraw={minWithdraw}
+                      />
+                    </div>
+                  )
+                })}
               </div>
 
               <div className="rounded-xl border border-border bg-surface p-5 space-y-4">
