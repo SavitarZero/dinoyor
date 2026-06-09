@@ -88,6 +88,16 @@ export async function cancelListing(listingId: string) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { error: 'Not authenticated' }
 
+  const { count } = await supabase
+    .from('orders')
+    .select('*', { count: 'exact', head: true })
+    .eq('listing_id', listingId)
+    .in('status', ['paid_escrow', 'delivered'])
+
+  if ((count ?? 0) > 0) {
+    return { error: 'Cannot remove this listing while there are active orders pending delivery or confirmation.' }
+  }
+
   const { error } = await supabase
     .from('listings')
     .update({ status: 'cancelled' })
