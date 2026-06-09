@@ -240,7 +240,7 @@ export default async function MyListingsPage({
                   {listing.status === 'active' && (
                     <RemoveListingButton listingId={listing.id} />
                   )}
-                  {(listing.status === 'cancelled' || listing.status === 'sold') && (
+                  {(listing.status === 'cancelled' || (listing.status === 'sold' && !orderMap[listing.id])) && (
                     <RelistButton listingId={listing.id} />
                   )}
                 </div>
