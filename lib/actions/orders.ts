@@ -88,9 +88,9 @@ export async function createOrder(listingId: string) {
     return { error: error.message }
   }
 
-  await supabase.from('listings').update({ status: 'sold' }).eq('id', listingId)
-
   const admin = createAdminClient()
+  await admin.from('listings').update({ status: 'sold' }).eq('id', listingId)
+
   const { data: conv } = await admin.from('conversations').insert({
     order_id: order.id,
     buyer_id: user.id,

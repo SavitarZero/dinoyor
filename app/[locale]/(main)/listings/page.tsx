@@ -18,7 +18,7 @@ const STATUS_CLASS: Record<string, string> = {
   cancelled: 'bg-border/50 text-gray-500 border-border',
 }
 
-type FilterStatus = 'active' | 'cancelled'
+type FilterStatus = 'active' | 'sold' | 'cancelled'
 
 export default async function MyListingsPage({
   searchParams,
@@ -27,7 +27,7 @@ export default async function MyListingsPage({
 }>) {
   const { status: statusParam } = await searchParams
   const filter: FilterStatus =
-    ['active', 'cancelled'].includes(statusParam ?? '')
+    ['active', 'sold', 'cancelled'].includes(statusParam ?? '')
       ? (statusParam as FilterStatus)
       : 'active'
 
@@ -58,6 +58,7 @@ export default async function MyListingsPage({
 
   const tabs: { label: string; value: FilterStatus; count: number | null }[] = [
     { label: 'On Sale',    value: 'active',    count: totalActive ?? 0 },
+    { label: 'Sold',       value: 'sold',      count: totalSold ?? 0 },
     { label: 'Cancelled',  value: 'cancelled', count: totalCancelled ?? 0 },
   ]
 
