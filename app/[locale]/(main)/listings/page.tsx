@@ -58,7 +58,7 @@ export default async function MyListingsPage({
     supabase.from('listings').select('*', { count: 'exact', head: true }).eq('seller_id', user.id).eq('status', 'active'),
     supabase.from('listings').select('*', { count: 'exact', head: true }).eq('seller_id', user.id).eq('status', 'sold'),
     supabase.from('listings').select('*', { count: 'exact', head: true }).eq('seller_id', user.id).eq('status', 'cancelled'),
-    supabase.from('listings').select('id, status, sold_count, listing_id:id').eq('seller_id', user.id).in('status', ['sold']),
+    supabase.from('listings').select('sold_count').eq('seller_id', user.id),
   ])
 
   const listings = filtered ?? []
