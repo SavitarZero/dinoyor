@@ -32,7 +32,7 @@ function ListingImage({ listing }: { readonly listing: ListingWithGame }) {
   )
 }
 
-export function ListingCard({ listing, isHot }: Readonly<{ listing: ListingWithGame; isHot?: boolean }>) {
+export function ListingCard({ listing, isHot, hideProfile }: Readonly<{ listing: ListingWithGame; isHot?: boolean; hideProfile?: boolean }>) {
   return (
     <Link
       href={`/market/${listing.id}`}
@@ -60,7 +60,7 @@ export function ListingCard({ listing, isHot }: Readonly<{ listing: ListingWithG
           <span className="text-sm font-bold text-accent-gold">
             {formatPrice(listing.price_amount, listing.price_currency)}
           </span>
-          {listing.profiles?.username && (
+          {!hideProfile && listing.profiles?.username && (
             <div className="flex items-center gap-1.5 min-w-0">
               {listing.profiles.avatar_url ? (
                 <img
