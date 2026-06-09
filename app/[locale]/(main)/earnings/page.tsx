@@ -12,15 +12,17 @@ function PayoutAction({
   availableAmount,
   currency,
   minWithdraw,
+  requirementsMet,
 }: Readonly<{
   hasWallet: boolean
   hasPendingRequest: boolean
   availableAmount: number
   currency: Currency
   minWithdraw: number
+  requirementsMet: boolean
 }>) {
-  if (!hasWallet) return (
-    <p className="text-yellow-400 text-xs">Set your payout wallet below before requesting a withdrawal.</p>
+  if (!requirementsMet) return (
+    <p className="text-gray-500 text-sm">Complete all requirements above to request a withdrawal.</p>
   )
   if (hasPendingRequest) return (
     <div className="space-y-1">
@@ -112,15 +114,15 @@ export default async function EarningsPage() {
             </div>
           </div>
 
-          {/* Payout action */}
-          <div className="rounded border border-border bg-surface px-5 py-4">
-            <PayoutAction
-              hasWallet={hasWallet}
-              hasPendingRequest={hasPendingRequest}
-              availableAmount={totalAvailable}
-              currency={primaryCurrency}
-              minWithdraw={minWithdraw}
-            />
+          {/* Payout wallet */}
+          <div className="rounded border border-border bg-surface">
+            <div className="px-4 py-3 border-b border-border">
+              <p className="text-white text-sm font-semibold">Payout Wallet</p>
+              <p className="text-gray-500 text-xs">Withdraw address — AMO from your sales will be sent here.</p>
+            </div>
+            <div className="px-4 py-4">
+              <WalletAddressForm currentAddress={profile?.wallet_address ?? null} currentNetwork={profile?.wallet_network ?? null} />
+            </div>
           </div>
 
           {/* Withdraw requirements */}
@@ -152,15 +154,16 @@ export default async function EarningsPage() {
             </div>
           </div>
 
-          {/* Payout wallet */}
-          <div className="rounded border border-border bg-surface">
-            <div className="px-4 py-3 border-b border-border">
-              <p className="text-white text-sm font-semibold">Payout Wallet</p>
-              <p className="text-gray-500 text-xs">Withdraw address — AMO from your sales will be sent here.</p>
-            </div>
-            <div className="px-4 py-4">
-              <WalletAddressForm currentAddress={profile?.wallet_address ?? null} currentNetwork={profile?.wallet_network ?? null} />
-            </div>
+          {/* Payout action */}
+          <div className="rounded border border-border bg-surface px-5 py-4">
+            <PayoutAction
+              hasWallet={hasWallet}
+              hasPendingRequest={hasPendingRequest}
+              availableAmount={totalAvailable}
+              currency={primaryCurrency}
+              minWithdraw={minWithdraw}
+              requirementsMet={profile?.kyc_status === 'approved' && !!profile?.wallet_address}
+            />
           </div>
 
         </div>
