@@ -19,7 +19,7 @@ export function RelistButton({ listingId }: { listingId: string }) {
     <button
       onClick={handleRelist}
       disabled={loading}
-      className="px-3 py-1.5 rounded border border-green-700/40 text-green-400 text-xs font-medium hover:bg-green-900/20 disabled:opacity-50 transition-colors"
+      className="w-full py-1.5 rounded border border-green-700/40 text-green-400 text-xs font-medium text-center hover:bg-green-900/20 disabled:opacity-50 transition-colors"
     >
       {loading ? 'Relisting...' : 'Relist'}
     </button>

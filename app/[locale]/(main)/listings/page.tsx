@@ -229,17 +229,17 @@ export default async function MyListingsPage({
                 </div>
 
                 {/* Actions */}
-                <div className="border-t border-border px-3 py-2.5 flex gap-2">
+                <div className="border-t border-border px-3 py-2.5 flex flex-col gap-1.5">
                   <Link
                     href={listing.status === 'sold' && orderMap[listing.id] ? `/orders/${orderMap[listing.id]}` : `/market/${listing.id}`}
-                    className="flex-1 py-1.5 rounded border border-border text-gray-400 text-xs font-medium text-center hover:text-white hover:border-gray-500 transition-colors"
+                    className="w-full py-1.5 rounded border border-border text-gray-400 text-xs font-medium text-center hover:text-white hover:border-gray-500 transition-colors"
                   >
                     {listing.status === 'sold' && orderMap[listing.id] ? 'View Order' : 'View'}
                   </Link>
+                  <EditPriceButton listingId={listing.id} currentPrice={listing.price_amount} status={listing.status} />
                   {listing.status === 'active' && (
                     <RemoveListingButton listingId={listing.id} />
                   )}
-                  <EditPriceButton listingId={listing.id} currentPrice={listing.price_amount} status={listing.status} />
                   {(listing.status === 'cancelled' || listing.status === 'sold') && (
                     <RelistButton listingId={listing.id} />
                   )}

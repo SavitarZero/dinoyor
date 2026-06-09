@@ -26,7 +26,7 @@ export function RemoveListingButton({ listingId }: { listingId: string }) {
       <button
         onClick={handleRemove}
         disabled={loading}
-        className="px-3 py-1.5 rounded border border-red-700/40 text-red-400 text-xs font-medium hover:bg-red-900/20 disabled:opacity-50 transition-colors"
+        className="w-full py-1.5 rounded border border-red-700/40 text-red-400 text-xs font-medium text-center hover:bg-red-900/20 disabled:opacity-50 transition-colors"
       >
         {loading ? 'Cancelling...' : 'Cancel'}
       </button>

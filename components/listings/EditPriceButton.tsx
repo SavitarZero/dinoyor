@@ -46,7 +46,7 @@ export function EditPriceButton({ listingId, currentPrice, status }: { listingId
     <>
       <button
         onClick={handleClick}
-        className="px-3 py-1.5 rounded border border-border text-gray-400 text-xs font-medium hover:text-white hover:border-gray-500 transition-colors"
+        className="w-full py-1.5 rounded border border-border text-gray-400 text-xs font-medium text-center hover:text-white hover:border-gray-500 transition-colors"
       >
         Edit Price
       </button>
