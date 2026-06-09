@@ -208,17 +208,30 @@ export default async function EarningsPage() {
             </div>
             {typedPayouts.length ? (
               <div className="divide-y divide-border">
-                {typedPayouts.map((p) => (
+                {typedPayouts.map((p) => {
+                  const isTrc20 = p.wallet_address?.startsWith('T')
+                  const explorerUrl = p.tx_hash
+                    ? isTrc20
+                      ? `https://tronscan.org/#/transaction/${p.tx_hash}`
+                      : `https://etherscan.io/tx/${p.tx_hash}`
+                    : null
+                  return (
                   <div key={p.id} className="flex items-center justify-between px-4 py-3">
                     <div className="min-w-0">
                       <p className="text-accent-gold text-sm font-medium">{Number(p.amount).toFixed(2)} AMO</p>
-                      <p className="text-gray-600 text-xs font-mono truncate">{p.wallet_address?.slice(0, 10)}…</p>
+                      {p.tx_hash && explorerUrl ? (
+                        <a href={explorerUrl} target="_blank" rel="noopener noreferrer" className="text-accent text-xs font-mono hover:underline truncate block">
+                          {p.tx_hash.slice(0, 16)}… ↗
+                        </a>
+                      ) : (
+                        <p className="text-gray-600 text-xs font-mono truncate">{p.wallet_address?.slice(0, 10)}…</p>
+                      )}
                     </div>
                     <p className="text-gray-600 text-xs shrink-0">
                       {new Date(p.processed_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                     </p>
                   </div>
-                ))}
+                )})}
               </div>
             ) : (
               <div className="p-4 text-center"><p className="text-gray-600 text-xs">No payouts yet</p></div>
