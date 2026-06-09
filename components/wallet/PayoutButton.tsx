@@ -72,14 +72,14 @@ export function PayoutButton({ currency, amount, minWithdraw }: Props) {
               <button
                 onClick={handleConfirm}
                 disabled={loading}
-                className="px-4 py-1.5 rounded-lg bg-accent text-black text-xs font-bold hover:opacity-90 disabled:opacity-50 transition-opacity"
+                className="px-4 py-1.5 rounded-lg bg-success text-black text-xs font-bold hover:bg-success-hover disabled:opacity-50 transition-colors"
               >
                 {loading ? 'Processing…' : 'Confirm'}
               </button>
               <button
                 onClick={() => setShowModal(false)}
                 disabled={loading}
-                className="px-4 py-1.5 rounded-lg border border-border text-gray-400 text-xs font-bold hover:text-white hover:border-accent/50 disabled:opacity-50 transition-colors"
+                className="px-4 py-1.5 rounded-lg border border-border text-gray-400 text-xs font-bold hover:text-white hover:border-gray-500 disabled:opacity-50 transition-colors"
               >
                 Cancel
               </button>

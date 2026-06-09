@@ -284,8 +284,8 @@ export function HomeSections({ games, byCategory, listings, hotIds, categories }
             ].map(({ step, title, desc, icon }) => (
               <div key={step} className="relative flex flex-col gap-3 p-5 rounded border border-border bg-surface">
                 <span className="text-4xl font-black text-white/5 absolute top-4 right-5 select-none">{step}</span>
-                <div className="w-10 h-10 rounded bg-accent/10 border border-accent/20 flex items-center justify-center shrink-0">
-                  <svg className="w-5 h-5 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                <div className="w-10 h-10 rounded bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0">
+                  <svg className="w-5 h-5 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
                     <path strokeLinecap="round" strokeLinejoin="round" d={icon} />
                   </svg>
                 </div>

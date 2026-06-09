@@ -255,13 +255,13 @@ function OrderList({ orders, emptyText, emptyLink, emptyLinkText }: Readonly<{ o
             value={search}
             onChange={e => handleSearch(e.target.value)}
             placeholder="Search by item name..."
-            className="w-full px-3 py-2 rounded bg-background border border-border text-white text-sm placeholder-gray-600 focus:outline-none focus:border-accent transition-colors"
+            className="w-full px-3 py-2 rounded bg-background border border-border text-white text-sm placeholder-gray-600 focus:outline-none focus:border-focus-border transition-colors"
           />
         </div>
         <select
           value={statusFilter}
           onChange={e => handleStatus(e.target.value)}
-          className="px-3 py-2.5 rounded bg-background border border-border text-white text-sm appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%236b7280%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-size-[16px] bg-position-[right_0.75rem_center] bg-no-repeat pr-8 focus:outline-none focus:border-accent transition-colors"
+          className="px-3 py-2.5 rounded bg-background border border-border text-white text-sm appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%236b7280%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-size-[16px] bg-position-[right_0.75rem_center] bg-no-repeat pr-8 focus:outline-none focus:border-focus-border transition-colors"
         >
           {STATUS_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
@@ -289,7 +289,7 @@ function OrderList({ orders, emptyText, emptyLink, emptyLinkText }: Readonly<{ o
                 </p>
               </div>
               <div className="text-right shrink-0">
-                <p className="text-white text-sm font-medium">{Number(o.amount).toFixed(2)} coin</p>
+                <p className="text-accent-gold text-sm font-medium">{Number(o.amount).toFixed(2)} coin</p>
                 <p className={`text-xs capitalize ${orderStatusColor(o.status)}`}>
                   {o.status.replaceAll('_', ' ')}
                 </p>
@@ -309,7 +309,7 @@ function OrderList({ orders, emptyText, emptyLink, emptyLinkText }: Readonly<{ o
           <button
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page <= 1}
-            className="px-2 py-1 rounded border border-border text-xs text-gray-400 hover:text-white hover:border-accent/50 disabled:opacity-30 disabled:pointer-events-none transition-colors"
+            className="px-2 py-1 rounded border border-border text-xs text-gray-400 hover:text-white hover:border-gray-500 disabled:opacity-30 disabled:pointer-events-none transition-colors"
           >
             ←
           </button>
@@ -318,7 +318,7 @@ function OrderList({ orders, emptyText, emptyLink, emptyLinkText }: Readonly<{ o
               key={p}
               onClick={() => setPage(p)}
               className={`w-7 h-7 rounded flex items-center justify-center text-xs font-medium transition-colors ${
-                p === page ? 'bg-accent text-black' : 'border border-border text-gray-400 hover:text-white hover:border-accent/50'
+                p === page ? 'bg-accent text-black' : 'border border-border text-gray-400 hover:text-white hover:border-gray-500'
               }`}
             >
               {p}
@@ -327,7 +327,7 @@ function OrderList({ orders, emptyText, emptyLink, emptyLinkText }: Readonly<{ o
           <button
             onClick={() => setPage(p => Math.min(totalPages, p + 1))}
             disabled={page >= totalPages}
-            className="px-2 py-1 rounded border border-border text-xs text-gray-400 hover:text-white hover:border-accent/50 disabled:opacity-30 disabled:pointer-events-none transition-colors"
+            className="px-2 py-1 rounded border border-border text-xs text-gray-400 hover:text-white hover:border-gray-500 disabled:opacity-30 disabled:pointer-events-none transition-colors"
           >
             →
           </button>

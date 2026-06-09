@@ -49,10 +49,10 @@ export function BuyButton({ listingId, price, isLoggedIn, buyerBalance }: Readon
           </div>
         </div>
         <div className="flex gap-2">
-          <button onClick={() => setStep('idle')} className="flex-1 py-2.5 rounded-xl border border-border text-gray-400 text-sm font-medium hover:text-white hover:border-accent transition-colors">
+          <button onClick={() => setStep('idle')} className="flex-1 py-2.5 rounded-xl border border-border text-gray-400 text-sm font-medium hover:text-white hover:border-gray-500 transition-colors">
             Cancel
           </button>
-          <button onClick={handleConfirm} className="flex-1 py-2.5 rounded-xl bg-accent text-black text-sm font-bold hover:opacity-90 transition-opacity">
+          <button onClick={handleConfirm} className="flex-1 py-2.5 rounded-xl bg-success text-black text-sm font-bold hover:bg-success-hover transition-colors">
             Yes, Buy Now
           </button>
         </div>

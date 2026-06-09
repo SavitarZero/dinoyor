@@ -96,9 +96,9 @@ export default async function ListingDetailPage({
 
           {/* Price + Like */}
           <div className="flex items-center gap-4">
-            <p className="text-3xl font-bold text-accent">
+            <p className="text-3xl font-bold text-accent-gold">
               {currencyPrefix(listing.price_currency)}{listing.price_amount}
-              <span className="text-lg text-accent/60 ml-1">coin</span>
+              <span className="text-lg text-accent-gold/60 ml-1">coin</span>
             </p>
             <div className="flex items-center gap-3">
               <LikeButton
@@ -122,7 +122,7 @@ export default async function ListingDetailPage({
           {/* Seller */}
           <Link
             href={seller?.username ? `/seller/${seller.username}` : '#'}
-            className="flex items-center gap-3 p-3 rounded-xl bg-surface border border-border hover:border-accent/50 transition-colors group"
+            className="flex items-center gap-3 p-3 rounded-xl bg-surface border border-border hover:border-gray-500 transition-colors group"
           >
             <div className="relative w-9 h-9 rounded-full bg-background overflow-hidden shrink-0">
               {seller?.avatar_url ? (

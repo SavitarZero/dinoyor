@@ -36,7 +36,7 @@ export function ListingCard({ listing, isHot }: Readonly<{ listing: ListingWithG
   return (
     <Link
       href={`/market/${listing.id}`}
-      className="group flex flex-col bg-surface rounded overflow-hidden border border-border hover:border-accent/60 hover:bg-surface-2 transition-all duration-150"
+      className="group flex flex-col bg-surface rounded overflow-hidden border border-border hover:border-gray-500/60 hover:bg-surface-2 transition-all duration-150"
     >
       {/* Image — landscape 16:9 */}
       <div className="relative aspect-video bg-background overflow-hidden">
@@ -57,7 +57,7 @@ export function ListingCard({ listing, isHot }: Readonly<{ listing: ListingWithG
           {listing.title}
         </p>
         <div className="flex items-center justify-between gap-2 mt-auto">
-          <span className="text-sm font-bold text-white">
+          <span className="text-sm font-bold text-accent-gold">
             {formatPrice(listing.price_amount, listing.price_currency)}
           </span>
           {listing.profiles?.username && (

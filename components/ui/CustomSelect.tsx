@@ -33,7 +33,7 @@ export function CustomSelect({ value, onChange, options, placeholder = 'Selectâ€
       <button
         type="button"
         onClick={() => setOpen(v => !v)}
-        className="w-full px-3 py-2 rounded-lg bg-background border border-border text-sm flex items-center justify-between text-left focus:outline-none focus:border-accent transition-colors"
+        className="w-full px-3 py-2 rounded-lg bg-background border border-border text-sm flex items-center justify-between text-left focus:outline-none focus:border-focus-border transition-colors"
       >
         <span className={selected ? 'text-white' : 'text-gray-600'}>
           {selected?.label ?? placeholder}

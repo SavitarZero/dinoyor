@@ -55,7 +55,7 @@ export function EmailForm({ currentEmail }: { currentEmail: string | null }) {
         onChange={e => setEmail(e.target.value)}
         required
         placeholder={currentEmail ? 'New email address' : 'your@email.com'}
-        className="w-full px-3 py-2 rounded-lg bg-background border border-border text-white text-sm placeholder-gray-600 focus:outline-none focus:border-accent transition-colors"
+        className="w-full px-3 py-2 rounded-lg bg-background border border-border text-white text-sm placeholder-gray-600 focus:outline-none focus:border-focus-border transition-colors"
       />
       <div className="flex items-center justify-between gap-3">
         <p className="text-gray-600 text-xs">We'll send a verification link.</p>

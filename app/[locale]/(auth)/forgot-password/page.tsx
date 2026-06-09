@@ -54,7 +54,7 @@ export default function ForgotPasswordPage() {
           value={email}
           onChange={e => setEmail(e.target.value)}
           required
-          className="w-full px-4 py-2 rounded-lg bg-background border border-border text-white focus:outline-none focus:border-accent placeholder-gray-600"
+          className="w-full px-4 py-2 rounded-lg bg-background border border-border text-white focus:outline-none focus:border-focus-border placeholder-gray-600"
         />
         <button
           type="submit"

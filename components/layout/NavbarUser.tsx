@@ -72,7 +72,7 @@ export async function NavbarUser() {
       <span className="hidden md:block h-6 w-px bg-white/10 mx-2 shrink-0" />
       <Link
         href="/wallet"
-        className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded border border-border bg-surface-2 hover:border-accent/50 transition-colors mr-3"
+        className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded border border-border bg-surface-2 hover:border-gray-500 transition-colors mr-3"
       >
         <span className="text-accent-gold text-xs font-bold tabular-nums">{amoBalance.toFixed(2)}</span>
         <span className="text-muted text-[10px] font-medium">coin</span>
@@ -113,7 +113,7 @@ export async function NavbarUserMobile() {
     <>
       <Link
         href="/wallet"
-        className="flex items-center gap-1.5 px-2.5 py-1 rounded border border-border bg-surface-2 hover:border-accent/50 transition-colors"
+        className="flex items-center gap-1.5 px-2.5 py-1 rounded border border-border bg-surface-2 hover:border-gray-500 transition-colors"
       >
         <span className="text-accent-gold text-xs font-bold tabular-nums">{amoBalance.toFixed(2)}</span>
         <span className="text-muted text-[10px] font-medium">coin</span>

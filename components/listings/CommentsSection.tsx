@@ -57,7 +57,7 @@ export function CommentsSection({ listingId, initialComments, isAuthenticated, h
             placeholder="Share your experience with this item..."
             maxLength={500}
             rows={3}
-            className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 resize-none focus:outline-none focus:border-accent/50 transition-colors"
+            className="w-full bg-surface border border-border rounded-xl px-4 py-3 text-sm text-white placeholder-gray-600 resize-none focus:outline-none focus:border-focus-border/50 transition-colors"
           />
           <div className="flex items-center justify-between">
             <span className="text-gray-700 text-xs">{body.length}/500</span>

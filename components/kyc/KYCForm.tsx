@@ -119,7 +119,7 @@ export function KYCForm({ currentStatus, submittedAt, reviewedAt, hasEmail = tru
                   type="email"
                   required
                   placeholder="you@example.com"
-                  className="w-full px-3 py-2 rounded bg-background border border-border text-white text-sm placeholder-gray-600 focus:outline-none focus:border-accent transition-colors"
+                  className="w-full px-3 py-2 rounded bg-background border border-border text-white text-sm placeholder-gray-600 focus:outline-none focus:border-focus-border transition-colors"
                 />
                 <p className="text-gray-600 text-xs mt-1">Used for order notifications and account recovery.</p>
               </div>
@@ -147,7 +147,7 @@ export function KYCForm({ currentStatus, submittedAt, reviewedAt, hasEmail = tru
               <button
                 type="button"
                 onClick={() => fileRef.current?.click()}
-                className={`w-full rounded border border-dashed py-6 text-center transition-colors ${fileName ? 'border-accent/50 bg-accent/5' : 'border-border hover:border-accent/50'}`}
+                className={`w-full rounded border border-dashed py-6 text-center transition-colors ${fileName ? 'border-accent/50 bg-accent/5' : 'border-border hover:border-gray-500'}`}
               >
                 {fileName ? (
                   <p className="text-accent text-sm truncate px-4">{fileName}</p>

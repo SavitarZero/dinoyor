@@ -28,7 +28,7 @@ export function PayoutSettingsForm({ currentMin }: { currentMin: number }) {
             step="0.01"
             value={value}
             onChange={e => setValue(e.target.value)}
-            className="w-full px-3 py-2.5 pr-9 rounded-xl bg-background border border-border text-white text-sm focus:outline-none focus:border-accent transition-colors"
+            className="w-full px-3 py-2.5 pr-9 rounded-xl bg-background border border-border text-white text-sm focus:outline-none focus:border-focus-border transition-colors"
           />
           <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col">
             <button type="button" onClick={() => setValue(String(Math.max(1, (parseFloat(value) || 0) + 1)))} className="text-gray-500 hover:text-white transition-colors">

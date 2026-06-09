@@ -99,7 +99,7 @@ export default function InfoPage() {
           <Link href="/market" className="px-6 py-2.5 rounded-full bg-accent text-black font-bold text-sm hover:opacity-90 transition-opacity">
             Browse Market
           </Link>
-          <Link href="/register" className="px-6 py-2.5 rounded-full border border-border text-white text-sm hover:border-accent transition-colors">
+          <Link href="/register" className="px-6 py-2.5 rounded-full border border-border text-white text-sm hover:border-gray-500 transition-colors">
             Create Account
           </Link>
         </div>

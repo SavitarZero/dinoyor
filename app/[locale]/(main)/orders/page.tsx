@@ -98,7 +98,7 @@ export default async function OrdersPage({ searchParams }: Props) {
               <Link
                 key={o.id}
                 href={`/orders/${o.id}`}
-                className="flex items-center gap-4 p-4 rounded-xl border border-border bg-surface hover:border-accent transition-all group"
+                className="flex items-center gap-4 p-4 rounded-xl border border-border bg-surface hover:border-gray-500 transition-all group"
               >
                 <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden bg-background shrink-0">
                   {image ? (
@@ -136,7 +136,7 @@ export default async function OrdersPage({ searchParams }: Props) {
                 </div>
 
                 <div className="text-right shrink-0">
-                  <p className="text-white text-sm font-bold">{o.amount} coin</p>
+                  <p className="text-accent-gold text-sm font-bold">{o.amount} coin</p>
                 </div>
 
                 <svg className="w-4 h-4 text-gray-600 group-hover:text-accent transition-colors shrink-0 hidden sm:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -157,7 +157,7 @@ export default async function OrdersPage({ searchParams }: Props) {
             <Link
               href={buildUrl(currentPage - 1)}
               className={`px-3 py-2 rounded-xl border border-border text-sm transition-colors ${
-                currentPage <= 1 ? 'text-gray-700 pointer-events-none' : 'text-gray-400 hover:text-white hover:border-accent'
+                currentPage <= 1 ? 'text-gray-700 pointer-events-none' : 'text-gray-400 hover:text-white hover:border-gray-500'
               }`}
               aria-disabled={currentPage <= 1}
             >
@@ -170,7 +170,7 @@ export default async function OrdersPage({ searchParams }: Props) {
                 className={`w-9 h-9 rounded-xl flex items-center justify-center text-sm font-medium transition-colors ${
                   p === currentPage
                     ? 'bg-accent text-black'
-                    : 'border border-border text-gray-400 hover:text-white hover:border-accent'
+                    : 'border border-border text-gray-400 hover:text-white hover:border-gray-500'
                 }`}
               >
                 {p}
@@ -179,7 +179,7 @@ export default async function OrdersPage({ searchParams }: Props) {
             <Link
               href={buildUrl(currentPage + 1)}
               className={`px-3 py-2 rounded-xl border border-border text-sm transition-colors ${
-                currentPage >= totalPages ? 'text-gray-700 pointer-events-none' : 'text-gray-400 hover:text-white hover:border-accent'
+                currentPage >= totalPages ? 'text-gray-700 pointer-events-none' : 'text-gray-400 hover:text-white hover:border-gray-500'
               }`}
               aria-disabled={currentPage >= totalPages}
             >

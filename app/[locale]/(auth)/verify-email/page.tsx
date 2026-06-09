@@ -39,7 +39,7 @@ export default function VerifyEmailPage() {
 
       <Link
         href="/login"
-        className="inline-block px-5 py-2 rounded-xl border border-border text-gray-400 text-sm hover:text-white hover:border-accent transition-colors"
+        className="inline-block px-5 py-2 rounded-xl border border-border text-gray-400 text-sm hover:text-white hover:border-gray-500 transition-colors"
       >
         Back to sign in
       </Link>

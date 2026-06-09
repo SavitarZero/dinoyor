@@ -287,7 +287,7 @@ export function PaymentSection({
                   className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                     copied
                       ? 'bg-green-900/30 border border-green-700/50 text-green-400'
-                      : 'bg-surface border border-border text-gray-400 hover:text-white hover:border-accent'
+                      : 'bg-surface border border-border text-gray-400 hover:text-white hover:border-gray-500'
                   }`}
                 >
                   {copied ? (
@@ -316,7 +316,7 @@ export function PaymentSection({
             value={txHash}
             onChange={e => setTxHash(e.target.value)}
             placeholder={wallet?.network === 'TRC20' ? 'e.g. a1b2c3d4...' : 'e.g. 0xa1b2c3...'}
-            className="w-full px-4 py-3 rounded-xl bg-background border border-border text-white text-sm font-mono placeholder-gray-600 focus:outline-none focus:border-accent transition-colors"
+            className="w-full px-4 py-3 rounded-xl bg-background border border-border text-white text-sm font-mono placeholder-gray-600 focus:outline-none focus:border-focus-border transition-colors"
           />
           <p className="text-gray-600 text-xs mt-1.5">
             Find the TX ID in your wallet app or exchange after sending

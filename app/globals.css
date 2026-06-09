@@ -1,14 +1,19 @@
 @import "tailwindcss";
 
 :root {
-  --background:   #111110;
-  --surface:      #1a1917;
-  --surface-2:    #242220;
-  --border-color: #2e2c2a;
-  --accent:       #C68B45;
-  --accent-gold:  #E5B26D;
-  --foreground:   #f0e8d8;
-  --muted:        #7a6a58;
+  --background:   #0a0a0a;
+  --surface:      #141414;
+  --surface-2:    #1e1e1e;
+  --border-color: #2a2a2a;
+  --accent:       #E51A1A;
+  --accent-hover: #FF3333;
+  --accent-muted: #991111;
+  --accent-gold:  #F59E0B;
+  --success:      #22c55e;
+  --success-hover:#16a34a;
+  --focus-border: #525252;
+  --foreground:   #f0f0f0;
+  --muted:        #6b6b6b;
 }
 
 .scrollbar-none {
@@ -27,7 +32,7 @@
   background: var(--background);
 }
 ::-webkit-scrollbar-thumb {
-  background: #3a3835;
+  background: #333333;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
@@ -36,7 +41,7 @@
 
 /* Text selection */
 ::selection {
-  background: rgba(198, 139, 69, 0.35);
+  background: rgba(229, 26, 26, 0.35);
   color: var(--foreground);
 }
 
@@ -46,7 +51,12 @@
   --color-surface-2:  var(--surface-2);
   --color-border:     var(--border-color);
   --color-accent:     var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-muted: var(--accent-muted);
   --color-accent-gold: var(--accent-gold);
+  --color-success:    var(--success);
+  --color-success-hover: var(--success-hover);
+  --color-focus-border: var(--focus-border);
   --color-foreground: var(--foreground);
   --color-muted:      var(--muted);
 }

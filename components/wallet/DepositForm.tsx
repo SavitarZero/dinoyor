@@ -135,7 +135,7 @@ export function DepositForm({ escrowAddresses, senderWallets, minDeposit }: Read
                 placeholder={network === 'ERC20' ? 'e.g. 0x...' : 'e.g. TXyz...'}
                 required
                 autoFocus
-                className="w-full px-3 py-2 rounded bg-surface border border-border text-white text-xs font-mono placeholder-gray-600 focus:outline-none focus:border-accent transition-colors"
+                className="w-full px-3 py-2 rounded bg-surface border border-border text-white text-xs font-mono placeholder-gray-600 focus:outline-none focus:border-focus-border transition-colors"
               />
               <div className="flex gap-2">
                 <button type="submit" disabled={walletLoading} className="px-3 py-1 rounded bg-accent text-black text-xs font-bold hover:opacity-90 disabled:opacity-50">
@@ -169,7 +169,7 @@ export function DepositForm({ escrowAddresses, senderWallets, minDeposit }: Read
                   <button
                     type="button"
                     onClick={() => { setEditValue(senderWallet); setEditing(true) }}
-                    className="px-3 py-1 rounded border border-border text-gray-400 text-xs hover:text-white hover:border-accent transition-colors"
+                    className="px-3 py-1 rounded border border-border text-gray-400 text-xs hover:text-white hover:border-gray-500 transition-colors"
                   >
                     Edit
                   </button>
@@ -190,7 +190,7 @@ export function DepositForm({ escrowAddresses, senderWallets, minDeposit }: Read
               <button
                 type="button"
                 onClick={() => { setEditValue(''); setEditing(true) }}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded border border-border text-gray-400 text-xs hover:text-white hover:border-accent transition-colors"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded border border-border text-gray-400 text-xs hover:text-white hover:border-gray-500 transition-colors"
               >
                 + Add {network} wallet
               </button>
@@ -211,7 +211,7 @@ export function DepositForm({ escrowAddresses, senderWallets, minDeposit }: Read
                   className={`shrink-0 px-3 py-1.5 rounded text-xs font-medium transition-all border ${
                     copied
                       ? 'bg-green-900/30 border-green-700/50 text-green-400'
-                      : 'bg-surface border-border text-gray-400 hover:text-white hover:border-accent'
+                      : 'bg-surface border-border text-gray-400 hover:text-white hover:border-gray-500'
                   }`}
                 >
                   {copied ? '✓ Copied' : 'Copy'}
@@ -237,7 +237,7 @@ export function DepositForm({ escrowAddresses, senderWallets, minDeposit }: Read
               value={txHash}
               onChange={e => setTxHash(e.target.value)}
               placeholder={network === 'TRC20' ? 'e.g. a1b2c3d4e5...' : 'e.g. 0xa1b2c3...'}
-              className="w-full px-4 py-3 rounded bg-background border border-border text-white text-sm font-mono placeholder-gray-600 focus:outline-none focus:border-accent transition-colors"
+              className="w-full px-4 py-3 rounded bg-background border border-border text-white text-sm font-mono placeholder-gray-600 focus:outline-none focus:border-focus-border transition-colors"
             />
             <p className="text-gray-600 text-xs mt-1.5">Find the TX ID in your wallet app or exchange after sending</p>
           </div>

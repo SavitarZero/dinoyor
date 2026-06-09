@@ -142,7 +142,7 @@ export default async function MyListingsPage({
             <div
               key={listing.id}
               className={`flex flex-col rounded-xl border bg-surface overflow-hidden transition-colors ${
-                listing.status === 'cancelled' ? 'border-border opacity-60' : 'border-border hover:border-accent/40'
+                listing.status === 'cancelled' ? 'border-border opacity-60' : 'border-border hover:border-gray-500/40'
               }`}
             >
               {/* Image */}
@@ -190,7 +190,7 @@ export default async function MyListingsPage({
               <div className="border-t border-border px-3 py-2.5 flex gap-2">
                 <Link
                   href={`/market/${listing.id}`}
-                  className="flex-1 py-1.5 rounded-lg border border-border text-gray-400 text-xs font-medium text-center hover:text-white hover:border-accent/50 transition-colors"
+                  className="flex-1 py-1.5 rounded-lg border border-border text-gray-400 text-xs font-medium text-center hover:text-white hover:border-gray-500 transition-colors"
                 >
                   View
                 </Link>

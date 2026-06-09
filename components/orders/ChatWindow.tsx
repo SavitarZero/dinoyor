@@ -121,7 +121,7 @@ export function ChatWindow({ conversationId, initialMessages, currentUserId }: P
           value={body}
           onChange={e => setBody(e.target.value)}
           placeholder="Type a message..."
-          className="flex-1 min-w-0 px-3 py-2 rounded-xl bg-background border border-border text-white text-sm placeholder-gray-600 focus:outline-none focus:border-accent/60 transition-colors"
+          className="flex-1 min-w-0 px-3 py-2 rounded-xl bg-background border border-border text-white text-sm placeholder-gray-600 focus:outline-none focus:border-focus-border/60 transition-colors"
         />
         <button
           type="submit"

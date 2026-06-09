@@ -30,7 +30,7 @@ export default function RegisterPage() {
     router.push('/login')
   }
 
-  const inputCls = 'w-full px-4 py-2.5 rounded-xl bg-background border border-border text-white text-sm placeholder-gray-600 focus:outline-none focus:border-accent transition-colors'
+  const inputCls = 'w-full px-4 py-2.5 rounded-xl bg-background border border-border text-white text-sm placeholder-gray-600 focus:outline-none focus:border-focus-border transition-colors'
 
   return (
     <div>

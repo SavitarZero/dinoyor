@@ -17,7 +17,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${geist.variable} h-full`} suppressHydrationWarning>
       <body className="min-h-full antialiased">
-        <NextTopLoader color="#E5B26D" shadow={false} showSpinner={false} height={2} />
+        <NextTopLoader color="#E51A1A" shadow={false} showSpinner={false} height={2} />
         {children}
       </body>
     </html>

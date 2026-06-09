@@ -43,9 +43,9 @@ export default async function WalletPage() {
         {/* Balance card */}
         <div className="rounded-xl border border-accent/20 bg-accent/5 p-5 flex flex-col gap-2">
           <p className="text-gray-500 text-xs uppercase tracking-wide">Balance</p>
-          <p className="text-3xl font-bold text-accent">
+          <p className="text-3xl font-bold text-accent-gold">
             {buyerBalance.toFixed(2)}
-            <span className="text-lg text-accent/60 ml-1.5">coin</span>
+            <span className="text-lg text-accent-gold/60 ml-1.5">coin</span>
           </p>
           <p className="text-gray-500 text-xs">Used for purchases — topped up via deposit</p>
         </div>

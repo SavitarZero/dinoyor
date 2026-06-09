@@ -124,7 +124,7 @@ export default async function MyListingsPage({
       {filtered.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {filtered.map((listing: any) => {
-            let cardClass = 'border-border hover:border-accent/40'
+            let cardClass = 'border-border hover:border-gray-500/40'
             if (listing.status === 'cancelled') cardClass = 'border-border opacity-50'
             else if (listing.status === 'sold') cardClass = 'border-border opacity-75'
             return (
@@ -194,7 +194,7 @@ export default async function MyListingsPage({
               <div className="border-t border-border px-3 py-2.5 flex gap-2">
                 <Link
                   href={`/market/${listing.id}`}
-                  className="flex-1 py-1.5 rounded border border-border text-gray-400 text-xs font-medium text-center hover:text-white hover:border-accent/50 transition-colors"
+                  className="flex-1 py-1.5 rounded border border-border text-gray-400 text-xs font-medium text-center hover:text-white hover:border-gray-500 transition-colors"
                 >
                   View
                 </Link>

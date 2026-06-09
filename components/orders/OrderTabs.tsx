@@ -50,7 +50,7 @@ export function OrderTabs({ activeRole, activeStatus }: { activeRole: string; ac
             className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${
               activeStatus === tab.id
                 ? 'bg-accent/10 border border-accent/30 text-accent'
-                : 'border border-border text-gray-500 hover:text-white hover:border-accent'
+                : 'border border-border text-gray-500 hover:text-white hover:border-gray-500'
             }`}
           >
             {tab.label}

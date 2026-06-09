@@ -68,7 +68,7 @@ function NetworkWallet({ network, address }: Readonly<{ network: Network; addres
             </div>
           ) : (
             <div className="flex gap-2">
-              <button onClick={() => { setEditing(true); setSaved(false) }} className="px-3 py-1 rounded border border-border text-gray-400 text-xs hover:text-white hover:border-accent transition-colors">
+              <button onClick={() => { setEditing(true); setSaved(false) }} className="px-3 py-1 rounded border border-border text-gray-400 text-xs hover:text-white hover:border-gray-500 transition-colors">
                 Edit
               </button>
               <button onClick={() => setConfirmDel(true)} className="px-3 py-1 rounded border border-red-700/40 text-red-400 text-xs hover:bg-red-900/20 transition-colors">
@@ -87,7 +87,7 @@ function NetworkWallet({ network, address }: Readonly<{ network: Network; addres
             onChange={e => setValue(e.target.value)}
             placeholder={placeholder}
             required
-            className="w-full px-3 py-2 rounded-lg bg-surface border border-border text-white text-xs font-mono placeholder-gray-600 focus:outline-none focus:border-accent transition-colors"
+            className="w-full px-3 py-2 rounded-lg bg-surface border border-border text-white text-xs font-mono placeholder-gray-600 focus:outline-none focus:border-focus-border transition-colors"
           />
           <div className="flex gap-2">
             <button type="submit" disabled={loading} className="px-3 py-1 rounded bg-accent text-black text-xs font-bold hover:opacity-90 disabled:opacity-50">

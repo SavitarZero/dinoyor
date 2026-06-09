@@ -177,7 +177,7 @@ export default async function OrderDetailPage({
                 </div>
               </div>
               <div className="text-right shrink-0">
-                <p className="text-white text-sm font-bold">{order.amount} coin</p>
+                <p className="text-accent-gold text-sm font-bold">{order.amount} coin</p>
               </div>
             </div>
           </div>
@@ -258,7 +258,7 @@ export default async function OrderDetailPage({
                   'use server'
                   await buyerConfirmReceived(id)
                 }}>
-                  <button className="px-4 py-1.5 rounded-lg bg-accent text-black text-xs font-bold hover:opacity-90">
+                  <button className="px-4 py-1.5 rounded-lg bg-success text-black text-xs font-bold hover:bg-success-hover transition-colors">
                     Confirm Received
                   </button>
                 </form>

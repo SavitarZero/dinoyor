@@ -70,7 +70,7 @@ export function WalletAddressForm({ currentAddress, currentNetwork }: Props) {
           <div className="flex gap-2">
             <button
               onClick={() => { setEditing(true); setSaved(false) }}
-              className="px-3 py-1 rounded border border-border text-gray-400 text-xs hover:text-white hover:border-accent transition-colors"
+              className="px-3 py-1 rounded border border-border text-gray-400 text-xs hover:text-white hover:border-gray-500 transition-colors"
             >
               Edit
             </button>
@@ -109,7 +109,7 @@ export function WalletAddressForm({ currentAddress, currentNetwork }: Props) {
           onChange={e => setAddress(e.target.value)}
           placeholder="e.g. TXyz... / 0x..."
           required
-          className="w-full px-3 py-2 rounded-lg bg-background border border-border text-white text-sm font-mono placeholder-gray-600 focus:outline-none focus:border-accent transition-colors"
+          className="w-full px-3 py-2 rounded-lg bg-background border border-border text-white text-sm font-mono placeholder-gray-600 focus:outline-none focus:border-focus-border transition-colors"
         />
         <p className="text-gray-600 text-xs mt-1">Double-check the address and network — incorrect addresses cannot be recovered.</p>
       </div>

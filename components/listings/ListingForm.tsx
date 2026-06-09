@@ -220,7 +220,7 @@ export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ ga
   const youReceive = Math.max(0, priceNum - percentFeeAmt - resolvedFlatFee)
   const fee = percentFeeAmt
 
-  const inputCls = 'w-full px-3 py-2.5 rounded bg-background border border-border text-white placeholder-gray-600 text-sm focus:outline-none focus:border-accent transition-colors'
+  const inputCls = 'w-full px-3 py-2.5 rounded bg-background border border-border text-white placeholder-gray-600 text-sm focus:outline-none focus:border-focus-border transition-colors'
   const labelCls = 'block text-xs font-medium text-gray-400 mb-1.5'
 
   return (
@@ -361,7 +361,7 @@ export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ ga
                 <button
                   type="button"
                   onClick={() => coverRef.current?.click()}
-                  className="w-full aspect-[4/3] rounded border-2 border-dashed border-border hover:border-accent transition-colors flex flex-col items-center justify-center gap-2"
+                  className="w-full aspect-[4/3] rounded border-2 border-dashed border-border hover:border-gray-500 transition-colors flex flex-col items-center justify-center gap-2"
                 >
                   <svg className="w-8 h-8 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0022.5 18.75V5.25A2.25 2.25 0 0020.25 3H3.75A2.25 2.25 0 001.5 5.25v13.5A2.25 2.25 0 003.75 21z" />
@@ -408,7 +408,7 @@ export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ ga
                   <button
                     type="button"
                     onClick={() => additionalRef.current?.click()}
-                    className="aspect-square rounded border-2 border-dashed border-border hover:border-accent transition-colors flex items-center justify-center"
+                    className="aspect-square rounded border-2 border-dashed border-border hover:border-gray-500 transition-colors flex items-center justify-center"
                   >
                     <span className="text-gray-500 text-lg">+</span>
                   </button>
@@ -467,7 +467,7 @@ export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ ga
                     </div>
                     <div className="border-t border-border pt-1.5 flex justify-between font-semibold">
                       <span className="text-white">You receive</span>
-                      <span className="text-accent">{youReceive.toFixed(2)} coin</span>
+                      <span className="text-accent-gold">{youReceive.toFixed(2)} coin</span>
                     </div>
                   </div>
                 )}
@@ -547,7 +547,7 @@ export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ ga
                 </div>
                 <div className="border-t border-border pt-2 flex justify-between text-sm">
                   <span className="text-white font-medium">You receive</span>
-                  <span className="text-accent font-bold">{priceNum > 0 ? `${youReceive.toFixed(2)} coin` : '—'}</span>
+                  <span className="text-accent-gold font-bold">{priceNum > 0 ? `${youReceive.toFixed(2)} coin` : '—'}</span>
                 </div>
               </div>
             </div>
@@ -556,7 +556,7 @@ export function ListingForm({ games, kycStatus, feePct, flatFee }: Readonly<{ ga
               <button
                 type="submit"
                 disabled={loading || coverCompressing || additionalCompressing || priceNum < MIN_PRICE}
-                className="w-full py-3 rounded bg-accent text-black font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-40"
+                className="w-full py-3 rounded bg-success text-black font-bold text-sm hover:bg-success-hover transition-colors disabled:opacity-40"
               >
                 {loading ? 'Publishing…' : 'Publish listing'}
               </button>
