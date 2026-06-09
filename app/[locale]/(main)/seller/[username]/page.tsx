@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation'
 import { ListingCard } from '@/components/listings/ListingCard'
 import type { ListingWithGame } from '@/lib/types/index'
 
-const PAGE_SIZE = 8
+const PAGE_SIZE = 10
 
 export default async function SellerStorePage({
   params,
