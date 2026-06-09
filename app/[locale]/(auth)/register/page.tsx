@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { signUpWithUsername } from '@/lib/actions/auth'
 import { GoogleButton } from '@/components/auth/GoogleButton'
 import { useTranslations } from 'next-intl'
+import { Eye, EyeOff } from 'lucide-react'
 
 export default function RegisterPage() {
   const t = useTranslations('auth')
@@ -12,6 +13,8 @@ export default function RegisterPage() {
   const [username, setUsername]               = useState('')
   const [password, setPassword]               = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [showPassword, setShowPassword]             = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [error, setError]                     = useState('')
   const [loading, setLoading]                 = useState(false)
 
@@ -60,30 +63,40 @@ export default function RegisterPage() {
 
         <div>
           <label htmlFor="password" className="block text-xs font-medium text-gray-400 mb-1.5">Password</label>
-          <input
-            id="password"
-            type="password"
-            placeholder={t('passwordMin')}
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            required
-            minLength={8}
-            className={inputCls}
-          />
+          <div className="relative">
+            <input
+              id="password"
+              type={showPassword ? 'text' : 'password'}
+              placeholder={t('passwordMin')}
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              required
+              minLength={8}
+              className={inputCls}
+            />
+            <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors">
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          </div>
         </div>
 
         <div>
           <label htmlFor="confirmPassword" className="block text-xs font-medium text-gray-400 mb-1.5">Confirm password</label>
-          <input
-            id="confirmPassword"
-            type="password"
-            placeholder={t('confirmPassword')}
-            value={confirmPassword}
-            onChange={e => setConfirmPassword(e.target.value)}
-            required
-            minLength={8}
-            className={inputCls}
-          />
+          <div className="relative">
+            <input
+              id="confirmPassword"
+              type={showConfirmPassword ? 'text' : 'password'}
+              placeholder={t('confirmPassword')}
+              value={confirmPassword}
+              onChange={e => setConfirmPassword(e.target.value)}
+              required
+              minLength={8}
+              className={inputCls}
+            />
+            <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors">
+              {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          </div>
         </div>
 
         <button
