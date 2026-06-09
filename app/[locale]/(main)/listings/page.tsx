@@ -69,15 +69,17 @@ export default async function MyListingsPage({
   // Order map for sold listings
   const soldListingIds = listings.filter(l => l.status === 'sold').map(l => l.id)
   let orderMap: Record<string, string> = {}
+  let activeOrderSet: Set<string> = new Set()
   if (soldListingIds.length > 0) {
     const { data: orders } = await supabase
       .from('orders')
-      .select('id, listing_id')
+      .select('id, listing_id, status')
       .in('listing_id', soldListingIds)
       .in('status', ['paid_escrow', 'delivered', 'completed'])
       .order('created_at', { ascending: false })
     for (const o of orders ?? []) {
       if (!orderMap[o.listing_id]) orderMap[o.listing_id] = o.id
+      if (o.status === 'paid_escrow' || o.status === 'delivered') activeOrderSet.add(o.listing_id)
     }
   }
 
@@ -241,7 +243,7 @@ export default async function MyListingsPage({
                     <RemoveListingButton listingId={listing.id} />
                   )}
                   {(listing.status === 'cancelled' || listing.status === 'sold') && (
-                    <RelistButton listingId={listing.id} disabled={!!orderMap[listing.id]} />
+                    <RelistButton listingId={listing.id} disabled={activeOrderSet.has(listing.id)} />
                   )}
                 </div>
               </div>
