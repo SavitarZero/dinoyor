@@ -5,24 +5,25 @@ import { notFound, redirect } from 'next/navigation'
 import { AutoReleaseTimer } from '@/components/orders/AutoReleaseTimer'
 import { ProofUpload } from '@/components/orders/ProofUpload'
 import { ChatWindow } from '@/components/orders/ChatWindow'
-import { buyerConfirmReceived, openDispute } from '@/lib/actions/orders'
+import { buyerConfirmReceived, openDispute, cancelOrder } from '@/lib/actions/orders'
 import type { Message } from '@/lib/types'
 
 const STEPS = [
-  { key: 'paid_escrow', label: 'Paid' },
-  { key: 'delivered',   label: 'Delivery' },
-  { key: 'confirmed',   label: 'Confirm' },
-  { key: 'completed',   label: 'Complete' },
+  { key: 'paid_escrow',       label: 'Secured' },
+  { key: 'pending_delivery',  label: 'Pending' },
+  { key: 'delivered',         label: 'Delivered' },
+  { key: 'confirmed',         label: 'Confirm' },
+  { key: 'completed',         label: 'Complete' },
 ]
 
 function getStepIndex(status: string) {
   const map: Record<string, number> = {
-    paid_escrow: 0,
-    delivered:   1,
-    confirmed:   2,
-    completed:   3,
+    paid_escrow: 1,
+    delivered:   2,
+    confirmed:   3,
+    completed:   4,
   }
-  return map[status] ?? -1
+  return map[status] ?? 0
 }
 
 export default async function OrderDetailPage({
@@ -86,16 +87,17 @@ export default async function OrderDetailPage({
           {/* Progress stepper */}
           {!isDisputed && !isCancelled && (
             <div className="rounded border border-border bg-surface px-4 py-4">
-              <div className="flex items-center">
+              <div className="flex items-center w-full">
                 {STEPS.map((step, i) => {
                   const done    = i < stepIndex
                   const current = i === stepIndex
+                  const isLast  = i === STEPS.length - 1
                   return (
-                    <div key={step.key} className="flex items-center flex-1">
+                    <div key={step.key} className={`flex items-center ${isLast ? '' : 'flex-1'}`}>
                       <div className="flex flex-col items-center gap-1">
                         <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border-2 ${
-                          done    ? 'bg-accent border-accent text-black' :
-                          current ? 'bg-accent/10 border-accent text-accent' :
+                          done    ? 'bg-success border-success text-black' :
+                          current ? 'bg-success/10 border-success text-success' :
                                     'bg-background border-border text-gray-600'
                         }`}>
                           {done ? (
@@ -104,12 +106,12 @@ export default async function OrderDetailPage({
                             </svg>
                           ) : i + 1}
                         </div>
-                        <span className={`text-[10px] font-medium text-center ${current ? 'text-accent' : done ? 'text-gray-400' : 'text-gray-600'}`}>
+                        <span className={`text-[10px] font-medium text-center ${current ? 'text-success' : done ? 'text-gray-400' : 'text-gray-600'}`}>
                           {step.label}
                         </span>
                       </div>
-                      {i < STEPS.length - 1 && (
-                        <div className={`flex-1 h-0.5 mx-1.5 mb-4 rounded-full ${done ? 'bg-accent' : 'bg-border'}`} />
+                      {!isLast && (
+                        <div className={`flex-1 h-0.5 mx-1.5 mb-4 rounded-full ${done ? 'bg-success' : 'bg-border'}`} />
                       )}
                     </div>
                   )
@@ -184,31 +186,51 @@ export default async function OrderDetailPage({
 
           {/* Paid from balance — seller notice */}
           {order.status === 'paid_escrow' && isSeller && (
-            <div className="rounded border border-border bg-surface px-4 py-3 flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-accent/10 border border-accent/20 flex items-center justify-center shrink-0">
-                <svg className="w-4 h-4 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
-                </svg>
+            <div className="rounded border border-border bg-surface px-4 py-3 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-green-500/10 border border-green-500/20 flex items-center justify-center shrink-0">
+                  <svg className="w-4 h-4 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-white text-sm font-semibold">Payment received</p>
+                  <p className="text-gray-500 text-xs">{order.amount} coin deducted from buyer. Please deliver the item.</p>
+                </div>
               </div>
-              <div>
-                <p className="text-white text-sm font-semibold">Payment received</p>
-                <p className="text-gray-500 text-xs">{order.amount} coin deducted from buyer's Coin Wallet. Please deliver the item.</p>
-              </div>
+              <form action={async () => {
+                'use server'
+                await cancelOrder(id)
+              }}>
+                <button className="px-3 py-1.5 rounded-lg border border-red-700/40 text-red-400 text-xs font-bold hover:bg-red-900/20 transition-colors">
+                  Cancel Order
+                </button>
+              </form>
             </div>
           )}
 
           {/* Paid from balance — buyer notice */}
           {order.status === 'paid_escrow' && isBuyer && (
-            <div className="rounded border border-border bg-surface px-4 py-3 flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center shrink-0">
-                <svg className="w-4 h-4 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+            <div className="rounded border border-border bg-surface px-4 py-3 flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center shrink-0">
+                  <svg className="w-4 h-4 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-white text-sm font-semibold">Waiting for delivery</p>
+                  <p className="text-gray-500 text-xs">{order.amount} coin held securely. Seller will deliver soon.</p>
+                </div>
               </div>
-              <div>
-                <p className="text-white text-sm font-semibold">Waiting for delivery</p>
-                <p className="text-gray-500 text-xs">{order.amount} coin deducted from your Coin Wallet. Seller will deliver soon.</p>
-              </div>
+              <form action={async () => {
+                'use server'
+                await cancelOrder(id)
+              }}>
+                <button className="px-3 py-1.5 rounded-lg border border-red-700/40 text-red-400 text-xs font-bold hover:bg-red-900/20 transition-colors">
+                  Cancel Order
+                </button>
+              </form>
             </div>
           )}
 

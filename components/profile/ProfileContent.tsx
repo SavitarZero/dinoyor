@@ -210,11 +210,11 @@ const PER_PAGE = 5
 
 const STATUS_OPTIONS = [
   { value: 'all', label: 'All' },
-  { value: 'awaiting_payment', label: 'Awaiting Payment' },
-  { value: 'paid_escrow', label: 'Awaiting Delivery' },
+  { value: 'awaiting_payment', label: 'Secured' },
+  { value: 'paid_escrow', label: 'Pending Delivery' },
   { value: 'delivered', label: 'Delivered' },
   { value: 'completed', label: 'Completed' },
-  { value: 'disputed', label: 'Disputed' },
+  { value: 'disputed', label: 'Refunded' },
   { value: 'cancelled', label: 'Cancelled' },
 ]
 

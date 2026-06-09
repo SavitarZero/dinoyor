@@ -6,11 +6,11 @@ import { OrderTabs } from '@/components/orders/OrderTabs'
 import type { OrderStatus } from '@/lib/types/index'
 
 const STATUS_LABEL: Record<OrderStatus, string> = {
-  awaiting_payment: 'Awaiting Payment',
-  paid_escrow:      'Awaiting Delivery',
+  awaiting_payment: 'Secured',
+  paid_escrow:      'Pending Delivery',
   delivered:        'Delivered',
   completed:        'Completed',
-  disputed:         'Disputed',
+  disputed:         'Refunded',
   cancelled:        'Cancelled',
 }
 

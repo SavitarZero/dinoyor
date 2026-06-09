@@ -251,3 +251,32 @@ export async function openDispute(orderId: string, reason: string) {
   revalidatePath(`/orders/${orderId}`)
   return { success: true }
 }
+
+export async function cancelOrder(orderId: string) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Not authenticated' }
+
+  const { data: order } = await supabase
+    .from('orders')
+    .select('id, buyer_id, seller_id, amount, status, listing_id')
+    .eq('id', orderId)
+    .single()
+
+  if (!order) return { error: 'Order not found' }
+  if (order.buyer_id !== user.id && order.seller_id !== user.id) return { error: 'Unauthorized' }
+  if (order.status !== 'paid_escrow') return { error: 'Can only cancel orders that are pending delivery' }
+
+  await supabase.rpc('increment_user_balance', {
+    p_user_id: order.buyer_id,
+    p_currency: 'USDT',
+    p_amount: order.amount,
+  })
+
+  await supabase.from('orders').update({ status: 'cancelled' }).eq('id', orderId)
+  await supabase.from('listings').update({ status: 'active' }).eq('id', order.listing_id)
+
+  revalidatePath(`/orders/${orderId}`)
+  revalidatePath('/orders')
+  return { success: true }
+}

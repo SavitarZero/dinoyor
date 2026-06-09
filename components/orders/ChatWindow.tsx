@@ -100,11 +100,11 @@ export function ChatWindow({ conversationId, initialMessages, currentUserId }: P
             <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
               <div className={`max-w-[75%] rounded-2xl px-3 py-2 ${
                 isMe
-                  ? 'bg-accent text-black rounded-br-sm'
+                  ? 'bg-white/10 text-white rounded-br-sm'
                   : 'bg-background border border-border text-white rounded-bl-sm'
               }`}>
                 <p className="text-sm leading-snug">{msg.body}</p>
-                <p suppressHydrationWarning className={`text-[10px] mt-1 ${isMe ? 'text-black/50' : 'text-gray-600'}`}>
+                <p suppressHydrationWarning className={`text-[10px] mt-1 ${isMe ? 'text-gray-500' : 'text-gray-600'}`}>
                   {new Date(msg.created_at).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
                 </p>
               </div>
@@ -126,7 +126,7 @@ export function ChatWindow({ conversationId, initialMessages, currentUserId }: P
         <button
           type="submit"
           disabled={!body.trim() || sending}
-          className="px-4 py-2 rounded-xl bg-success text-black text-sm font-semibold disabled:opacity-40 hover:bg-success-hover transition-colors shrink-0"
+          className="px-4 py-2 rounded-xl bg-white/10 text-white text-sm font-semibold disabled:opacity-40 hover:bg-white/20 transition-colors shrink-0"
         >
           Send
         </button>
