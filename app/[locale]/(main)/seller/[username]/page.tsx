@@ -150,7 +150,7 @@ export default async function SellerStorePage({
             </div>
 
             {/* Pagination */}
-            {totalCount > 1 && (
+            {totalCount >= 1 && (
               <div className="flex items-center justify-center gap-1 mt-8">
                 {page > 1 ? (
                   <Link href={pageHref(page - 1)} className="px-3 py-2 rounded text-sm text-gray-400 hover:text-white hover:bg-white/8 transition-colors">←</Link>
