@@ -62,7 +62,7 @@ export function EmailForm({ currentEmail }: { currentEmail: string | null }) {
         <button
           type="submit"
           disabled={loading}
-          className="px-4 py-1.5 rounded-lg bg-accent text-black text-xs font-bold hover:opacity-90 disabled:opacity-50 transition-opacity"
+          className="px-4 py-1.5 rounded-lg bg-success text-black text-xs font-bold hover:opacity-90 disabled:opacity-50 transition-opacity"
         >
           {loading ? 'Sending…' : 'Send link'}
         </button>

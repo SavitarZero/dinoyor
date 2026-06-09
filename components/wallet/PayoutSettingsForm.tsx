@@ -47,7 +47,7 @@ export function PayoutSettingsForm({ currentMin }: { currentMin: number }) {
       <button
         type="submit"
         disabled={saving}
-        className="px-4 py-2.5 rounded-xl bg-accent text-black text-sm font-semibold hover:opacity-90 disabled:opacity-50"
+        className="px-4 py-2.5 rounded-xl bg-success text-black text-sm font-semibold hover:opacity-90 disabled:opacity-50"
       >
         {saving ? 'Saving…' : 'Save'}
       </button>

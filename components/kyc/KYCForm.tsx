@@ -174,7 +174,7 @@ export function KYCForm({ currentStatus, submittedAt, reviewedAt, hasEmail = tru
             <button
               type="submit"
               disabled={loading}
-              className="px-4 py-2 rounded bg-accent text-black text-xs font-bold hover:opacity-90 disabled:opacity-50 transition-opacity"
+              className="px-4 py-2 rounded bg-success text-black text-xs font-bold hover:opacity-90 disabled:opacity-50 transition-opacity"
             >
               {loading ? 'Submitting…' : 'Apply to become a seller'}
             </button>

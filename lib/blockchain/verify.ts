@@ -59,7 +59,7 @@ export async function verifyTrc20Deposit(
 
     const txData = await txRes.json() as { data: unknown[] }
     if (!txData.data?.length) {
-      return { ok: false, error: 'Transaction not confirmed yet — wait a moment and resubmit' }
+      return { ok: false, error: 'Transaction not confirmed yet. Please wait and try again.' }
     }
 
     // Fetch events to find the Transfer
@@ -127,10 +127,10 @@ export async function verifyErc20Deposit(
     const { result } = await res.json() as { result: EthReceipt | null }
 
     if (!result) {
-      return { ok: false, error: 'Transaction not found — it may not be confirmed yet' }
+      return { ok: false, error: 'Transaction not found or not confirmed yet. Please wait and try again.' }
     }
     if (result.status !== '0x1') {
-      return { ok: false, error: 'Transaction failed on-chain' }
+      return { ok: false, error: 'Transaction failed on-chain. Please check and try again.' }
     }
 
     const log = result.logs.find(l =>

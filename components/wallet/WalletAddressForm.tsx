@@ -118,7 +118,7 @@ export function WalletAddressForm({ currentAddress, currentNetwork }: Props) {
         <button
           type="submit"
           disabled={loading}
-          className="px-4 py-1.5 rounded-lg bg-accent text-black text-xs font-bold hover:opacity-90 disabled:opacity-50"
+          className="px-4 py-1.5 rounded-lg bg-success text-black text-xs font-bold hover:opacity-90 disabled:opacity-50"
         >
           {loading ? 'Saving…' : 'Save'}
         </button>
