@@ -19,8 +19,8 @@ export function EditPriceButton({ listingId, currentPrice, status, disabled }: {
       setShowModal(true)
       return
     }
-    if (status !== 'cancelled' && status !== 'active') {
-      setError('cancel_required')
+    if (status === 'active') {
+      setError('must_remove')
       setShowModal(true)
       return
     }
@@ -72,6 +72,24 @@ export function EditPriceButton({ listingId, currentPrice, status, disabled }: {
                   <p className="text-white text-sm font-semibold">Cannot edit price</p>
                 </div>
                 <p className="text-yellow-400 text-xs">This listing has an active order that hasn't been completed yet. You can edit the price after the order is confirmed or cancelled.</p>
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="px-4 py-1.5 rounded-lg border border-border text-gray-400 text-xs font-bold hover:text-white hover:border-gray-500 transition-colors"
+                >
+                  OK
+                </button>
+              </>
+            ) : error === 'must_remove' ? (
+              <>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center shrink-0">
+                    <svg className="w-4 h-4 text-yellow-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                    </svg>
+                  </div>
+                  <p className="text-white text-sm font-semibold">Cannot edit price</p>
+                </div>
+                <p className="text-yellow-400 text-xs">This listing is currently on the market. Remove it first before editing the price.</p>
                 <button
                   onClick={() => setShowModal(false)}
                   className="px-4 py-1.5 rounded-lg border border-border text-gray-400 text-xs font-bold hover:text-white hover:border-gray-500 transition-colors"
