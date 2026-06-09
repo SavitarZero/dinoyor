@@ -49,18 +49,10 @@ export default async function OrderDetailPage({
 
   const [{ data: proofs }, { data: conversation }] = await Promise.all([
     supabase.from('order_proofs').select('screenshot_urls').eq('order_id', id),
-    supabase.from('conversations').select('id').eq('order_id', id).single(),
+    supabase.from('conversations').select('id, messages(id, body, created_at, sender_id)').eq('order_id', id).order('created_at', { referencedTable: 'messages', ascending: true }).single(),
   ])
 
-  let initialMessages: Message[] = []
-  if (conversation) {
-    const { data: msgs } = await supabase
-      .from('messages')
-      .select('id, body, created_at, sender_id')
-      .eq('conversation_id', conversation.id)
-      .order('created_at', { ascending: true })
-    initialMessages = (msgs ?? []) as Message[]
-  }
+  const initialMessages: Message[] = (conversation?.messages ?? []) as Message[]
 
   const stepIndex   = getStepIndex(order.status)
   const isDisputed  = order.status === 'disputed'

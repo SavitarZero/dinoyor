@@ -8,7 +8,7 @@ const handleI18nRouting = createMiddleware(routing)
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname
 
-  const protectedPaths = ['/profile', '/listings/new', '/orders', '/wallet']
+  const protectedPaths = ['/profile', '/listings/new', '/orders', '/wallet', '/earnings']
   const adminPaths = ['/admin']
 
   const isProtected =
@@ -35,9 +35,9 @@ export async function proxy(request: NextRequest) {
       }
     )
 
-    const { data: { user } } = await supabase.auth.getUser()
+    const { data: { session } } = await supabase.auth.getSession()
 
-    if (!user) {
+    if (!session?.user) {
       return NextResponse.redirect(new URL('/login', request.url))
     }
 

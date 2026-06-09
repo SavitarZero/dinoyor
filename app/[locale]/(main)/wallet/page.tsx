@@ -1,7 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { DepositForm } from '@/components/wallet/DepositForm'
-import { DepositWalletForm } from '@/components/wallet/DepositWalletForm'
 import type { DepositRequest } from '@/lib/types'
 
 export default async function WalletPage() {
@@ -38,7 +37,7 @@ export default async function WalletPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <h1 className="text-white text-xl font-bold mb-6">Coin Wallet</h1>
+      <h1 className="text-white text-xl font-bold mb-6">Ammonite Coin Wallet</h1>
       <div className="grid lg:grid-cols-3 gap-5">
 
         {/* Balance card */}
@@ -94,28 +93,18 @@ export default async function WalletPage() {
         </div>
       </div>
 
-      {/* Sender wallet setup */}
+      {/* Top up */}
       <div className="mt-5 rounded border border-border bg-surface">
         <div className="px-5 py-3 border-b border-border">
-          <p className="text-white text-sm font-semibold">Sender Address</p>
-          <p className="text-gray-500 text-xs">The wallet you send coin from.</p>
+          <p className="text-white text-sm font-semibold">Top up balance</p>
         </div>
         <div className="px-5 py-4">
-          <DepositWalletForm
-            trc20Address={senderWallets.trc20}
-            erc20Address={senderWallets.erc20}
+          <DepositForm
+            escrowAddresses={escrowAddresses}
+            senderWallets={senderWallets}
+            minDeposit={minDeposit}
           />
         </div>
-      </div>
-
-      {/* Deposit form */}
-      <div className="mt-5 rounded-xl border border-border bg-surface p-5">
-        <p className="text-white text-sm font-semibold mb-4">Top up balance</p>
-        <DepositForm
-          escrowAddresses={escrowAddresses}
-          senderWallets={senderWallets}
-          minDeposit={minDeposit}
-        />
       </div>
     </div>
   )

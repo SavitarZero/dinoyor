@@ -1,7 +1,6 @@
 'use client'
 import { useState } from 'react'
-import Link from 'next/link'
-import { submitDeposit } from '@/lib/actions/deposits'
+import { submitDeposit, saveDepositWallet, deleteDepositWallet } from '@/lib/actions/deposits'
 
 interface Props {
   escrowAddresses: { erc20: string; trc20: string }
@@ -16,14 +15,52 @@ export function DepositForm({ escrowAddresses, senderWallets, minDeposit }: Read
   const [result, setResult]   = useState<{ ok: true; amount: number } | { ok: false; error: string } | null>(null)
   const [copied, setCopied]   = useState(false)
 
+  // Local wallet state — updated optimistically after save/delete
+  const [localWallets, setLocalWallets] = useState({ trc20: senderWallets.trc20, erc20: senderWallets.erc20 })
+  const [editing, setEditing]           = useState(false)
+  const [editValue, setEditValue]       = useState('')
+  const [confirmDel, setConfirmDel]     = useState(false)
+  const [walletLoading, setWalletLoading] = useState(false)
+  const [walletError, setWalletError]     = useState('')
+
   const address      = network === 'TRC20' ? escrowAddresses.trc20 : escrowAddresses.erc20
-  const senderWallet = network === 'TRC20' ? senderWallets.trc20   : senderWallets.erc20
+  const senderWallet = network === 'TRC20' ? localWallets.trc20    : localWallets.erc20
+  const walletKey    = network === 'TRC20' ? 'trc20' : 'erc20'
+
+  function switchNetwork(n: 'TRC20' | 'ERC20') {
+    setNetwork(n)
+    setCopied(false)
+    setEditing(false)
+    setConfirmDel(false)
+    setWalletError('')
+  }
 
   async function handleCopy() {
     if (!address) return
     await navigator.clipboard.writeText(address)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
+  }
+
+  async function handleSaveWallet(e: React.SyntheticEvent<HTMLFormElement>) {
+    e.preventDefault()
+    setWalletError('')
+    setWalletLoading(true)
+    const res = await saveDepositWallet(editValue.trim(), network)
+    setWalletLoading(false)
+    if (res?.error) { setWalletError(res.error); return }
+    setLocalWallets(prev => ({ ...prev, [walletKey]: editValue.trim() }))
+    setEditing(false)
+  }
+
+  async function handleDeleteWallet() {
+    setWalletLoading(true)
+    setWalletError('')
+    const res = await deleteDepositWallet(network)
+    setWalletLoading(false)
+    if (res?.error) { setWalletError(res.error); setConfirmDel(false); return }
+    setLocalWallets(prev => ({ ...prev, [walletKey]: null }))
+    setConfirmDel(false)
   }
 
   async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
@@ -46,7 +83,7 @@ export function DepositForm({ escrowAddresses, senderWallets, minDeposit }: Read
 
   if (result?.ok) {
     return (
-      <div className="rounded-xl border border-green-700/40 bg-green-900/10 p-5 space-y-2">
+      <div className="rounded border border-green-700/40 bg-green-900/10 p-5 space-y-2">
         <div className="flex items-center gap-2">
           <svg className="w-5 h-5 text-green-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
@@ -69,12 +106,12 @@ export function DepositForm({ escrowAddresses, senderWallets, minDeposit }: Read
         <p className="text-white text-sm font-semibold">Step 1 — Send USDT to the platform wallet</p>
 
         {/* Network selector */}
-        <div className="flex rounded-xl overflow-hidden border border-border">
+        <div className="flex rounded overflow-hidden border border-border">
           {(['TRC20', 'ERC20'] as const).map(n => (
             <button
               key={n}
               type="button"
-              onClick={() => { setNetwork(n); setCopied(false) }}
+              onClick={() => switchNetwork(n)}
               className={`flex-1 py-2.5 text-xs font-semibold transition-colors ${
                 network === n ? 'bg-surface text-white border-b-2 border-accent' : 'text-gray-500 hover:text-gray-300 bg-background'
               }`}
@@ -85,32 +122,84 @@ export function DepositForm({ escrowAddresses, senderWallets, minDeposit }: Read
           ))}
         </div>
 
-        {/* Your registered sender wallet */}
-        {senderWallet ? (
-          <div className="rounded-xl bg-background border border-border p-3 space-y-0.5">
-            <p className="text-gray-500 text-xs uppercase tracking-wide">Send FROM this wallet</p>
-            <p className="text-white text-sm font-mono break-all">{senderWallet}</p>
-            <p className="text-gray-600 text-xs">Must match exactly — transactions from other addresses will be rejected</p>
-          </div>
-        ) : (
-          <div className="rounded-xl border border-yellow-700/40 bg-yellow-900/10 p-4 space-y-2">
-            <div className="flex items-start gap-3">
-              <svg className="w-5 h-5 text-yellow-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-              </svg>
-              <div>
-                <p className="text-yellow-400 font-semibold text-sm">No {network} sender wallet registered</p>
-                <p className="text-gray-400 text-xs mt-1">Register the wallet address you'll send from before making a deposit.</p>
+        {/* Sender wallet — inline add / edit / delete */}
+        <div className="rounded bg-background border border-border p-3">
+          {editing ? (
+            <form onSubmit={handleSaveWallet} className="space-y-2">
+              <p className="text-gray-500 text-xs uppercase tracking-wide mb-1">Send FROM ({network})</p>
+              {walletError && <p className="text-red-400 text-xs">{walletError}</p>}
+              <input
+                type="text"
+                value={editValue}
+                onChange={e => setEditValue(e.target.value)}
+                placeholder={network === 'ERC20' ? 'e.g. 0x...' : 'e.g. TXyz...'}
+                required
+                autoFocus
+                className="w-full px-3 py-2 rounded bg-surface border border-border text-white text-xs font-mono placeholder-gray-600 focus:outline-none focus:border-accent transition-colors"
+              />
+              <div className="flex gap-2">
+                <button type="submit" disabled={walletLoading} className="px-3 py-1 rounded bg-accent text-black text-xs font-bold hover:opacity-90 disabled:opacity-50">
+                  {walletLoading ? 'Saving…' : 'Save'}
+                </button>
+                {senderWallet && (
+                  <button type="button" onClick={() => { setEditing(false); setWalletError('') }} className="px-3 py-1 rounded border border-border text-gray-400 text-xs hover:text-white transition-colors">
+                    Cancel
+                  </button>
+                )}
               </div>
+            </form>
+          ) : senderWallet ? (
+            <div className="space-y-0.5">
+              <p className="text-gray-500 text-xs uppercase tracking-wide">Send FROM this wallet</p>
+              <p className="text-white text-sm font-mono break-all">{senderWallet}</p>
+              <p className="text-gray-600 text-xs">Must match exactly — transactions from other addresses will be rejected</p>
+              {walletError && <p className="text-red-400 text-xs mt-1">{walletError}</p>}
+              {confirmDel ? (
+                <div className="flex items-center gap-2 pt-2">
+                  <p className="text-gray-400 text-xs flex-1">Remove this wallet?</p>
+                  <button onClick={handleDeleteWallet} disabled={walletLoading} className="px-3 py-1 rounded bg-red-600 text-white text-xs font-bold hover:opacity-90 disabled:opacity-50">
+                    {walletLoading ? 'Removing…' : 'Yes'}
+                  </button>
+                  <button onClick={() => setConfirmDel(false)} className="px-3 py-1 rounded border border-border text-gray-400 text-xs hover:text-white transition-colors">
+                    Cancel
+                  </button>
+                </div>
+              ) : (
+                <div className="flex gap-2 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => { setEditValue(senderWallet); setEditing(true) }}
+                    className="px-3 py-1 rounded border border-border text-gray-400 text-xs hover:text-white hover:border-accent transition-colors"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setConfirmDel(true)}
+                    className="px-3 py-1 rounded border border-red-700/40 text-red-400 text-xs hover:bg-red-900/20 transition-colors"
+                  >
+                    Delete
+                  </button>
+                </div>
+              )}
             </div>
-            <Link href="/profile#deposit-wallet" className="inline-flex items-center gap-1.5 text-accent text-sm font-medium hover:underline">
-              Go to Profile → Wallet Settings →
-            </Link>
-          </div>
-        )}
+          ) : (
+            <div className="space-y-2">
+              <p className="text-gray-500 text-xs uppercase tracking-wide">Send FROM wallet ({network})</p>
+              <p className="text-gray-600 text-xs">No {network} sender wallet registered.</p>
+              <button
+                type="button"
+                onClick={() => { setEditValue(''); setEditing(true) }}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded border border-border text-gray-400 text-xs hover:text-white hover:border-accent transition-colors"
+              >
+                + Add {network} wallet
+              </button>
+            </div>
+          )}
+        </div>
 
         {/* Destination (platform escrow) address */}
-        <div className="rounded-xl bg-background border border-border p-4 space-y-2">
+        <div className="rounded bg-background border border-border p-4 space-y-2">
           {address ? (
             <>
               <p className="text-gray-500 text-xs uppercase tracking-wide">Send TO ({network})</p>
@@ -119,7 +208,7 @@ export function DepositForm({ escrowAddresses, senderWallets, minDeposit }: Read
                 <button
                   type="button"
                   onClick={handleCopy}
-                  className={`shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
+                  className={`shrink-0 px-3 py-1.5 rounded text-xs font-medium transition-all border ${
                     copied
                       ? 'bg-green-900/30 border-green-700/50 text-green-400'
                       : 'bg-surface border-border text-gray-400 hover:text-white hover:border-accent'
@@ -148,11 +237,9 @@ export function DepositForm({ escrowAddresses, senderWallets, minDeposit }: Read
               value={txHash}
               onChange={e => setTxHash(e.target.value)}
               placeholder={network === 'TRC20' ? 'e.g. a1b2c3d4e5...' : 'e.g. 0xa1b2c3...'}
-              className="w-full px-4 py-3 rounded-xl bg-background border border-border text-white text-sm font-mono placeholder-gray-600 focus:outline-none focus:border-accent transition-colors"
+              className="w-full px-4 py-3 rounded bg-background border border-border text-white text-sm font-mono placeholder-gray-600 focus:outline-none focus:border-accent transition-colors"
             />
-            <p className="text-gray-600 text-xs mt-1.5">
-              Find the TX ID in your wallet app or exchange after sending
-            </p>
+            <p className="text-gray-600 text-xs mt-1.5">Find the TX ID in your wallet app or exchange after sending</p>
           </div>
 
           {result && !result.ok && (
@@ -162,7 +249,7 @@ export function DepositForm({ escrowAddresses, senderWallets, minDeposit }: Read
           <button
             type="submit"
             disabled={loading || !address || !senderWallet}
-            className="w-full py-3 rounded-xl bg-accent text-black font-bold text-sm hover:opacity-90 disabled:opacity-40 transition-opacity"
+            className="w-full py-3 rounded bg-accent text-black font-bold text-sm hover:opacity-90 disabled:opacity-40 transition-opacity"
           >
             {loading ? 'Verifying on blockchain…' : `Verify & Credit — min ${minDeposit} USDT`}
           </button>

@@ -1,7 +1,6 @@
 'use client'
 import { useState, useRef, useEffect } from 'react'
 import Image from 'next/image'
-import imageCompression from 'browser-image-compression'
 import { createListing } from '@/lib/actions/listings'
 import Link from 'next/link'
 
@@ -43,6 +42,7 @@ const ADDITIONAL_MAX_MB  = 3
 const ADDITIONAL_MAX_COUNT = 5
 
 async function compressImage(file: File, maxWidthOrHeight: number, maxSizeMB: number): Promise<File> {
+  const { default: imageCompression } = await import('browser-image-compression')
   return imageCompression(file, {
     maxSizeMB,
     maxWidthOrHeight,

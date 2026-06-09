@@ -13,52 +13,35 @@ export default async function ProfilePage() {
     { data: profile },
     { count: activeListings },
     { data: balances },
-    { data: amoBalanceRow },
+    { data: buyerOrdersRaw },
   ] = await Promise.all([
-    supabase.from('profiles').select('username, avatar_url, kyc_status, role, wallet_address, wallet_network, pending_email, created_at').eq('id', user.id).single(),
+    supabase.from('profiles').select('username, avatar_url, kyc_status, role, pending_email, created_at').eq('id', user.id).single(),
     supabase.from('listings').select('*', { count: 'exact', head: true }).eq('seller_id', user.id).eq('status', 'active'),
     supabase.from('seller_balances').select('pending_amount, currency').eq('seller_id', user.id),
-    supabase.from('user_balances').select('balance').eq('user_id', user.id).eq('currency', 'USDT').maybeSingle(),
+    supabase.from('orders').select('id, status, amount, created_at, listings(title, images)').eq('buyer_id', user.id).order('created_at', { ascending: false }).limit(50),
   ])
 
   const role = profile?.role ?? 'user'
   const isSeller = role === 'seller' || role === 'admin'
+  const hasKyc = profile?.kyc_status === 'approved' || profile?.kyc_status === 'pending'
 
-  const { data: buyerOrders } = await supabase
-    .from('orders')
-    .select('id, status, amount, created_at, listings(title, images)')
-    .eq('buyer_id', user.id)
-    .order('created_at', { ascending: false })
-    .limit(50)
+  const [sellerOrdersRaw, kycSubmission] = await Promise.all([
+    isSeller
+      ? supabase.from('orders').select('id, status, amount, created_at, listings(title, images)').eq('seller_id', user.id).order('created_at', { ascending: false }).limit(50)
+      : Promise.resolve({ data: null }),
+    hasKyc
+      ? supabase.from('kyc_submissions').select('created_at, reviewed_at').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1).single()
+      : Promise.resolve({ data: null }),
+  ])
 
-  let sellerOrders: ProfileOrder[] = []
-  if (isSeller) {
-    const { data } = await supabase
-      .from('orders')
-      .select('id, status, amount, created_at, listings(title, images)')
-      .eq('seller_id', user.id)
-      .order('created_at', { ascending: false })
-      .limit(50)
-    sellerOrders = (data ?? []).map(o => ({
-      id: String(o.id),
-      status: String(o.status),
-      amount: Number(o.amount),
-      created_at: String(o.created_at),
-      listings: Array.isArray(o.listings) ? (o.listings[0] ?? null) : o.listings,
-    }))
-  }
-
-  let kycData = null
-  if (profile?.kyc_status === 'approved' || profile?.kyc_status === 'pending') {
-    const { data } = await supabase
-      .from('kyc_submissions')
-      .select('created_at, reviewed_at')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .single()
-    kycData = data
-  }
+  const sellerOrders: ProfileOrder[] = (sellerOrdersRaw.data ?? []).map(o => ({
+    id: String(o.id),
+    status: String(o.status),
+    amount: Number(o.amount),
+    created_at: String(o.created_at),
+    listings: Array.isArray(o.listings) ? (o.listings[0] ?? null) : o.listings,
+  }))
+  const kycData = kycSubmission.data
 
   const completedSales = sellerOrders.filter(o => o.status === 'completed')
   const hasRealEmail = !!(user.email && !user.email.endsWith('@dinoyor.internal'))
@@ -73,14 +56,11 @@ export default async function ProfilePage() {
       : null,
     isSeller,
     kycStatus: profile?.kyc_status ?? null,
-    walletAddress: profile?.wallet_address ?? null,
-    walletNetwork: profile?.wallet_network ?? null,
-    amoBalance: Number(amoBalanceRow?.balance ?? 0),
     completedSales: completedSales.length,
     totalEarnings: completedSales.reduce((sum, o) => sum + Number(o.amount), 0),
     activeListings: activeListings ?? 0,
     totalBalance: balances?.reduce((sum, b) => sum + Number(b.pending_amount), 0) ?? 0,
-    buyerOrders: (buyerOrders ?? []).map(o => ({
+    buyerOrders: (buyerOrdersRaw ?? []).map((o: { id: unknown; status: unknown; amount: unknown; created_at: unknown; listings: unknown }) => ({
       id: String(o.id),
       status: String(o.status),
       amount: Number(o.amount),

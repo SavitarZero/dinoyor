@@ -37,7 +37,7 @@ function PayoutAction({
       <span className="text-gray-600 text-xs">Min. {minWithdraw} coin</span>
     </div>
   )
-  return null
+  return <p className="text-gray-600 text-xs">No available balance to withdraw yet.</p>
 }
 
 export default async function EarningsPage() {
@@ -95,7 +95,7 @@ export default async function EarningsPage() {
 
           {/* Balance cards — always visible */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="rounded-xl border border-green-700/30 bg-green-900/10 p-5 flex flex-col gap-1">
+            <div className="rounded border border-green-700/30 bg-green-900/10 p-5 flex flex-col gap-1">
               <p className="text-gray-500 text-xs uppercase tracking-wide">Available</p>
               <p className="text-3xl font-bold text-green-400">
                 {totalAvailable.toFixed(2)}
@@ -103,7 +103,7 @@ export default async function EarningsPage() {
               </p>
               <p className="text-gray-600 text-xs">Ready to withdraw</p>
             </div>
-            <div className="rounded-xl border border-yellow-700/30 bg-yellow-900/10 p-5 flex flex-col gap-1">
+            <div className="rounded border border-yellow-700/30 bg-yellow-900/10 p-5 flex flex-col gap-1">
               <p className="text-gray-500 text-xs uppercase tracking-wide">On Hold</p>
               <p className="text-3xl font-bold text-yellow-400">
                 {totalPending.toFixed(2)}
@@ -114,7 +114,7 @@ export default async function EarningsPage() {
           </div>
 
           {/* Payout action */}
-          <div className="rounded-xl border border-border bg-surface px-5 py-4">
+          <div className="rounded border border-border bg-surface px-5 py-4">
             <PayoutAction
               hasWallet={hasWallet}
               hasPendingRequest={hasPendingRequest}
@@ -125,7 +125,7 @@ export default async function EarningsPage() {
           </div>
 
           {/* Withdraw requirements */}
-          <div className="rounded-xl border border-border bg-surface p-4 space-y-2">
+          <div className="rounded border border-border bg-surface p-4 space-y-2">
             <p className="text-gray-400 text-xs font-semibold uppercase tracking-wide">Withdraw Requirements</p>
             <div className="space-y-2">
               {[
@@ -173,7 +173,7 @@ export default async function EarningsPage() {
 
         <div className="space-y-5">
           {/* Earnings history */}
-          <div className="rounded-xl border border-border bg-surface">
+          <div className="rounded border border-border bg-surface">
             <div className="px-4 py-3 border-b border-border">
               <p className="text-white text-sm font-medium">Earnings History</p>
             </div>
@@ -205,7 +205,7 @@ export default async function EarningsPage() {
           </div>
 
           {/* Payouts */}
-          <div className="rounded-xl border border-border bg-surface">
+          <div className="rounded border border-border bg-surface">
             <div className="px-4 py-3 border-b border-border">
               <p className="text-white text-sm font-medium">Payouts</p>
             </div>

@@ -21,14 +21,14 @@ interface Props {
 }
 
 const BASE_ITEMS = [
-  { href: '/profile', label: 'Profile', Icon: LayoutDashboard },
-  { href: '/orders',  label: 'Orders',  Icon: Package },
+  { href: '/profile', label: 'Profile',     Icon: LayoutDashboard },
+  { href: '/orders',  label: 'Orders',      Icon: Package },
+  { href: '/wallet',  label: 'Coin Wallet', Icon: Wallet },
 ]
 
 const SELLER_ITEMS = [
-  { href: '/wallet',      label: 'Coin Wallet',     Icon: Wallet },
-  { href: '/earnings',    label: 'Earnings',        Icon: TrendingUp },
-  { href: '/listings',    label: 'My Listings',     Icon: Store },
+  { href: '/earnings', label: 'Earnings',    Icon: TrendingUp },
+  { href: '/listings', label: 'My Listings', Icon: Store },
 ]
 
 export function ProfileDropdown({ avatarUrl, username, email, role, amoBalance }: Props) {
