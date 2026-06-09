@@ -21,8 +21,8 @@ interface Props {
 
 const BASE_ITEMS = [
   { href: '/profile', label: 'Profile',     Icon: LayoutDashboard },
-  { href: '/orders',  label: 'Orders',      Icon: Package },
   { href: '/listings', label: 'My Listings', Icon: Store },
+  { href: '/orders',  label: 'Orders',      Icon: Package },
   { href: '/wallet',  label: 'Coin Wallet', Icon: Wallet },
 ]
 
