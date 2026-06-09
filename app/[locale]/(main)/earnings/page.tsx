@@ -87,7 +87,8 @@ export default async function EarningsPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <h1 className="text-white text-xl font-bold mb-6">Earnings</h1>
+      <h1 className="text-white text-xl font-bold mb-1">Earnings</h1>
+      <p className="text-gray-500 text-xs mb-6">1 AMO = 1 USDT</p>
       <div className="grid lg:grid-cols-3 gap-5">
         <div className="lg:col-span-2 space-y-5">
 
@@ -97,7 +98,7 @@ export default async function EarningsPage() {
               <p className="text-gray-500 text-xs uppercase tracking-wide">Available</p>
               <p className="text-3xl font-bold text-green-400">
                 {totalAvailable.toFixed(2)}
-                <span className="text-base text-green-600 ml-1.5">USDT</span>
+                <span className="text-base text-green-600 ml-1.5">AMO</span>
               </p>
               <p className="text-gray-600 text-xs">Ready to withdraw</p>
             </div>
@@ -105,7 +106,7 @@ export default async function EarningsPage() {
               <p className="text-gray-500 text-xs uppercase tracking-wide">On Hold</p>
               <p className="text-3xl font-bold text-yellow-400">
                 {totalPending.toFixed(2)}
-                <span className="text-base text-yellow-600 ml-1.5">USDT</span>
+                <span className="text-base text-yellow-600 ml-1.5">AMO</span>
               </p>
               <p className="text-gray-600 text-xs">Available in {holdLabel}</p>
             </div>
@@ -155,7 +156,7 @@ export default async function EarningsPage() {
           <div className="rounded border border-border bg-surface">
             <div className="px-4 py-3 border-b border-border">
               <p className="text-white text-sm font-semibold">Payout Wallet</p>
-              <p className="text-gray-500 text-xs">Withdraw address — coin from your sales will be sent here.</p>
+              <p className="text-gray-500 text-xs">Withdraw address — AMO from your sales will be sent here.</p>
             </div>
             <div className="px-4 py-4">
               <WalletAddressForm currentAddress={profile?.wallet_address ?? null} currentNetwork={profile?.wallet_network ?? null} />
@@ -179,7 +180,7 @@ export default async function EarningsPage() {
                         {tx.type === 'credit' ? '+' : '-'}
                       </span>
                       <div className="min-w-0">
-                        <p className="text-accent-gold text-sm">{Number(tx.amount).toFixed(2)} coin</p>
+                        <p className="text-accent-gold text-sm">{Number(tx.amount).toFixed(2)} AMO</p>
                         <p className="text-gray-600 text-xs truncate">{tx.note}</p>
                       </div>
                     </div>
@@ -207,7 +208,7 @@ export default async function EarningsPage() {
                 {typedPayouts.map((p) => (
                   <div key={p.id} className="flex items-center justify-between px-4 py-3">
                     <div className="min-w-0">
-                      <p className="text-accent-gold text-sm font-medium">{Number(p.amount).toFixed(2)} coin</p>
+                      <p className="text-accent-gold text-sm font-medium">{Number(p.amount).toFixed(2)} AMO</p>
                       <p className="text-gray-600 text-xs font-mono truncate">{p.wallet_address?.slice(0, 10)}…</p>
                     </div>
                     <p className="text-gray-600 text-xs shrink-0">
