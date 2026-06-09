@@ -138,7 +138,16 @@ export async function updateListingPrice(listingId: string, newPrice: number) {
     .single()
 
   if (!listing) return { error: 'Listing not found' }
-  if (listing.status !== 'cancelled') return { error: 'Can only edit price of cancelled listings' }
+  if (listing.status === 'active') return { error: 'Cannot edit price while listing is on the market' }
+  if (listing.status === 'sold') {
+    const { data: activeOrders } = await supabase
+      .from('orders')
+      .select('id')
+      .eq('listing_id', listingId)
+      .in('status', ['paid_escrow', 'delivered'])
+      .limit(1)
+    if (activeOrders && activeOrders.length > 0) return { error: 'Cannot edit price while order is in progress' }
+  }
 
   const { error } = await supabase
     .from('listings')
