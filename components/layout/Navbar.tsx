@@ -17,7 +17,7 @@ export function Navbar() {
           href="/"
           className="font-black text-base tracking-[0.12em] text-accent hover:text-accent-gold transition-colors shrink-0"
         >
-          AMMONITE
+          DCORE
         </Link>
 
         <div className="flex-1 min-w-0 max-w-xl">
@@ -34,7 +34,7 @@ export function Navbar() {
       {/* ── Mobile row ── */}
       <div className="flex md:hidden items-center px-4 h-12 gap-3">
         <Link href="/" className="shrink-0 font-black text-sm tracking-[0.12em] text-accent">
-          AMMONITE
+          DCORE
         </Link>
         <div className="flex-1" />
         <div className="flex items-center gap-1.5">

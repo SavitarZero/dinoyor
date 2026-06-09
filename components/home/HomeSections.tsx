@@ -301,7 +301,7 @@ export function HomeSections({ games, byCategory, listings, hotIds, categories }
         {/* ── Trust & Safety ── */}
         <div className="rounded border border-border bg-surface p-6 md:p-8 mb-8">
           <div className="text-center mb-6">
-            <h2 className="text-xl md:text-2xl font-black text-white">Why trade on Ammonite?</h2>
+            <h2 className="text-xl md:text-2xl font-black text-white">Why trade on DCORE?</h2>
             <p className="text-gray-500 text-sm mt-1">Built for safe, fast game item trading</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

@@ -9,7 +9,7 @@ const geist = Geist({
 })
 
 export const metadata: Metadata = {
-  title: "Ammonite — Gaming Item Marketplace",
+  title: "DCORE — Gaming Item Marketplace",
   description: "Buy and sell in-game items with crypto. Protected by escrow. For SEA gamers.",
 }
 

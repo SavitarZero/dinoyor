@@ -26,7 +26,7 @@ export function KYCForm({ currentStatus, submittedAt, reviewedAt, hasEmail = tru
           </div>
           <div>
             <p className="text-green-400 text-sm font-semibold">Application approved</p>
-            <p className="text-gray-500 text-xs">You are now a verified seller on Ammonite.</p>
+            <p className="text-gray-500 text-xs">You are now a verified seller on DCORE.</p>
           </div>
         </div>
         <div className="divide-y divide-border">
@@ -131,7 +131,7 @@ export function KYCForm({ currentStatus, submittedAt, reviewedAt, hasEmail = tru
                 <p className="text-gray-300 text-xs font-medium">How to take the photo:</p>
                 <ol className="list-decimal list-inside text-gray-500 text-xs space-y-1">
                   <li>Hold your national ID card next to your face.</li>
-                  <li>Write on a piece of paper: <span className="text-gray-300 font-medium">"Used for registering as a seller of Ammonite"</span></li>
+                  <li>Write on a piece of paper: <span className="text-gray-300 font-medium">"Used for registering as a seller of DCORE"</span></li>
                   <li>Hold the paper in the same photo so both your face, ID, and note are clearly visible.</li>
                 </ol>
               </div>

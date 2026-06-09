@@ -33,7 +33,7 @@ export default async function KYCPage() {
     <div className="max-w-2xl mx-auto px-4 py-8">
       <div className="mb-6">
         <h1 className="text-white text-xl font-bold">Become a Seller</h1>
-        <p className="text-gray-500 text-sm mt-1">Verify your identity to list items for sale on Ammonite.</p>
+        <p className="text-gray-500 text-sm mt-1">Verify your identity to list items for sale on DCORE.</p>
       </div>
 
       <KYCForm

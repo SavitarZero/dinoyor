@@ -28,7 +28,7 @@ export function Footer() {
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <Link href="/" className="font-black text-sm tracking-[0.25em] text-accent">
-              AMMONITE
+              DCORE
             </Link>
             <p className="text-gray-500 text-xs mt-3 leading-relaxed max-w-48">
               P2P marketplace for gaming items. Safe trades with secure payments for SEA gamers.
@@ -53,7 +53,7 @@ export function Footer() {
         </div>
 
         <div className="border-t border-border pt-6 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p className="text-gray-700 text-xs">© {new Date().getFullYear()} Ammonite. All rights reserved.</p>
+          <p className="text-gray-700 text-xs">© {new Date().getFullYear()} DCORE. All rights reserved.</p>
           <p className="text-gray-700 text-xs">Built for SEA gamers 🎮</p>
         </div>
       </div>
