@@ -12,20 +12,37 @@ export async function saveDepositWallet(walletAddress: string, network: 'TRC20' 
   const trimmed = walletAddress.trim()
   if (!trimmed) return { error: 'Wallet address is required' }
 
-  // Check uniqueness across all users (admin client to bypass RLS)
+  // Check uniqueness: same address + same network cannot belong to two accounts
   const admin = createAdminClient()
   const { data: conflict } = await admin
     .from('profiles')
     .select('id')
     .ilike('deposit_wallet', trimmed)
+    .eq('deposit_wallet_network', network)
     .neq('id', user.id)
     .maybeSingle()
 
-  if (conflict) return { error: 'This wallet address is already registered by another account' }
+  if (conflict) return { error: 'This wallet address is already registered by another account on the same network' }
 
   const { error } = await supabase.from('profiles').update({
     deposit_wallet: trimmed,
     deposit_wallet_network: network,
+  }).eq('id', user.id)
+  if (error) return { error: error.message }
+
+  revalidatePath('/wallet')
+  revalidatePath('/profile')
+  return { success: true }
+}
+
+export async function deleteDepositWallet() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return { error: 'Not authenticated' }
+
+  const { error } = await supabase.from('profiles').update({
+    deposit_wallet: null,
+    deposit_wallet_network: null,
   }).eq('id', user.id)
   if (error) return { error: error.message }
 
