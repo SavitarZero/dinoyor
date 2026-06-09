@@ -18,26 +18,29 @@ function PayoutAction({
   currency: Currency
   minWithdraw: number
 }>) {
-  if (!hasWallet) return <p className="text-yellow-400 text-xs">Set payout wallet first</p>
+  if (!hasWallet) return (
+    <p className="text-yellow-400 text-xs">Set your payout wallet below before requesting a withdrawal.</p>
+  )
   if (hasPendingRequest) return (
-    <span className="inline-block px-3 py-1.5 rounded-full bg-yellow-900/30 border border-yellow-700/40 text-yellow-400 text-xs font-medium">
-      Payout request pending approval
-    </span>
+    <div className="flex items-center gap-2">
+      <span className="w-2 h-2 rounded-full bg-yellow-400 shrink-0" />
+      <p className="text-yellow-400 text-sm">Payout request submitted — awaiting admin approval.</p>
+    </div>
   )
   if (availableAmount > 0) return (
-    <div className="flex items-center gap-2">
+    <div className="flex flex-col sm:flex-row sm:items-center gap-3">
       <form action={async () => {
         'use server'
         await requestPayout(currency)
       }}>
-        <button className="px-4 py-2 rounded-xl bg-accent text-black text-sm font-semibold hover:opacity-90">
+        <button className="px-5 py-2.5 rounded bg-accent text-black text-sm font-bold hover:opacity-90 transition-opacity">
           Request Payout
         </button>
       </form>
-      <span className="text-gray-600 text-xs">Min. {minWithdraw} coin</span>
+      <p className="text-gray-500 text-xs">Minimum withdrawal: {minWithdraw} USDT</p>
     </div>
   )
-  return <p className="text-gray-600 text-xs">No available balance to withdraw yet.</p>
+  return <p className="text-gray-500 text-sm">No available balance to withdraw yet.</p>
 }
 
 export default async function EarningsPage() {
