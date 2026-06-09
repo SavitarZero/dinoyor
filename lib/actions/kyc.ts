@@ -12,9 +12,6 @@ export async function submitKYC(formData: FormData) {
   if (!photoFile || photoFile.size === 0) return { error: 'Please upload a photo of yourself holding your ID card.' }
 
   const email = (formData.get('email') as string | null)?.trim() || null
-  if (email) {
-    await supabase.from('profiles').update({ email }).eq('id', user.id)
-  }
 
   const ext = photoFile.name.split('.').pop()
   const path = `${user.id}/id-card.${ext}`
@@ -28,6 +25,7 @@ export async function submitKYC(formData: FormData) {
 
   const { error: insertError } = await supabase.from('kyc_submissions').upsert({
     user_id: user.id,
+    email: email ?? null,
     phone: '',
     id_card_url: publicUrl,
     status: 'pending',
