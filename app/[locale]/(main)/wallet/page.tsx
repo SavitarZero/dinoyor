@@ -56,7 +56,7 @@ export default async function WalletPage() {
             <p className="text-white text-sm font-medium">Deposit History</p>
           </div>
           {typedDeposits.length ? (
-            <div className="divide-y divide-border">
+            <div className="divide-y divide-border max-h-[232px] overflow-y-auto">
               {typedDeposits.map((d) => {
                 let statusClass = 'bg-yellow-400/10 text-yellow-400'
                 let statusLabel = 'Pending review'
