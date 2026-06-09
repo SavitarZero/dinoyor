@@ -46,6 +46,13 @@ export function GameLogo({ src, slug, name, className = 'w-8 h-8 rounded-lg' }: 
             src={src}
             alt=""
             className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-300"
+            ref={(el) => {
+              if (el && el.complete && el.naturalWidth > 0) {
+                el.style.opacity = '1'
+                const skel = el.previousElementSibling as HTMLElement
+                if (skel) skel.style.display = 'none'
+              }
+            }}
             onLoad={(e) => {
               e.currentTarget.style.opacity = '1'
               const skel = e.currentTarget.previousElementSibling as HTMLElement
@@ -93,6 +100,13 @@ export function GameBanner({ src, slug, name, className = 'w-full h-full', child
             src={src}
             alt=""
             className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-300"
+            ref={(el) => {
+              if (el && el.complete && el.naturalWidth > 0) {
+                el.style.opacity = '1'
+                const skel = el.previousElementSibling as HTMLElement
+                if (skel) skel.style.display = 'none'
+              }
+            }}
             onLoad={(e) => {
               e.currentTarget.style.opacity = '1'
               const skel = e.currentTarget.previousElementSibling as HTMLElement
