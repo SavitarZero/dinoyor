@@ -317,7 +317,17 @@ export function DepositForm({
             Destination wallet
           </label>
           <div className="rounded bg-background border border-border p-4 space-y-2">
-            {address ? (
+            {!senderWallet ? (
+              <>
+                <p className="text-gray-500 text-xs uppercase tracking-wide">
+                  Send TO ({network})
+                </p>
+                <p className="text-white text-sm font-mono">**********</p>
+                <p className="text-yellow-400/70 text-xs">
+                  ⚠ Register your sender wallet above to reveal the destination address
+                </p>
+              </>
+            ) : address ? (
               <>
                 <p className="text-gray-500 text-xs uppercase tracking-wide">
                   Send TO ({network})
