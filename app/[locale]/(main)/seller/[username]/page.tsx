@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
@@ -63,9 +64,9 @@ export default async function SellerStorePage({
       {/* Store header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 p-5 rounded-2xl border border-border bg-surface">
         {/* Avatar */}
-        <div className="w-16 h-16 rounded-full bg-background overflow-hidden shrink-0 ring-2 ring-border">
+        <div className="relative w-16 h-16 rounded-full bg-background overflow-hidden shrink-0 ring-2 ring-border">
           {seller.avatar_url ? (
-            <img src={seller.avatar_url} alt={seller.username} referrerPolicy="no-referrer" className="w-full h-full object-cover" />
+            <Image src={seller.avatar_url} alt={seller.username ?? ''} fill unoptimized className="object-cover" />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-2xl font-bold text-gray-500">
               {(seller.username || '?')[0].toUpperCase()}

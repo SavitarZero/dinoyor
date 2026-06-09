@@ -1,9 +1,16 @@
-// On-chain verification for TRC20 (TRON) and ERC20 (Ethereum) USDT deposits.
-// Uses Tronscan public API for TRON and a public ETH JSON-RPC for Ethereum.
-// All env vars default to mainnet — set to testnet values for testing.
+// On-chain verification for TRC20 (TRON Grid) and ERC20 (Ethereum JSON-RPC).
+// TRON Grid works for both mainnet and Shasta testnet — set env vars accordingly.
+//
+// Mainnet defaults:
+//   TRON_GRID_URL=https://api.trongrid.io
+//   TRON_USDT_CONTRACT=TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t
+//
+// Shasta testnet:
+//   TRON_GRID_URL=https://api.shasta.trongrid.io
+//   TRON_USDT_CONTRACT=TG3XXyExBkPp9nzdajDZsozEu4BkaSJozs
 
-const TRON_API_URL = process.env.TRON_API_URL ?? 'https://apilist.tronscanapi.com'
-const TRON_USDT_CONTRACT = process.env.TRON_USDT_CONTRACT ?? 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t'
+const TRON_GRID_URL = process.env.TRON_GRID_URL ?? 'https://api.trongrid.io'
+const TRON_USDT_CONTRACT = (process.env.TRON_USDT_CONTRACT ?? 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t').toLowerCase()
 const ETH_RPC_URL = process.env.ETH_RPC_URL ?? 'https://cloudflare-eth.com'
 const ETH_USDT_CONTRACT = (process.env.ETH_USDT_CONTRACT ?? '0xdAC17F958D2ee523a2206206994597C13D831ec7').toLowerCase()
 const TRANSFER_TOPIC = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
@@ -14,17 +21,15 @@ export interface VerifyResult {
   error?: string
 }
 
-interface TronscanTransfer {
-  from_address: string
-  to_address: string
-  amount_str: string
-  decimals: number
+interface TronGridEvent {
+  event_name: string
   contract_address: string
+  result: Record<string, string>
+  result_type?: Record<string, string>
 }
 
-interface TronscanTx {
-  confirmed: boolean
-  trc20TransferInfo?: TronscanTransfer[]
+interface TronGridEventsResponse {
+  data: TronGridEvent[]
 }
 
 interface EthLog {
@@ -45,35 +50,49 @@ export async function verifyTrc20Deposit(
   minAmount: number
 ): Promise<VerifyResult> {
   try {
-    const url = `${TRON_API_URL}/api/transaction-info?hash=${encodeURIComponent(txHash)}`
-    const res = await fetch(url, { cache: 'no-store' })
-    if (!res.ok) return { ok: false, error: 'Could not reach TRON API — try again later' }
+    // Check transaction is confirmed (only_confirmed=true returns empty data if not yet confirmed)
+    const txRes = await fetch(
+      `${TRON_GRID_URL}/v1/transactions/${encodeURIComponent(txHash)}?only_confirmed=true`,
+      { cache: 'no-store' }
+    )
+    if (!txRes.ok) return { ok: false, error: 'Could not reach TRON API — try again later' }
 
-    const tx = await res.json() as TronscanTx
-
-    if (!tx.confirmed) {
+    const txData = await txRes.json() as { data: unknown[] }
+    if (!txData.data?.length) {
       return { ok: false, error: 'Transaction not confirmed yet — wait a moment and resubmit' }
     }
 
-    const transfer = tx.trc20TransferInfo?.[0]
+    // Fetch events to find the Transfer
+    const evRes = await fetch(
+      `${TRON_GRID_URL}/v1/transactions/${encodeURIComponent(txHash)}/events`,
+      { cache: 'no-store' }
+    )
+    if (!evRes.ok) return { ok: false, error: 'Could not reach TRON API — try again later' }
+
+    const evData = await evRes.json() as TronGridEventsResponse
+    const transfer = evData.data?.find(e =>
+      e.event_name === 'Transfer' &&
+      e.contract_address.toLowerCase() === TRON_USDT_CONTRACT
+    )
+
     if (!transfer) {
-      return { ok: false, error: 'No TRC20 token transfer found in this transaction' }
+      return { ok: false, error: 'No USDT (TRC20) transfer found in this transaction' }
     }
 
-    if (transfer.contract_address !== TRON_USDT_CONTRACT) {
-      return { ok: false, error: 'Transaction is not a USDT (TRC20) transfer' }
-    }
+    // TRON Grid returns named params (from/to/value) for known ABIs like USDT
+    // Fall back to positional params (0/1/2) just in case
+    const fromAddr = (transfer.result['from'] ?? transfer.result['0'] ?? '').toLowerCase()
+    const toAddr = (transfer.result['to'] ?? transfer.result['1'] ?? '').toLowerCase()
+    const valueStr = transfer.result['value'] ?? transfer.result['2'] ?? '0'
 
-    if (transfer.from_address.toLowerCase() !== senderAddress.toLowerCase()) {
+    if (fromAddr !== senderAddress.toLowerCase()) {
       return { ok: false, error: 'Sender address does not match your registered deposit wallet' }
     }
-
-    if (transfer.to_address.toLowerCase() !== escrowAddress.toLowerCase()) {
+    if (toAddr !== escrowAddress.toLowerCase()) {
       return { ok: false, error: 'Transaction recipient is not the platform deposit address' }
     }
 
-    const decimals = transfer.decimals ?? 6
-    const verifiedAmount = Number(transfer.amount_str) / Math.pow(10, decimals)
+    const verifiedAmount = Number(valueStr) / 1_000_000 // USDT has 6 decimals on TRON
 
     if (verifiedAmount < minAmount) {
       return { ok: false, error: `Amount ${verifiedAmount.toFixed(2)} USDT is below the minimum deposit of ${minAmount} USDT` }

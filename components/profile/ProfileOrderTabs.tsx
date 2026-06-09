@@ -1,4 +1,5 @@
 'use client'
+import Image from 'next/image'
 import { useState } from 'react'
 import Link from 'next/link'
 
@@ -53,9 +54,9 @@ export function ProfileOrderTabs({ buyerOrders, sellerOrders }: Props) {
               href={`/orders/${o.id}`}
               className="flex items-center gap-3 px-4 py-3 hover:bg-white/[0.03] transition-colors"
             >
-              <div className="w-10 h-10 rounded-lg overflow-hidden bg-background shrink-0">
+              <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-background shrink-0">
                 {o.listings?.images?.[0] ? (
-                  <img src={o.listings.images[0]} alt="" className="w-full h-full object-cover" />
+                  <Image src={o.listings.images[0]} alt="" fill className="object-cover" />
                 ) : (
                   <div className="w-full h-full bg-background" />
                 )}

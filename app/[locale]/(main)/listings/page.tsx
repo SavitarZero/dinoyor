@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
@@ -168,7 +169,7 @@ export default async function MyListingsPage({
                   {listing.games && (
                     <div className="flex items-center gap-1">
                       {listing.games.logo_url && (
-                        <img src={listing.games.logo_url} alt="" className="w-3.5 h-3.5 rounded-sm object-cover shrink-0" />
+                        <Image src={listing.games.logo_url} alt="" width={14} height={14} className="rounded-sm object-cover shrink-0" />
                       )}
                       <p className="text-gray-600 text-xs truncate">{listing.games.name}</p>
                     </div>

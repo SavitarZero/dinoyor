@@ -15,7 +15,7 @@ export default async function ProfilePage() {
     { data: balances },
     { data: amoBalanceRow },
   ] = await Promise.all([
-    supabase.from('profiles').select('username, avatar_url, kyc_status, role, wallet_address, wallet_network, deposit_wallet, deposit_wallet_network, created_at').eq('id', user.id).single(),
+    supabase.from('profiles').select('username, avatar_url, kyc_status, role, wallet_address, wallet_network, deposit_wallet, deposit_wallet_network, pending_email, created_at').eq('id', user.id).single(),
     supabase.from('listings').select('*', { count: 'exact', head: true }).eq('seller_id', user.id).eq('status', 'active'),
     supabase.from('seller_balances').select('pending_amount, currency').eq('seller_id', user.id),
     supabase.from('user_balances').select('balance').eq('user_id', user.id).eq('currency', 'USDT').maybeSingle(),
@@ -94,6 +94,7 @@ export default async function ProfilePage() {
     kycReviewedAt: kycData?.reviewed_at ?? null,
     hasRealEmail,
     currentEmail: hasRealEmail ? user.email! : null,
+    pendingEmail: profile?.pending_email ?? null,
     isOAuthOnly,
   }
 

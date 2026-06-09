@@ -1,4 +1,5 @@
 'use client'
+import Image from 'next/image'
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { signOut } from '@/lib/actions/auth'
@@ -56,7 +57,7 @@ export function ProfileDropdown({ avatarUrl, username, email, role, amoBalance }
       >
         <span className={`block rounded-full ring-2 transition-all duration-150 ${open ? 'ring-accent/60' : 'ring-transparent hover:ring-accent/60'}`}>
           {avatarUrl ? (
-            <img src={avatarUrl} alt="avatar" referrerPolicy="no-referrer" className="w-8 h-8 rounded-full object-cover" />
+            <Image src={avatarUrl} alt="avatar" width={32} height={32} unoptimized className="rounded-full object-cover" />
           ) : (
             <span className="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-black text-xs font-bold">
               {initials}
@@ -73,7 +74,7 @@ export function ProfileDropdown({ avatarUrl, username, email, role, amoBalance }
         {/* Header */}
         <div className="flex items-center gap-3 px-4 py-3.5 border-b border-border">
           {avatarUrl ? (
-            <img src={avatarUrl} alt="avatar" referrerPolicy="no-referrer" className="w-9 h-9 rounded-full object-cover shrink-0" />
+            <Image src={avatarUrl} alt="avatar" width={36} height={36} unoptimized className="rounded-full object-cover shrink-0" />
           ) : (
             <span className="w-9 h-9 rounded-full bg-accent flex items-center justify-center text-black text-sm font-bold shrink-0">
               {initials}

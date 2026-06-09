@@ -27,8 +27,8 @@ export async function createListing(formData: FormData) {
   const coverFile = formData.get('cover') as File | null
   const additionalFiles = formData.getAll('additional') as File[]
 
-  if (!title || !gameId || isNaN(priceAmount) || priceAmount <= 0) {
-    return { error: 'Missing required fields' }
+  if (!title || !gameId || isNaN(priceAmount) || priceAmount < 10) {
+    return { error: priceAmount < 10 ? 'Minimum price is 10 coin' : 'Missing required fields' }
   }
   if (!coverFile || coverFile.size === 0) return { error: 'Cover image is required' }
   if (coverFile.size > 2 * 1024 * 1024) return { error: 'Cover image must be under 2 MB' }

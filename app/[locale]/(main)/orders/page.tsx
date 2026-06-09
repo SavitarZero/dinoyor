@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
@@ -99,9 +100,9 @@ export default async function OrdersPage({ searchParams }: Props) {
                 href={`/orders/${o.id}`}
                 className="flex items-center gap-4 p-4 rounded-xl border border-border bg-surface hover:border-accent transition-all group"
               >
-                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden bg-background shrink-0">
+                <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden bg-background shrink-0">
                   {image ? (
-                    <img src={image} alt="" className="w-full h-full object-cover" />
+                    <Image src={image} alt="" fill className="object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-700">
                       <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>

@@ -39,9 +39,13 @@ export default function ForgotPasswordPage() {
   return (
     <div>
       <h1 className="text-2xl font-bold text-white mb-2">Forgot password?</h1>
-      <p className="text-gray-400 text-sm mb-6">
-        Enter the email linked to your account. You must have verified your email first.
+      <p className="text-gray-400 text-sm mb-4">
+        Enter the email linked to your account.
       </p>
+      <div className="rounded-lg border border-border bg-surface px-3 py-2.5 mb-6 text-xs text-gray-500 space-y-1">
+        <p>Registered with a username?</p>
+        <p>You need to have added a recovery email first — go to <span className="text-accent">Profile → Security → Set recovery email</span> while logged in.</p>
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <input

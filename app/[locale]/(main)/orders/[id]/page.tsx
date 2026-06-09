@@ -155,9 +155,9 @@ export default async function OrderDetailPage({
               </p>
             </div>
             <div className="px-4 py-4 flex gap-4">
-              <div className="w-14 h-14 rounded-lg overflow-hidden bg-background shrink-0">
+              <div className="relative w-14 h-14 rounded-lg overflow-hidden bg-background shrink-0">
                 {itemImage ? (
-                  <img src={itemImage} alt="" referrerPolicy="no-referrer" className="w-full h-full object-cover" />
+                  <Image src={itemImage} alt="" fill unoptimized className="object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-700">
                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -170,9 +170,9 @@ export default async function OrderDetailPage({
                 <p className="text-white text-sm font-medium truncate">{(order as any).listings?.title}</p>
                 <div className="flex items-center gap-3 mt-1">
                   <div className="flex items-center gap-1.5">
-                    <div className="w-5 h-5 rounded-full bg-background overflow-hidden shrink-0">
+                    <div className="relative w-5 h-5 rounded-full bg-background overflow-hidden shrink-0">
                       {counterparty?.avatar_url ? (
-                        <img src={counterparty.avatar_url} alt="" referrerPolicy="no-referrer" className="w-full h-full object-cover" />
+                        <Image src={counterparty.avatar_url} alt="" fill unoptimized className="object-cover" />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-gray-600 text-[10px] font-bold">
                           {(counterparty?.username || '?')[0].toUpperCase()}

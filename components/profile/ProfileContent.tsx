@@ -1,9 +1,11 @@
 'use client'
+import Image from 'next/image'
 import { useState } from 'react'
 import Link from 'next/link'
 import { WalletAddressForm } from '@/components/wallet/WalletAddressForm'
 import { DepositWalletForm } from '@/components/wallet/DepositWalletForm'
 import { KYCForm } from '@/components/kyc/KYCForm'
+import { EmailForm } from '@/components/profile/EmailForm'
 import type { KYCStatus, ProfileOrder } from '@/lib/types'
 
 type Tab = 'personal' | 'security' | 'wallet' | 'purchases' | 'sales' | 'kyc'
@@ -30,6 +32,7 @@ interface ProfileData {
   kycReviewedAt: string | null
   hasRealEmail: boolean
   currentEmail: string | null
+  pendingEmail: string | null
   isOAuthOnly: boolean
 }
 
@@ -91,9 +94,68 @@ function PersonalSection({ data }: Readonly<{ data: ProfileData }>) {
   )
 }
 
-function SecuritySection({ isOAuthOnly }: Readonly<{ isOAuthOnly: boolean }>) {
+function SecuritySection({ isOAuthOnly, hasRealEmail, currentEmail, pendingEmail }: Readonly<{
+  isOAuthOnly: boolean
+  hasRealEmail: boolean
+  currentEmail: string | null
+  pendingEmail: string | null
+}>) {
   return (
     <div className="space-y-4">
+
+      {/* Email */}
+      <div className="rounded border border-border bg-surface overflow-hidden">
+        <div className="px-4 py-3 border-b border-border flex items-center justify-between">
+          <p className="text-gray-500 text-xs font-medium uppercase tracking-wide">Recovery Email</p>
+          {hasRealEmail && <span className="text-green-400 text-xs font-medium">Verified</span>}
+          {pendingEmail && !hasRealEmail && <span className="text-yellow-400 text-xs font-medium">Pending</span>}
+        </div>
+        <div className="px-4 py-4 space-y-4">
+          {isOAuthOnly ? (
+            <div className="flex items-center gap-2">
+              <svg className="w-4 h-4 text-green-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              <div>
+                <p className="text-white text-sm">{currentEmail}</p>
+                <p className="text-gray-500 text-xs">Managed by your login provider</p>
+              </div>
+            </div>
+          ) : hasRealEmail ? (
+            <div className="flex items-center gap-2">
+              <svg className="w-4 h-4 text-green-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              <p className="text-white text-sm">{currentEmail}</p>
+            </div>
+          ) : pendingEmail ? (
+            <div className="flex items-center gap-2">
+              <svg className="w-4 h-4 text-yellow-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div>
+                <p className="text-white text-sm">{pendingEmail}</p>
+                <p className="text-yellow-400 text-xs">Check your inbox and click the verification link</p>
+              </div>
+            </div>
+          ) : (
+            <div className="rounded-lg border border-yellow-700/40 bg-yellow-900/10 px-3 py-2.5 flex items-start gap-2">
+              <svg className="w-4 h-4 text-yellow-400 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+              </svg>
+              <p className="text-yellow-300 text-xs leading-relaxed">
+                No email set — if you forget your password your account will be permanently inaccessible.
+              </p>
+            </div>
+          )}
+
+          {!isOAuthOnly && (
+            <EmailForm currentEmail={hasRealEmail ? currentEmail : null} />
+          )}
+        </div>
+      </div>
+
+      {/* Password */}
       {isOAuthOnly ? (
         <div className="rounded border border-border bg-surface overflow-hidden">
           <div className="px-4 py-3 border-b border-border">
@@ -117,10 +179,16 @@ function SecuritySection({ isOAuthOnly }: Readonly<{ isOAuthOnly: boolean }>) {
             <p className="text-gray-500 text-xs font-medium uppercase tracking-wide">Password</p>
           </div>
           <div className="px-4 py-4">
-            <p className="text-gray-400 text-sm">To change your password, use the password reset flow.</p>
-            <Link href="/forgot-password" className="inline-block mt-2 text-accent text-xs hover:underline">
-              Reset password →
-            </Link>
+            {hasRealEmail ? (
+              <>
+                <p className="text-gray-400 text-sm">To change your password, use the password reset flow.</p>
+                <Link href="/forgot-password" className="inline-block mt-2 text-accent text-xs hover:underline">
+                  Reset password →
+                </Link>
+              </>
+            ) : (
+              <p className="text-gray-600 text-sm">Set a recovery email above to enable password reset.</p>
+            )}
           </div>
         </div>
       )}
@@ -277,9 +345,9 @@ function OrderList({ orders, emptyText, emptyLink, emptyLinkText }: Readonly<{ o
         <div className="rounded border border-border bg-surface divide-y divide-border overflow-hidden">
           {paginated.map((o) => (
             <Link key={o.id} href={`/orders/${o.id}`} className="flex items-center gap-3 px-4 py-3 hover:bg-white/[0.02] transition-colors">
-              <div className="w-10 h-10 rounded overflow-hidden bg-background shrink-0">
+              <div className="relative w-10 h-10 rounded overflow-hidden bg-background shrink-0">
                 {o.listings?.images?.[0]
-                  ? <img src={o.listings.images[0]} alt="" className="w-full h-full object-cover" />
+                  ? <Image src={o.listings.images[0]} alt="" fill className="object-cover" />
                   : <div className="w-full h-full bg-background" />
                 }
               </div>
@@ -369,7 +437,7 @@ export function ProfileContent({ data }: Readonly<{ data: ProfileData }>) {
 
           <div className="flex items-center gap-3 p-4 rounded border border-border bg-surface">
             {data.displayAvatar
-              ? <img src={data.displayAvatar} alt="" className="w-11 h-11 rounded-full object-cover shrink-0" />
+              ? <Image src={data.displayAvatar} alt="" width={44} height={44} unoptimized className="rounded-full object-cover shrink-0" />
               : (
                 <div className="w-11 h-11 rounded-full bg-accent/10 border border-accent/20 flex items-center justify-center text-accent text-sm font-black shrink-0">
                   {data.displayName[0].toUpperCase()}
@@ -383,22 +451,26 @@ export function ProfileContent({ data }: Readonly<{ data: ProfileData }>) {
           </div>
 
           <nav className="rounded border border-border bg-surface overflow-hidden">
-            {MENU_ITEMS.map(({ key, label, icon }) => (
-              <button
-                key={key}
-                onClick={() => setActiveTab(key)}
-                className={`w-full flex items-center gap-3 px-4 py-3 text-sm transition-colors border-l-2 text-left ${
-                  activeTab === key
-                    ? 'text-white bg-white/[0.03] border-accent'
-                    : 'text-gray-400 hover:text-white hover:bg-white/[0.02] border-transparent'
-                }`}
-              >
-                <svg className={`w-4 h-4 ${activeTab === key ? 'text-accent' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d={icon} />
-                </svg>
-                {label}
-              </button>
-            ))}
+            {MENU_ITEMS.map(({ key, label, icon }) => {
+              const showAlert = key === 'security' && !data.isOAuthOnly && !data.hasRealEmail
+              return (
+                <button
+                  key={key}
+                  onClick={() => setActiveTab(key)}
+                  className={`w-full flex items-center gap-3 px-4 py-3 text-sm transition-colors border-l-2 text-left ${
+                    activeTab === key
+                      ? 'text-white bg-white/3 border-accent'
+                      : 'text-gray-400 hover:text-white hover:bg-white/2 border-transparent'
+                  }`}
+                >
+                  <svg className={`w-4 h-4 ${activeTab === key ? 'text-accent' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d={icon} />
+                  </svg>
+                  <span className="flex-1">{label}</span>
+                  {showAlert && <span className="w-2 h-2 rounded-full bg-yellow-400 shrink-0" />}
+                </button>
+              )
+            })}
           </nav>
 
         </div>
@@ -407,7 +479,7 @@ export function ProfileContent({ data }: Readonly<{ data: ProfileData }>) {
       {/* Main content */}
       <main className="flex-1 min-w-0">
         {activeTab === 'personal' && <PersonalSection data={data} />}
-        {activeTab === 'security' && <SecuritySection isOAuthOnly={data.isOAuthOnly} />}
+        {activeTab === 'security' && <SecuritySection isOAuthOnly={data.isOAuthOnly} hasRealEmail={data.hasRealEmail} currentEmail={data.currentEmail} pendingEmail={data.pendingEmail} />}
         {activeTab === 'wallet' && <WalletSection data={data} />}
         {activeTab === 'purchases' && <PurchasesSection orders={data.buyerOrders} />}
         {activeTab === 'sales' && <SalesSection orders={data.sellerOrders} />}

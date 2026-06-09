@@ -44,16 +44,18 @@ export async function submitDeposit(txHash: string, network: 'TRC20' | 'ERC20') 
   }
 
   // Fetch platform settings (escrow address + min deposit)
+  const isTestnet = process.env.NEXT_PUBLIC_IS_TESTNET === 'true'
+  const trc20Key = isTestnet ? 'escrow_wallet_trc20_testnet' : 'escrow_wallet_trc20'
+  const erc20Key = isTestnet ? 'escrow_wallet_erc20_testnet' : 'escrow_wallet_erc20'
+
   const { data: settingsRows } = await supabase
     .from('platform_settings')
     .select('key, value')
-    .in('key', ['min_deposit_amo', 'escrow_wallet_trc20', 'escrow_wallet_erc20'])
+    .in('key', ['min_deposit_amo', trc20Key, erc20Key])
 
   const settings = Object.fromEntries((settingsRows ?? []).map(r => [r.key, r.value as string]))
   const minDeposit = Number(settings['min_deposit_amo'] ?? 10)
-  const escrowAddress = network === 'TRC20'
-    ? settings['escrow_wallet_trc20']
-    : settings['escrow_wallet_erc20']
+  const escrowAddress = network === 'TRC20' ? settings[trc20Key] : settings[erc20Key]
 
   if (!escrowAddress) {
     return { error: 'Platform deposit address is not configured — contact support' }
