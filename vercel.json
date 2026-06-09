@@ -1,8 +1,8 @@
 {
   "crons": [
     {
-      "path": "/api/cron/auto-release",
-      "schedule": "0 0 * * *"
+      "path": "/api/cron/release-funds",
+      "schedule": "*/5 * * * *"
     }
   ]
 }
