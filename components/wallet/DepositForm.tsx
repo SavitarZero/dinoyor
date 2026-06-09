@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { submitDeposit, saveDepositWallet, deleteDepositWallet } from '@/lib/actions/deposits'
+import { CustomSelect } from '@/components/ui/CustomSelect'
 
 function DepositSuccess({ amount, onReset }: { amount: number; onReset: () => void }) {
   const [countdown, setCountdown] = useState(5)
@@ -36,7 +37,7 @@ interface Props {
 }
 
 export function DepositForm({ escrowAddresses, senderWallets, minDeposit }: Readonly<Props>) {
-  const [network, setNetwork] = useState<'TRC20' | 'ERC20'>('TRC20')
+  const [network, setNetwork] = useState<'TRC20' | 'ERC20'>('ERC20')
   const [txHash, setTxHash]   = useState('')
   const [loading, setLoading] = useState(false)
   const [result, setResult]   = useState<{ ok: true; amount: number } | { ok: false; error: string } | null>(null)
@@ -120,20 +121,16 @@ export function DepositForm({ escrowAddresses, senderWallets, minDeposit }: Read
         <p className="text-white text-sm font-semibold">Step 1 — Send USDT to the platform wallet</p>
 
         {/* Network selector */}
-        <div className="flex rounded overflow-hidden border border-border">
-          {(['TRC20', 'ERC20'] as const).map(n => (
-            <button
-              key={n}
-              type="button"
-              onClick={() => switchNetwork(n)}
-              className={`flex-1 py-2.5 text-xs font-semibold transition-colors ${
-                network === n ? 'bg-surface text-white border-b-2 border-accent' : 'text-gray-500 hover:text-gray-300 bg-background'
-              }`}
-            >
-              {n}
-              {n === 'TRC20' && <span className="ml-1.5 px-1.5 py-0.5 rounded bg-accent/20 text-accent text-[10px] font-bold">Recommended</span>}
-            </button>
-          ))}
+        <div>
+          <CustomSelect
+            value={network}
+            onChange={(v) => switchNetwork(v as 'TRC20' | 'ERC20')}
+            options={[
+              { value: 'ERC20', label: 'ERC20 (Ethereum)' },
+              { value: 'TRC20', label: 'TRC20 (Tron)' },
+            ]}
+            placeholder="Select network"
+          />
         </div>
 
         {/* Sender wallet — inline add / edit / delete */}
