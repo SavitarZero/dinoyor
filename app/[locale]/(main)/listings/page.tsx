@@ -52,6 +52,20 @@ export default async function MyListingsPage({
     supabase.from('listings').select('*', { count: 'exact', head: true }).eq('seller_id', user.id).eq('status', 'cancelled'),
   ])
 
+  const soldListingIds = (listings ?? []).filter(l => l.status === 'sold').map(l => l.id)
+  let orderMap: Record<string, string> = {}
+  if (soldListingIds.length > 0) {
+    const { data: orders } = await supabase
+      .from('orders')
+      .select('id, listing_id')
+      .in('listing_id', soldListingIds)
+      .in('status', ['paid_escrow', 'delivered', 'completed'])
+      .order('created_at', { ascending: false })
+    for (const o of orders ?? []) {
+      if (!orderMap[o.listing_id]) orderMap[o.listing_id] = o.id
+    }
+  }
+
   const filtered = (listings ?? []).filter(l => l.status === filter)
 
   const totalSoldItems = (listings ?? []).reduce((s, l) => s + (l.sold_count ?? 0), 0)
@@ -188,10 +202,10 @@ export default async function MyListingsPage({
               {/* Actions */}
               <div className="border-t border-border px-3 py-2.5 flex gap-2">
                 <Link
-                  href={`/market/${listing.id}`}
+                  href={listing.status === 'sold' && orderMap[listing.id] ? `/orders/${orderMap[listing.id]}` : `/market/${listing.id}`}
                   className="flex-1 py-1.5 rounded border border-border text-gray-400 text-xs font-medium text-center hover:text-white hover:border-gray-500 transition-colors"
                 >
-                  View
+                  {listing.status === 'sold' && orderMap[listing.id] ? 'View Order' : 'View'}
                 </Link>
                 {listing.status === 'active' && (
                   <RemoveListingButton listingId={listing.id} />
