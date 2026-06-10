@@ -14,29 +14,22 @@ interface Notification {
   created_at: string
 }
 
-export function NotificationBell({ userId }: { userId: string }) {
+interface Props {
+  userId: string
+  initialNotifications: Notification[]
+  initialUnread: number
+}
+
+export function NotificationBell({ userId, initialNotifications, initialUnread }: Props) {
   const [open, setOpen] = useState(false)
-  const [notifications, setNotifications] = useState<Notification[]>([])
-  const [unreadCount, setUnreadCount] = useState(0)
+  const [notifications, setNotifications] = useState<Notification[]>(initialNotifications)
+  const [unreadCount, setUnreadCount] = useState(initialUnread)
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const supabase = createClient()
-    supabase
-      .from('notifications')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
-      .limit(20)
-      .then(({ data }) => {
-        if (data) {
-          setNotifications(data)
-          setUnreadCount(data.filter(n => !n.read).length)
-        }
-      })
-
     const channel = supabase
-      .channel('notifications')
+      .channel(`notifications-${userId}`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${userId}` }, (payload) => {
         const n = payload.new as Notification
         setNotifications(prev => [n, ...prev].slice(0, 20))

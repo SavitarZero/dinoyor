@@ -17,3 +17,6 @@ create policy "notifications_owner_update" on public.notifications for update us
 
 -- Index for fast queries
 create index notifications_user_unread_idx on public.notifications (user_id, read, created_at desc);
+
+-- Enable realtime for notifications
+alter publication supabase_realtime add table public.notifications;

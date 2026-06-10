@@ -16,14 +16,19 @@ const getNavbarData = cache(async () => {
   let profile = null
   let role: string = 'user'
   let amoBalance = 0
+  let notifications: any[] = []
+  let unreadCount = 0
   if (user) {
-    const [{ data: profileData }, { data: balanceData }] = await Promise.all([
+    const [{ data: profileData }, { data: balanceData }, { data: notiData }] = await Promise.all([
       supabase.from('profiles').select('username, avatar_url, role').eq('id', user.id).single(),
       supabase.from('user_balances').select('balance').eq('user_id', user.id).eq('currency', 'USDT').maybeSingle(),
+      supabase.from('notifications').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(20),
     ])
     profile = profileData
     role = profile?.role ?? 'user'
     amoBalance = Number(balanceData?.balance ?? 0)
+    notifications = notiData ?? []
+    unreadCount = notifications.filter((n: any) => !n.read).length
   }
 
   const avatarUrl =
@@ -31,11 +36,11 @@ const getNavbarData = cache(async () => {
     (user?.user_metadata?.avatar_url as string | undefined) ||
     null
 
-  return { user, profile, role, avatarUrl, amoBalance }
+  return { user, profile, role, avatarUrl, amoBalance, notifications, unreadCount }
 })
 
 export async function NavbarUser() {
-  const { user, profile, role, avatarUrl, amoBalance } = await getNavbarData()
+  const { user, profile, role, avatarUrl, amoBalance, notifications, unreadCount } = await getNavbarData()
 
   if (!user) {
     return (
@@ -78,7 +83,7 @@ export async function NavbarUser() {
         <span className="text-accent-gold text-xs font-bold tabular-nums">{amoBalance.toFixed(2)}</span>
         <span className="text-muted text-[10px] font-medium">AMO</span>
       </Link>
-      <NotificationBell userId={user.id} />
+      <NotificationBell userId={user.id} initialNotifications={notifications} initialUnread={unreadCount} />
       <ProfileDropdown
         avatarUrl={avatarUrl}
         username={profile?.username ?? null}
@@ -91,7 +96,7 @@ export async function NavbarUser() {
 }
 
 export async function NavbarUserMobile() {
-  const { user, profile, role, avatarUrl, amoBalance } = await getNavbarData()
+  const { user, profile, role, avatarUrl, amoBalance, notifications, unreadCount } = await getNavbarData()
 
   if (!user) {
     return (
