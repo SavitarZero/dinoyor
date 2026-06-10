@@ -328,6 +328,23 @@ export async function cancelOrder(orderId: string) {
   await admin.from('orders').update({ status: 'cancelled' }).eq('id', orderId)
   await admin.from('listings').update({ status: 'active' }).eq('id', order.listing_id)
 
+  // Notify both parties
+  const cancelledBy = isBuyer ? 'buyer' : 'seller'
+  await createNotification({
+    userId: order.buyer_id,
+    type: 'order_cancelled',
+    title: 'Order cancelled',
+    body: `Order cancelled by ${cancelledBy}. ${order.amount} AMO refunded to your wallet.`,
+    link: `/orders/${orderId}`,
+  })
+  await createNotification({
+    userId: order.seller_id,
+    type: 'order_cancelled',
+    title: 'Order cancelled',
+    body: `Order cancelled by ${cancelledBy}. ${order.amount} AMO refunded to buyer.`,
+    link: `/orders/${orderId}`,
+  })
+
   revalidatePath(`/orders/${orderId}`)
   revalidatePath('/orders')
   return { success: true }
