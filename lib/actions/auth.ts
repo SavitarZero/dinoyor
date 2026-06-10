@@ -105,6 +105,7 @@ export async function updateEmail(email: string) {
       email_confirm: true,
     })
     if (error) {
+      console.error('[updateEmail] admin.updateUserById error:', error)
       if (error.message.toLowerCase().includes('already')) {
         return { error: 'This email is already used by another account' }
       }

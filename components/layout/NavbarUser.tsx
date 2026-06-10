@@ -2,6 +2,7 @@ import { cache } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { ProfileDropdown } from './ProfileDropdown'
+import { NotificationBell } from './NotificationBell'
 import { Store, Package, Plus } from 'lucide-react'
 
 const textBtn =
@@ -77,6 +78,7 @@ export async function NavbarUser() {
         <span className="text-accent-gold text-xs font-bold tabular-nums">{amoBalance.toFixed(2)}</span>
         <span className="text-muted text-[10px] font-medium">AMO</span>
       </Link>
+      <NotificationBell userId={user.id} />
       <ProfileDropdown
         avatarUrl={avatarUrl}
         username={profile?.username ?? null}

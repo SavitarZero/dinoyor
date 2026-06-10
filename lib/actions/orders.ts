@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
+import { createNotification } from '@/lib/utils/notifications'
 
 function deliveryMs(deliveryTime: string | null | undefined): number {
   if (!deliveryTime) return 24 * 60 * 60 * 1000
@@ -109,6 +110,9 @@ export async function createOrder(listingId: string) {
     })
   }
 
+  // Notify seller: new order
+  await createNotification({ userId: listing.seller_id, type: 'new_order', title: 'New order received', body: listing.title, link: `/orders/${order.id}` })
+
   revalidatePath('/orders')
   redirect(`/orders/${order.id}`)
 }
@@ -120,7 +124,7 @@ export async function confirmDelivery(orderId: string, screenshotFiles: File[]) 
 
   const { data: order } = await supabase
     .from('orders')
-    .select('id, seller_id, status, listing_id')
+    .select('id, seller_id, buyer_id, status, listing_id')
     .eq('id', orderId)
     .single()
   if (!order || order.seller_id !== user.id) return { error: 'Unauthorized' }
@@ -153,6 +157,9 @@ export async function confirmDelivery(orderId: string, screenshotFiles: File[]) 
     status: 'delivered',
     auto_release_at: autoReleaseAt,
   }).eq('id', orderId)
+
+  // Notify buyer: seller delivered
+  await createNotification({ userId: order.buyer_id, type: 'seller_delivered', title: 'Item delivered', body: 'Seller has delivered your item. Please confirm receipt.', link: `/orders/${orderId}` })
 
   revalidatePath(`/orders/${orderId}`)
   return { success: true }
@@ -221,6 +228,11 @@ export async function buyerConfirmReceived(orderId: string) {
   ])
 
   revalidatePath(`/orders/${orderId}`)
+
+  // Notify both: order completed
+  await createNotification({ userId: order.seller_id, type: 'order_completed', title: 'Order completed', body: 'Buyer confirmed receipt. Payment released to your balance.', link: `/orders/${orderId}` })
+  await createNotification({ userId: order.buyer_id, type: 'buyer_confirmed', title: 'Order completed', body: 'You confirmed receipt. Thank you!', link: `/orders/${orderId}` })
+
   return { success: true }
 }
 
